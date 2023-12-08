@@ -1,0 +1,9 @@
+{
+    "properties": [
+        {
+            "name": "minerva.auth-header",
+            "type": "java.lang.String",
+            "description": "Header used to pass the authentication token to the service."
+        }
+    ]
+}
