@@ -15,7 +15,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
-public class SquirrelSecurityConfig {
+public class SecurityConfig {
 
     private final AuthReqFilter authReqFilter;
 

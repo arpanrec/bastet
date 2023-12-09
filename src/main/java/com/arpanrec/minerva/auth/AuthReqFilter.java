@@ -19,15 +19,15 @@ public class AuthReqFilter extends OncePerRequestFilter {
 
     public AuthReqFilter(
             AuthManager authManager,
-            SquirrelDetailsService squirrelDetailsService,
+            UDetailsService uDetailsService,
             AuthProperties authProperties) {
         this.authManager = authManager;
-        this.squirrelDetailsService = squirrelDetailsService;
+        this.uDetailsService = uDetailsService;
         this.authProperties = authProperties;
     }
 
     private final AuthManager authManager;
-    private final SquirrelDetailsService squirrelDetailsService;
+    private final UDetailsService uDetailsService;
 
     private final AuthProperties authProperties;
 
@@ -47,7 +47,7 @@ public class AuthReqFilter extends OncePerRequestFilter {
         String username = credential[0];
         String providedPassword = credential[1];
 
-        User user = squirrelDetailsService.loadUserByUsername(username);
+        User user = uDetailsService.loadUserByUsername(username);
         SquirrelAuthentication squirrelAuthentication = new SquirrelAuthentication();
         squirrelAuthentication.setProvidedPassword(providedPassword);
         squirrelAuthentication.setUser(user);
