@@ -14,7 +14,7 @@ public class AuthProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        MAuthentication auth = (MAuthentication) authentication;
+        AuthImpl auth = (AuthImpl) authentication;
         log.debug("User authentication started");
         if (auth.getCredentials().equals(auth.getProvidedPassword())) {
             log.info("User authenticated");

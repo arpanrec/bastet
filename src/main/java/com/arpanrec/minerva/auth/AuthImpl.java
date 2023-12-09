@@ -16,7 +16,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MAuthentication implements Authentication {
+public class AuthImpl implements Authentication {
 
     private boolean authenticated;
     private User user;

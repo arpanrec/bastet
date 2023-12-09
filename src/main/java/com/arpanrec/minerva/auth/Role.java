@@ -12,7 +12,7 @@ import lombok.Data;
 
 import java.util.Collection;
 
-@Entity
+@Entity(name = "roles")
 @Data
 public class Role {
 

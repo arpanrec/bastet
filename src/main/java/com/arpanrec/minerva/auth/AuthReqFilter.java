@@ -17,14 +17,14 @@ import java.io.IOException;
 @Component
 public class AuthReqFilter extends OncePerRequestFilter {
 
-    public AuthReqFilter(AuthManager authManager, UDetailsService uDetailsService, AuthProperties authProperties) {
+    public AuthReqFilter(AuthManager authManager, UserDetailsServiceImpl userDetailsServiceImpl, AuthProperties authProperties) {
         this.authManager = authManager;
-        this.uDetailsService = uDetailsService;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.authProperties = authProperties;
     }
 
     private final AuthManager authManager;
-    private final UDetailsService uDetailsService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     private final AuthProperties authProperties;
 
@@ -42,13 +42,13 @@ public class AuthReqFilter extends OncePerRequestFilter {
         String username = credential[0];
         String providedPassword = credential[1];
 
-        User user = uDetailsService.loadUserByUsername(username);
-        MAuthentication mAuthentication = new MAuthentication();
-        mAuthentication.setProvidedPassword(providedPassword);
-        mAuthentication.setUser(user);
-        mAuthentication.setAuthenticated(false);
+        User user = userDetailsServiceImpl.loadUserByUsername(username);
+        AuthImpl authImpl = new AuthImpl();
+        authImpl.setProvidedPassword(providedPassword);
+        authImpl.setUser(user);
+        authImpl.setAuthenticated(false);
 
-        Authentication authentication = authManager.authenticate(mAuthentication);
+        Authentication authentication = authManager.authenticate(authImpl);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
