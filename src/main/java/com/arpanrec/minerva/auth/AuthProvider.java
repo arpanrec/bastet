@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class SquirrelAuthenticationProvider implements AuthenticationProvider {
+public class AuthProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication)

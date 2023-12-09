@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class SquirrelAuthenticationManager implements AuthenticationManager {
+public class AuthManager implements AuthenticationManager {
 
-    private final SquirrelAuthenticationProvider squirrelAuthenticationProvider;
+    private final AuthProvider authProvider;
 
     @Override
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
-        return squirrelAuthenticationProvider.authenticate(authentication);
+        return authProvider.authenticate(authentication);
     }
 }

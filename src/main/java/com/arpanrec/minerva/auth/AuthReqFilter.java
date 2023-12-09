@@ -15,33 +15,33 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-public class SquirrelAuthenticationOncePerRequestFilter extends OncePerRequestFilter {
+public class AuthReqFilter extends OncePerRequestFilter {
 
-    public SquirrelAuthenticationOncePerRequestFilter(
-            SquirrelAuthenticationManager squirrelAuthenticationManager,
+    public AuthReqFilter(
+            AuthManager authManager,
             SquirrelDetailsService squirrelDetailsService,
-            MinervaAuthProperties minervaAuthProperties) {
-        this.squirrelAuthenticationManager = squirrelAuthenticationManager;
+            AuthProperties authProperties) {
+        this.authManager = authManager;
         this.squirrelDetailsService = squirrelDetailsService;
-        this.minervaAuthProperties = minervaAuthProperties;
+        this.authProperties = authProperties;
     }
 
-    private final SquirrelAuthenticationManager squirrelAuthenticationManager;
+    private final AuthManager authManager;
     private final SquirrelDetailsService squirrelDetailsService;
 
-    private final MinervaAuthProperties minervaAuthProperties;
+    private final AuthProperties authProperties;
 
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
 
-        var base64Cred = request.getHeader(minervaAuthProperties.getHeaderKey());
+        var base64Cred = request.getHeader(authProperties.getHeaderKey());
         if (base64Cred == null) {
             filterChain.doFilter(request, response);
             return;
         }
-        log.debug("headerKey: {}, base64Cred: {}", minervaAuthProperties.getHeaderKey(), base64Cred);
+        log.debug("headerKey: {}, base64Cred: {}", authProperties.getHeaderKey(), base64Cred);
 
         String[] creds = base64Cred.split(":");
         String username = creds[0];
@@ -53,8 +53,7 @@ public class SquirrelAuthenticationOncePerRequestFilter extends OncePerRequestFi
         squirrelAuthentication.setSquirrel(userDetails);
         squirrelAuthentication.setAuthenticated(false);
 
-        Authentication authentication =
-                squirrelAuthenticationManager.authenticate(squirrelAuthentication);
+        Authentication authentication = authManager.authenticate(squirrelAuthentication);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

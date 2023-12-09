@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "minerva.auth")
 @Data
-public class MinervaAuthProperties {
+public class AuthProperties {
 
     private String headerKey = "Authorization";
 }
