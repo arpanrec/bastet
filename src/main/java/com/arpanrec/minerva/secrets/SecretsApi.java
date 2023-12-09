@@ -1,6 +1,5 @@
 package com.arpanrec.minerva.secrets;
 
-import com.arpanrec.minerva.api.Secrets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +17,7 @@ public class SecretsApi {
 
     @PostMapping(path = "/v1/secret/{path}")
     public String uploadFile(@PathVariable String path, @RequestBody String secretContent) {
-        var secret = new Secrets(path, secretContent);
+        var secret = new Secret(path, secretContent);
         secretRepository.save(secret);
         return "File uploaded";
     }
