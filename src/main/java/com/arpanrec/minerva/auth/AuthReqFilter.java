@@ -17,10 +17,7 @@ import java.io.IOException;
 @Component
 public class AuthReqFilter extends OncePerRequestFilter {
 
-    public AuthReqFilter(
-            AuthManager authManager,
-            UDetailsService uDetailsService,
-            AuthProperties authProperties) {
+    public AuthReqFilter(AuthManager authManager, UDetailsService uDetailsService, AuthProperties authProperties) {
         this.authManager = authManager;
         this.uDetailsService = uDetailsService;
         this.authProperties = authProperties;
@@ -31,9 +28,7 @@ public class AuthReqFilter extends OncePerRequestFilter {
 
     private final AuthProperties authProperties;
 
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
 
         var base64Cred = request.getHeader(authProperties.getHeaderKey());
