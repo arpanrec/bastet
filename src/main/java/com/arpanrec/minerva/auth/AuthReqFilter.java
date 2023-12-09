@@ -48,12 +48,12 @@ public class AuthReqFilter extends OncePerRequestFilter {
         String providedPassword = credential[1];
 
         User user = uDetailsService.loadUserByUsername(username);
-        SquirrelAuthentication squirrelAuthentication = new SquirrelAuthentication();
-        squirrelAuthentication.setProvidedPassword(providedPassword);
-        squirrelAuthentication.setUser(user);
-        squirrelAuthentication.setAuthenticated(false);
+        MAuthentication mAuthentication = new MAuthentication();
+        mAuthentication.setProvidedPassword(providedPassword);
+        mAuthentication.setUser(user);
+        mAuthentication.setAuthenticated(false);
 
-        Authentication authentication = authManager.authenticate(squirrelAuthentication);
+        Authentication authentication = authManager.authenticate(mAuthentication);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

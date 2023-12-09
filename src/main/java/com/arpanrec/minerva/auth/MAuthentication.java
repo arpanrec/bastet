@@ -16,7 +16,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SquirrelAuthentication implements Authentication {
+public class MAuthentication implements Authentication {
 
     private boolean authenticated;
     private User user;
