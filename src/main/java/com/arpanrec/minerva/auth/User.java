@@ -24,10 +24,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class AuthPrincipalUser implements UserDetails {
+public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(generator = "increment", strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -36,7 +36,7 @@ public class AuthPrincipalUser implements UserDetails {
     @Column
     private String password;
 
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column

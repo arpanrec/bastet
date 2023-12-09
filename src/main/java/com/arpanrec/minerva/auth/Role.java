@@ -24,7 +24,7 @@ public class Role {
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private Collection<AuthPrincipalUser> authPrincipalUsers;
+    private Collection<User> users;
 
     @ManyToMany
     @JoinTable(name = "roles_privileges",

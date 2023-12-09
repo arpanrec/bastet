@@ -19,7 +19,7 @@ import java.util.Collection;
 public class SquirrelAuthentication implements Authentication {
 
     private boolean authenticated;
-    private AuthPrincipalUser authPrincipalUser;
+    private User user;
     private String providedPassword;
 
 
@@ -28,20 +28,20 @@ public class SquirrelAuthentication implements Authentication {
     }
 
     public Object getCredentials() {
-        return this.authPrincipalUser.getPassword();
+        return this.user.getPassword();
     }
 
     public Object getDetails() {
-        return this.authPrincipalUser;
+        return this.user;
     }
 
     public Object getPrincipal() {
-        return this.authPrincipalUser;
+        return this.user;
     }
 
     @Override
     public String getName() {
-        return this.authPrincipalUser.getName();
+        return this.user.getName();
     }
 
     @Override

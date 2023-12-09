@@ -19,7 +19,6 @@ public class SquirrelSecurityConfig {
 
     private final AuthReqFilter authReqFilter;
 
-
     private final AuthProvider authProvider;
 
     @Bean
