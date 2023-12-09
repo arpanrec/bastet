@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "squirrel")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Squirrel implements UserDetails {
+@Entity
+public class AuthPrincipalUser implements UserDetails {
 
     @Id
     @GeneratedValue(generator = "increment", strategy = GenerationType.IDENTITY)

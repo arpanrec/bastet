@@ -14,7 +14,7 @@ public class SquirrelDetailsService implements UserDetailsService {
     private SquirrelsRepository squirrelsRepository;
 
     @Override
-    public Squirrel loadUserByUsername(String username) throws UsernameNotFoundException {
+    public AuthPrincipalUser loadUserByUsername(String username) throws UsernameNotFoundException {
         log.debug("Loading user by username: {}", username);
         return squirrelsRepository.findByName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));

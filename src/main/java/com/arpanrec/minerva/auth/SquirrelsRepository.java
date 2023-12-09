@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface SquirrelsRepository extends JpaRepository<Squirrel, Long> {
+public interface SquirrelsRepository extends JpaRepository<AuthPrincipalUser, Long> {
 
-    Optional<Squirrel> findByEmail(String email);
+    // Optional<AuthPrincipalUser> findByEmail(String email);
 
-    Optional<Squirrel> findByName(String name);
+    Optional<AuthPrincipalUser> findByName(String name);
 }
