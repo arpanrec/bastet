@@ -43,9 +43,9 @@ public class AuthReqFilter extends OncePerRequestFilter {
         }
         log.debug("headerKey: {}, base64Cred: {}", authProperties.getHeaderKey(), base64Cred);
 
-        String[] creds = base64Cred.split(":");
-        String username = creds[0];
-        String providedPassword = creds[1];
+        String[] credential = base64Cred.split(":");
+        String username = credential[0];
+        String providedPassword = credential[1];
 
         AuthPrincipalUser authPrincipalUser = squirrelDetailsService.loadUserByUsername(username);
         SquirrelAuthentication squirrelAuthentication = new SquirrelAuthentication();
