@@ -1,9 +1,19 @@
 {
     "properties": [
         {
-            "name": "minerva.auth-header",
+            "name": "minerva.auth.header-key",
             "type": "java.lang.String",
             "description": "Header used to pass the authentication token to the service."
+        },
+        {
+            "name": "minerva.secret.encrypt",
+            "type": "java.lang.Boolean",
+            "description": "Whether or not to encrypt the secret."
+        },
+        {
+            "name": "minerva.secret.encryption-key",
+            "type": "java.lang.String",
+            "description": "The encryption key to use for encrypting the secret."
         }
     ]
 }

@@ -21,5 +21,3 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-minerva:
-  auth-header: x-minerva

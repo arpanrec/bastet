@@ -5,7 +5,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,28 +19,29 @@ public class SquirrelAuthenticationOncePerRequestFilter extends OncePerRequestFi
 
     public SquirrelAuthenticationOncePerRequestFilter(
             SquirrelAuthenticationManager squirrelAuthenticationManager,
-            SquirrelDetailsService squirrelDetailsService) {
+            SquirrelDetailsService squirrelDetailsService,
+            MinervaAuthProperties minervaAuthProperties) {
         this.squirrelAuthenticationManager = squirrelAuthenticationManager;
         this.squirrelDetailsService = squirrelDetailsService;
+        this.minervaAuthProperties = minervaAuthProperties;
     }
 
     private final SquirrelAuthenticationManager squirrelAuthenticationManager;
     private final SquirrelDetailsService squirrelDetailsService;
 
-    @Value("${minerva.auth-header}")
-    private String headerKey;
+    private final MinervaAuthProperties minervaAuthProperties;
 
     protected void doFilterInternal(@NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+                                    @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
 
-        var base64Cred = request.getHeader(headerKey);
+        var base64Cred = request.getHeader(minervaAuthProperties.getHeaderKey());
         if (base64Cred == null) {
             filterChain.doFilter(request, response);
             return;
         }
-        log.debug("headerKey: {}, base64Cred: {}", headerKey, base64Cred);
+        log.debug("headerKey: {}, base64Cred: {}", minervaAuthProperties.getHeaderKey(), base64Cred);
 
         String[] creds = base64Cred.split(":");
         String username = creds[0];
