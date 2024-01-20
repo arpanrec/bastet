@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.plugins.ide.eclipse.model.EclipseModel
+import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
     java
@@ -7,6 +9,8 @@ plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
     kotlin("plugin.jpa") version "1.9.22"
+    idea
+    eclipse
 }
 
 group = "com.arpanrec"
@@ -14,6 +18,20 @@ version = "0.0.0-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
+}
+
+configure<IdeaModel> {
+    module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
+}
+
+configure<EclipseModel> {
+    classpath {
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
 }
 
 configurations {
