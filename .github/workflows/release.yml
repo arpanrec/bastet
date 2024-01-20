@@ -3,7 +3,8 @@ name: Release
 "on":
   push:
     branches:
-      - "dev/env"
+      - "master"
+      - "main"
 
 jobs:
   release:
