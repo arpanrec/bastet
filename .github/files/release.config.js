@@ -33,7 +33,7 @@ module.exports = {
       "@semantic-release/exec",
       {
         prepareCmd:
-          'sed -i \'s/^version = ":.*/version = "${nextRelease.version}"/g\' build.gradle.kts',
+          'sed -i \'s/^version = ".*/version = "${nextRelease.version}"/g\' build.gradle.kts',
       },
     ],
     [
