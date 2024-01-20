@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/arpanrec/minerva/compare/1.0.0...1.0.1) (2024-01-20)
+
+
+### Bug Fixes
+
+* Fix version replacement in build.gradle.kts ([fa1b22a](https://github.com/arpanrec/minerva/commit/fa1b22afde71055fc72648981b6e3914bfd4d9ff))
+
 # 1.0.0 (2024-01-20)
 
 
