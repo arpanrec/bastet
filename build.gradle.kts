@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.plugins.ide.eclipse.model.EclipseModel
 import org.gradle.plugins.ide.idea.model.IdeaModel
+import org.jetbrains.kotlin.cli.jvm.main
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
@@ -133,4 +134,12 @@ tasks.getByName<BootJar>("bootJar") {
     enabled = true
     mainClass = "com.arpanrec.minerva.Application"
     archiveAppendix.set("boot")
+}
+
+graalvmNative {
+    binaries {
+        named("main") {
+            buildArgs.add("-Dorg.sqlite.lib.exportPath=${layout.buildDirectory}")
+        }
+    }
 }
