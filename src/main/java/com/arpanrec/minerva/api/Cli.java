@@ -1,6 +1,6 @@
 package com.arpanrec.minerva.api;
 
-import com.arpanrec.minerva.secrets.SecretProperties;
+import com.arpanrec.minerva.kv.KeyValueProperties;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class Cli implements CommandLineRunner {
 
-    private SecretProperties secretProperties;
+    private KeyValueProperties keyValueProperties;
 
     @Autowired
-    public void setProps(SecretProperties secretProperties) {
-        this.secretProperties = secretProperties;
+    public void setProps(KeyValueProperties keyValueProperties) {
+        this.keyValueProperties = keyValueProperties;
     }
 
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("encrypt: " + this.secretProperties.isEncrypt());
-        log.info("encryptionKey: " + this.secretProperties.getEncryptionKey());
+        log.info("encrypt: " + this.keyValueProperties.isEncrypt());
+        log.info("encryptionKey: " + this.keyValueProperties.getEncryptionKey());
     }
 }
