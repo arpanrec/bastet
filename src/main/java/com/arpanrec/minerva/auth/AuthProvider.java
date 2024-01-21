@@ -10,12 +10,11 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class SquirrelAuthenticationProvider implements AuthenticationProvider {
+public class AuthProvider implements AuthenticationProvider {
 
     @Override
-    public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
-        SquirrelAuthentication auth = (SquirrelAuthentication) authentication;
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        AuthImpl auth = (AuthImpl) authentication;
         log.debug("User authentication started");
         if (auth.getCredentials().equals(auth.getProvidedPassword())) {
             log.info("User authenticated");

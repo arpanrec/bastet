@@ -12,7 +12,7 @@ import lombok.Data;
 
 import java.util.Collection;
 
-@Entity
+@Entity(name = "roles")
 @Data
 public class Role {
 
@@ -24,7 +24,7 @@ public class Role {
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private Collection<Squirrel> users;
+    private Collection<User> users;
 
     @ManyToMany
     @JoinTable(name = "roles_privileges",

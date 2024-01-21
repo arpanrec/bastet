@@ -15,12 +15,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
-public class SquirrelSecurityConfig {
+public class SecurityConfig {
 
-    private final SquirrelAuthenticationOncePerRequestFilter squirrelAuthenticationOncePerRequestFilter;
+    private final AuthReqFilter authReqFilter;
 
-
-    private final SquirrelAuthenticationProvider authProvider;
+    private final AuthProvider authProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,8 +30,7 @@ public class SquirrelSecurityConfig {
         http.sessionManagement(sessionManagement -> sessionManagement
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authenticationProvider(authProvider);
-        http.addFilterAfter(squirrelAuthenticationOncePerRequestFilter,
-                BasicAuthenticationFilter.class);
+        http.addFilterAfter(authReqFilter, BasicAuthenticationFilter.class);
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll());
         http.authorizeHttpRequests(

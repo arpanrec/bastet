@@ -16,10 +16,10 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SquirrelAuthentication implements Authentication {
+public class AuthImpl implements Authentication {
 
     private boolean authenticated;
-    private Squirrel squirrel;
+    private User user;
     private String providedPassword;
 
 
@@ -28,20 +28,20 @@ public class SquirrelAuthentication implements Authentication {
     }
 
     public Object getCredentials() {
-        return this.squirrel.getPassword();
+        return this.user.getPassword();
     }
 
     public Object getDetails() {
-        return this.squirrel;
+        return this.user;
     }
 
     public Object getPrincipal() {
-        return this.squirrel;
+        return this.user;
     }
 
     @Override
     public String getName() {
-        return this.squirrel.getName();
+        return this.user.getName();
     }
 
     @Override

@@ -1,22 +1,22 @@
 package com.arpanrec.minerva.auth;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class SquirrelDetailsService implements UserDetailsService {
+@AllArgsConstructor
+public class UserDetailsServiceImpl implements UserDetailsService {
 
-    @Autowired
-    private SquirrelsRepository squirrelsRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public Squirrel loadUserByUsername(String username) throws UsernameNotFoundException {
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
         log.debug("Loading user by username: {}", username);
-        return squirrelsRepository.findByName(username)
+        return userRepository.findByName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

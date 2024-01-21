@@ -45,3 +45,5 @@ target
 *.iml
 /.vscode/
 .vscode/settings.json
+
+/gradle*

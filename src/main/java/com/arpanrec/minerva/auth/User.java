@@ -20,14 +20,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "squirrel")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Squirrel implements UserDetails {
+@Entity(name = "users")
+public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(generator = "increment", strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -36,7 +36,7 @@ public class Squirrel implements UserDetails {
     @Column
     private String password;
 
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column

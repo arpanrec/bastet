@@ -5,8 +5,8 @@
 ```bash
 docker volume create minerva-test-postgres
 
+docker rm -f minerva-test-postgres
 docker run --name minerva-test-postgres \
-    --rm \
     -p 5432:5432 \
     -v minerva-test-postgres:/var/lib/postgresql/data \
     --restart no \
