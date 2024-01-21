@@ -10,14 +10,15 @@ spring:
     init:
       mode: always
   datasource:
-    url: "jdbc:postgresql://localhost:5432/postgres"
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
+    url: "jdbc:sqlite:sqlitesample.db"
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+minerva:
+  keyvalue:
+    encrypt: false
+    encryption-key: "1234567890123456"

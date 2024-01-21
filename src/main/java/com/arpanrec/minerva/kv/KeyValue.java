@@ -1,4 +1,4 @@
-package com.arpanrec.minerva.secrets;
+package com.arpanrec.minerva.kv;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -6,16 +6,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "secrets")
-public class Secret {
+@Entity(name = "keyvalue")
+@Setter
+@Getter
+public class KeyValue {
 
-    public Secret(String path, String content) {
+    public KeyValue(String path, String content) {
         this.path = path;
         this.content = content;
     }

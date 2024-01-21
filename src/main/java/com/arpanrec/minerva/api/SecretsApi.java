@@ -1,5 +1,7 @@
-package com.arpanrec.minerva.secrets;
+package com.arpanrec.minerva.api;
 
+import com.arpanrec.minerva.kv.KeyValue;
+import com.arpanrec.minerva.kv.KeyValueRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,16 +11,16 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class SecretsApi {
 
-    private final SecretRepository secretRepository;
+    private final KeyValueRepository keyValueRepository;
 
-    public SecretsApi(SecretRepository secretRepository) {
-        this.secretRepository = secretRepository;
+    public SecretsApi(KeyValueRepository keyValueRepository) {
+        this.keyValueRepository = keyValueRepository;
     }
 
     @PostMapping(path = "/v1/secret/{path}")
     public String uploadFile(@PathVariable String path, @RequestBody String secretContent) {
-        var secret = new Secret(path, secretContent);
-        secretRepository.save(secret);
+        var secret = new KeyValue(path, secretContent);
+        keyValueRepository.save(secret);
         return "File uploaded";
     }
 
