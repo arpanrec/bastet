@@ -3,6 +3,7 @@ import org.gradle.plugins.ide.eclipse.model.EclipseModel
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
+    groovy
     java
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
@@ -18,6 +19,32 @@ version = "0.0.0-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/java")
+        }
+        kotlin {
+            srcDirs("src/main/kotlin")
+        }
+        groovy {
+            srcDirs("src/main/groovy")
+        }
+    }
+    test {
+        java {
+            srcDirs("src/test/java")
+        }
+        kotlin {
+            srcDirs("src/test/kotlin")
+        }
+        groovy {
+            srcDirs("src/test/groovy")
+        }
+    }
 }
 
 configure<IdeaModel> {
@@ -43,12 +70,24 @@ configurations {
 repositories {
     mavenCentral()
 }
-
+configurations {
+    all {
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    }
+}
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.apache.groovy:groovy")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-log4j2")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl")
+    implementation("org.apache.logging.log4j:log4j-api")
+    implementation("org.apache.logging.log4j:log4j-core")
+    implementation("org.slf4j:jcl-over-slf4j")
+    implementation("org.slf4j:jul-to-slf4j")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -68,4 +107,9 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs += "-Xjsr305=strict"
         jvmTarget = "17"
     }
+}
+
+tasks.create<Delete>("cleanAll") {
+    group = "clean"
+    delete("logs", "bin", "build")
 }
