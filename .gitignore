@@ -47,3 +47,4 @@ target
 .vscode/settings.json
 
 /gradle*
+*.db
