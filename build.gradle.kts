@@ -96,6 +96,10 @@ dependencies {
     testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.platform:junit-platform-launcher")
+    implementation("org.apache.commons:commons-lang3")
+    implementation("org.jetbrains:annotations")
+    implementation("org.xerial:sqlite-jdbc")
+    implementation("org.hibernate.orm:hibernate-community-dialects")
 }
 
 tasks.withType<Test> {
