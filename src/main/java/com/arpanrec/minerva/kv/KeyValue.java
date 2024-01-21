@@ -10,12 +10,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "keyvalue")
 @Setter
 @Getter
-public class KeyValue {
+public class KeyValue implements Serializable {
+
 
     public KeyValue(String path, String content) {
         this.path = path;

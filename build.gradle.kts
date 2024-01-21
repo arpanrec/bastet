@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.plugins.ide.eclipse.model.EclipseModel
 import org.gradle.plugins.ide.idea.model.IdeaModel
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     groovy
@@ -12,6 +13,7 @@ plugins {
     kotlin("plugin.jpa") version "1.9.22"
     idea
     eclipse
+    id("org.graalvm.buildtools.native") version "0.9.28"
 }
 
 group = "com.arpanrec"
@@ -116,4 +118,19 @@ tasks.withType<KotlinCompile> {
 tasks.create<Delete>("cleanAll") {
     group = "clean"
     delete("logs", "bin", "build")
+}
+
+//springBoot() {
+//    mainClass.set("com.arpanrec.minerva.Application")
+//}
+
+tasks.getByName<Jar>("jar") {
+    enabled = true
+
+}
+
+tasks.getByName<BootJar>("bootJar") {
+    enabled = true
+    mainClass = "com.arpanrec.minerva.Application"
+    archiveAppendix.set("boot")
 }

@@ -9,22 +9,22 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-public class SecretsApi {
+public class KeyValueApi {
 
     private final KeyValueRepository keyValueRepository;
 
-    public SecretsApi(KeyValueRepository keyValueRepository) {
+    public KeyValueApi(KeyValueRepository keyValueRepository) {
         this.keyValueRepository = keyValueRepository;
     }
 
-    @PostMapping(path = "/v1/secret/{path}")
+    @PostMapping(path = "/keyvaule/{path}")
     public String uploadFile(@PathVariable String path, @RequestBody String secretContent) {
         var secret = new KeyValue(path, secretContent);
         keyValueRepository.save(secret);
         return "File uploaded";
     }
 
-    @GetMapping(path = "/v1/secret/{path}")
+    @GetMapping(path = "/v1/keyvaule/{path}")
     public String downloadFile(@PathVariable String path) {
         UserDetails userDetails =
                 (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
