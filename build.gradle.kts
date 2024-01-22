@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.plugins.ide.eclipse.model.EclipseModel
 import org.gradle.plugins.ide.idea.model.IdeaModel
-import org.jetbrains.kotlin.cli.jvm.main
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
@@ -80,29 +79,39 @@ configurations {
 }
 dependencies {
     implementation("org.apache.groovy:groovy")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-hateoas")
+
+    // Log4j2
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl")
     implementation("org.apache.logging.log4j:log4j-api")
     implementation("org.apache.logging.log4j:log4j-core")
     implementation("org.slf4j:jcl-over-slf4j")
     implementation("org.slf4j:jul-to-slf4j")
+    implementation("org.slf4j:log4j-over-slf4j")
+    implementation("org.slf4j:osgi-over-slf4j:2.1.0-alpha1")
+
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+
     implementation("org.springframework.boot:spring-boot-starter-security")
-    testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("com.h2database:h2")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.junit.platform:junit-platform-launcher")
+
     implementation("org.apache.commons:commons-lang3")
     implementation("org.jetbrains:annotations")
-    implementation("org.xerial:sqlite-jdbc")
-    implementation("org.hibernate.orm:hibernate-community-dialects")
+    implementation("org.postgresql:postgresql:42.7.1")
+    // implementation("org.xerial:sqlite-jdbc")
+    // implementation("org.hibernate.orm:hibernate-community-dialects")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.junit.platform:junit-platform-launcher")
+    testImplementation("com.h2database:h2")
 }
 
 tasks.withType<Test> {

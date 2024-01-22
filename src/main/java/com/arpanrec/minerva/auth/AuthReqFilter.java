@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Base64;
 
 @Slf4j
 @Component
@@ -38,7 +39,7 @@ public class AuthReqFilter extends OncePerRequestFilter {
         }
         log.debug("headerKey: {}, base64Cred: {}", authProperties.getHeaderKey(), base64Cred);
 
-        String[] credential = base64Cred.split(":");
+        String[] credential = new String(Base64.getDecoder().decode(base64Cred.substring(6))).split(":");
         String username = credential[0];
         String providedPassword = credential[1];
 

@@ -6,18 +6,21 @@ debug: true
 spring:
   profiles:
     active: default
+  application:
+    name: minerva
   sql:
     init:
       mode: always
   datasource:
-    url: "jdbc:sqlite:minerva.db"
-    driver-class-name: org.sqlite.JDBC
-    username: admin
-    password: admin
+    url: "jdbc:postgresql://localhost:5432/postgres"
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
   jpa:
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+    open-in-view: false
 minerva:
   keyvalue:
     encrypt: false
