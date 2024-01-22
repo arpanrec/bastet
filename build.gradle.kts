@@ -112,6 +112,9 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.junit.platform:junit-platform-launcher")
     testImplementation("com.h2database:h2")
+
+    implementation("org.bouncycastle:bcpg-jdk18on:1.77")
+
 }
 
 tasks.withType<Test> {
