@@ -132,7 +132,7 @@ tasks.getByName<Jar>("jar") {
 
 tasks.getByName<BootJar>("bootJar") {
     enabled = true
-    mainClass = "com.arpanrec.minerva.Application"
+    mainClass = getMainClassName()
     archiveAppendix.set("boot")
 }
 
@@ -142,4 +142,8 @@ graalvmNative {
             buildArgs.add("-Dorg.sqlite.lib.exportPath=${layout.buildDirectory}")
         }
     }
+}
+fun getMainClassName(): String {
+    val mainClass = "com.arpanrec.minerva.Application"
+    return mainClass
 }
