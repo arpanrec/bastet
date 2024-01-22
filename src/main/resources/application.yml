@@ -10,7 +10,7 @@ spring:
     init:
       mode: always
   datasource:
-    url: "jdbc:sqlite:sqlitesample.db"
+    url: "jdbc:sqlite:minerva.db"
     driver-class-name: org.sqlite.JDBC
     username: admin
     password: admin
