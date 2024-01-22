@@ -3,7 +3,6 @@ package com.arpanrec.minerva.api;
 import com.arpanrec.minerva.kv.KeyValue;
 import com.arpanrec.minerva.kv.KeyValueRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
