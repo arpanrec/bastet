@@ -8,7 +8,7 @@ class GnuPGTest {
 
     @Test
     fun testGnuPG() {
-        val publicKey = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+        val publicKey: String = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
                 "\n" +
                 "mDMEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm\n" +
                 "umnaeIy0LG1pbmVydmEtdGVzdCA8bWluZXJ2YS10ZXN0QG1pbmVydmEtdGVzdC5j\n" +
@@ -22,7 +22,7 @@ class GnuPGTest {
                 "/aPa84R3hAw=\n" +
                 "=kgso\n" +
                 "-----END PGP PUBLIC KEY BLOCK-----"
-        val privateKey = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n" +
+        val privateKey: String = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n" +
                 "\n" +
                 "lIYEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm\n" +
                 "umnaeIz+BwMCdNs9UHB91Gn/sq1FqE2sz9/ZguQjtGCOsmqjAUr5WJqGB2NE9RR4\n" +
@@ -39,7 +39,7 @@ class GnuPGTest {
                 "1tw2qmtpjSy2EpCx9Om+vrY6TsbHdv2j2vOEd4QM\n" +
                 "=SQ4t\n" +
                 "-----END PGP PRIVATE KEY BLOCK-----"
-        val passphrase = "password"
+        val passphrase: String = "password"
         throw NotImplementedError()
     }
 
