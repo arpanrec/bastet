@@ -4,9 +4,7 @@ import org.bouncycastle.bcpg.ArmoredOutputStream
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openpgp.PGPEncryptedData
 import org.bouncycastle.openpgp.PGPEncryptedDataGenerator
-import org.bouncycastle.openpgp.PGPObjectFactory
 import org.bouncycastle.openpgp.PGPPublicKey
-import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData
 import org.bouncycastle.openpgp.PGPPublicKeyRingCollection
 import org.bouncycastle.openpgp.PGPUtil
 import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator
@@ -75,7 +73,7 @@ class GnuPG {
             JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256)
                 .setWithIntegrityPacket(true)
                 .setSecureRandom(SecureRandom())
-                .setProvider("BC")
+                .setProvider(BouncyCastleProvider.PROVIDER_NAME)
         )
         encryptedDataGenerator.addMethod(
             JcePublicKeyKeyEncryptionMethodGenerator(pgpPublicKey).setProvider(
