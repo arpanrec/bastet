@@ -1,7 +1,5 @@
 package com.arpanrec.minerva.test;
 
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
-import org.bouncycastle.bcpg.ArmoredInputStream;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPEncryptedData;
@@ -19,9 +17,13 @@ import org.bouncycastle.openpgp.PGPUtil;
 import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
@@ -30,7 +32,10 @@ import java.util.Iterator;
 @SpringBootTest
 class ApplicationTests {
 
-    public static void main(String[] args) throws Exception {
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ApplicationTests.class);
+
+    @Test
+    void testGpg() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         String privateKeyString = """
                 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -54,23 +59,23 @@ class ApplicationTests {
         String passphraseString = "password";
         String encryptedDataString = """
                 -----BEGIN PGP MESSAGE-----
-                Version: BCPG v1.77.00
 
-                wV4DubSNXBIhRMMSAQdA9X95Tniut3d6wn1Ldt6E+NHZYkM1l/iTDXTkevNBoy4w
-                vrHNaS++yZ4dwHjg/s6ZZkLHf/c/lU1QZvJLQSE1EmimgDzwFJVeADU7VLSIDd52
-                0jUBWGUD+rADOsZCLMBjMhgl101AYo8OYIbfTX3NlQ1bRSIG+zA14rxJF9msvtFW
-                SpKGEg+SBw==
-                =JKd6
-                -----END PGP MESSAGE-----""";
+                wV4DubSNXBIhRMMSAQdAZ9DMo1276ZfcRxyL4b3HggNSCFNAGvCtwP25jKbQmA4w
+                mg0b9O+gvTUuDe/T9moSOGRoyukhTA0WRvG+exKbbao8o4CmCS7WRG3FwKW6fR8V
+                0jUB6d3A3bUDUnYKvsNpdTLTFs3YUU8f+6L4T/KETAGnfLhxt6qNDevekKOnCoCH
+                YWXeWJ9qsw==
+                =CQqa
+                -----END PGP MESSAGE-----
+                """;
 
         // Convert strings to streams
         InputStream privateKeyStream = new ByteArrayInputStream(privateKeyString.getBytes(StandardCharsets.UTF_8));
-        InputStream encryptedDataStream = new ArmoredInputStream(new ByteArrayInputStream(encryptedDataString.getBytes(StandardCharsets.UTF_8)));
+        InputStream encryptedDataStream = new ByteArrayInputStream(encryptedDataString.getBytes(StandardCharsets.UTF_8));
 
         decrypt(privateKeyStream, passphraseString.toCharArray(), encryptedDataStream);
     }
 
-    private static void decrypt(InputStream privateKeyStream, char[] passphrase, InputStream encryptedDataStream) throws Exception {
+    void decrypt(InputStream privateKeyStream, char[] passphrase, InputStream encryptedDataStream) throws Exception {
         PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(PGPUtil.getDecoderStream(privateKeyStream), new JcaKeyFingerprintCalculator());
 
         PGPPrivateKey pgpPrivateKey = null;
@@ -125,7 +130,8 @@ class ApplicationTests {
             throw new IllegalArgumentException("No encrypted data found.");
         }
 
-        InputStream clear = publicKeyEncryptedData.getDataStream(new JcePublicKeyDataDecryptorFactoryBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME).build(pgpPrivateKey));
+        InputStream clear = publicKeyEncryptedData.getDataStream(new JcePublicKeyDataDecryptorFactoryBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME)
+                .build(pgpPrivateKey));
         PGPObjectFactory plainFact = new PGPObjectFactory(clear, new JcaKeyFingerprintCalculator());
         Object message = plainFact.nextObject();
 
@@ -144,7 +150,7 @@ class ApplicationTests {
                     out.write(ch);
                 }
                 String decryptedData = out.toString();
-                System.out.println(decryptedData); // Your decrypted data}
+                log.info("Decrypted data: {}", decryptedData);
 
             } catch (Exception e) {
                 throw new PGPException("Failed to decrypt message", e);
