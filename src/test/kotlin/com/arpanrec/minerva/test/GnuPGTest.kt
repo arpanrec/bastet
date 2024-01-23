@@ -95,7 +95,7 @@ class GpGTest {
         val out: OutputStream = ArmoredOutputStream(encryptedOut)
 
         val encryptedDataGenerator = PGPEncryptedDataGenerator(
-            JcePGPDataEncryptorBuilder(PGPEncryptedData.CAST5)
+            JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256)
                 .setWithIntegrityPacket(true)
                 .setSecureRandom(SecureRandom())
                 .setProvider("BC")
