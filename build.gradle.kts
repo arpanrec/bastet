@@ -114,7 +114,8 @@ dependencies {
     testImplementation("com.h2database:h2")
 
     implementation("org.bouncycastle:bcpg-jdk18on:1.77")
-
+    implementation("org.bouncycastle:bcprov-jdk18on:1.77")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.77")
 }
 
 tasks.withType<Test> {
