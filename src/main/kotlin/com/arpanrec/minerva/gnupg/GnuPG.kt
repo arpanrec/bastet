@@ -51,9 +51,7 @@ class GnuPG {
         log.info("Setting up encrypted data generator.")
         requireNotNull(this.publicKeyString) { "Public key string is null." }
         val publicKeyStream: InputStream = ByteArrayInputStream(
-            this.publicKeyString!!.toByteArray(
-                StandardCharsets.UTF_8
-            )
+            this.publicKeyString!!.toByteArray(StandardCharsets.UTF_8)
         )
         val pgpPubRingCollection = PGPPublicKeyRingCollection(
             PGPUtil.getDecoderStream(publicKeyStream), JcaKeyFingerprintCalculator()
