@@ -1,5 +1,6 @@
 package com.arpanrec.minerva.test;
 
+import org.bouncycastle.bcpg.ArmoredInputStream;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPEncryptedData;
@@ -59,18 +60,19 @@ class ApplicationTests {
         String passphraseString = "password";
         String encryptedDataString = """
                 -----BEGIN PGP MESSAGE-----
+                Version: BCPG v1.77.00
 
-                wV4DubSNXBIhRMMSAQdAZ9DMo1276ZfcRxyL4b3HggNSCFNAGvCtwP25jKbQmA4w
-                mg0b9O+gvTUuDe/T9moSOGRoyukhTA0WRvG+exKbbao8o4CmCS7WRG3FwKW6fR8V
-                0jUB6d3A3bUDUnYKvsNpdTLTFs3YUU8f+6L4T/KETAGnfLhxt6qNDevekKOnCoCH
-                YWXeWJ9qsw==
-                =CQqa
+                wV4DubSNXBIhRMMSAQdAzVJhAeRnTuzFaDBlvAxuJd5xoTyHVdXNkTQXb6RG5ycw
+                cKmspaTgntPZ/zgdX+sTnYbWlWSR383x6+CzI72PSu+fsovkvCaheafqhNZX95Kd
+                0i0BIrGTGT3OLe2dxfZLru58eD2R6QlEA+Pmco98qUiT5YjwfbF6NwGOPQN4KeU=
+                =ke0z
                 -----END PGP MESSAGE-----
+
                 """;
 
         // Convert strings to streams
         InputStream privateKeyStream = new ByteArrayInputStream(privateKeyString.getBytes(StandardCharsets.UTF_8));
-        InputStream encryptedDataStream = new ByteArrayInputStream(encryptedDataString.getBytes(StandardCharsets.UTF_8));
+        InputStream encryptedDataStream = new ArmoredInputStream(new FileInputStream("/home/arpan/Downloads/bc-encrypted.gpg"));
 
         decrypt(privateKeyStream, passphraseString.toCharArray(), encryptedDataStream);
     }
