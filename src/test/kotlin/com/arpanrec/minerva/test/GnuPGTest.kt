@@ -1,27 +1,18 @@
 package com.arpanrec.minerva.test
 
-import org.bouncycastle.bcpg.ArmoredOutputStream
-import org.bouncycastle.jce.provider.BouncyCastleProvider
-import org.bouncycastle.openpgp.PGPEncryptedData
-import org.bouncycastle.openpgp.PGPEncryptedDataGenerator
+import com.arpanrec.minerva.gnupg.GnuPG
 import org.bouncycastle.openpgp.PGPException
-import org.bouncycastle.openpgp.PGPPublicKey
-import org.bouncycastle.openpgp.PGPPublicKeyRingCollection
-import org.bouncycastle.openpgp.PGPUtil
-import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator
-import org.bouncycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder
-import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator
 import org.junit.jupiter.api.Test
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import java.nio.charset.StandardCharsets
-import java.security.SecureRandom
-import java.security.Security
 
+@SpringBootTest
 class GpGTest {
+
+    @Autowired
+    private var gnuPG: GnuPG? = null
+
     var privateKey: String = """
             -----BEGIN PGP PRIVATE KEY BLOCK-----
 
@@ -46,79 +37,6 @@ class GpGTest {
     @Test
     @Throws(IOException::class, PGPException::class)
     fun test() {
-        val dataToEncrypt = "Hello, World!" // The data you want to encrypt
-
-        // Convert the public key string to an InputStream
-        val publicKeyString = """
-                -----BEGIN PGP PUBLIC KEY BLOCK-----
-
-                mDMEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
-                umnaeIy0LG1pbmVydmEtdGVzdCA8bWluZXJ2YS10ZXN0QG1pbmVydmEtdGVzdC5j
-                b20+iJkEExYKAEEWIQR/tX7WJd7W0WbxhY/rY/cBPZC6AAUCZa70AAIbAwUJBaOa
-                gAULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAKCRDrY/cBPZC6AP0OAQCnWQJg
-                EDHdRIugMORCBLo9i7gTnTNgV3ov9n3h+yMPmgD9HN29m9o0OIQbDyFCqE4jwbU0
-                UDB6/aX2dgXgwF0xagC4OARlrvQAEgorBgEEAZdVAQUBAQdAemolmqy4kFq5iEtF
-                ZyEELwf73OY7DcWFK5NIv0xCz18DAQgHiH4EGBYKACYWIQR/tX7WJd7W0WbxhY/r
-                Y/cBPZC6AAUCZa70AAIbDAUJBaOagAAKCRDrY/cBPZC6AJ8eAP4qOtZ535X89wei
-                q3J5c9sV9jopcu6BJtXrXhk23W3fhgD/fAbW3Daqa2mNLLYSkLH06b6+tjpOxsd2
-                /aPa84R3hAw=
-                =kgso
-                -----END PGP PUBLIC KEY BLOCK-----
-                """.trimIndent()
-        val publicKeyStream: InputStream = ByteArrayInputStream(
-            publicKeyString.toByteArray(
-                StandardCharsets.UTF_8
-            )
-        )
-
-        // Read the public key
-        val pgpPubRingCollection = PGPPublicKeyRingCollection(
-            PGPUtil.getDecoderStream(publicKeyStream), JcaKeyFingerprintCalculator()
-        )
-        var pgpPublicKey: PGPPublicKey? = null
-        val keyRingIter = pgpPubRingCollection.keyRings
-        while (keyRingIter.hasNext() && pgpPublicKey == null) {
-            val keyRing = keyRingIter.next()
-            val keyIter = keyRing.publicKeys
-            while (keyIter.hasNext()) {
-                val key = keyIter.next()
-                if (key.isEncryptionKey) {
-                    pgpPublicKey = key
-                    break
-                }
-            }
-        }
-
-        requireNotNull(pgpPublicKey) { "Can't find encryption key in key ring." }
-
-        val encryptedOut = ByteArrayOutputStream()
-        val out: OutputStream = ArmoredOutputStream(encryptedOut)
-
-        val encryptedDataGenerator = PGPEncryptedDataGenerator(
-            JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256)
-                .setWithIntegrityPacket(true)
-                .setSecureRandom(SecureRandom())
-                .setProvider("BC")
-        )
-
-        encryptedDataGenerator.addMethod(
-            JcePublicKeyKeyEncryptionMethodGenerator(pgpPublicKey).setProvider(
-                "BC"
-            )
-        )
-
-        val encryptedOutStream = encryptedDataGenerator.open(out, ByteArray(1 shl 16))
-        encryptedOutStream.write(dataToEncrypt.toByteArray(StandardCharsets.UTF_8)) // dataToEncrypt is the string you want to encrypt
-        encryptedOutStream.close()
-        out.close()
-
-        val encryptedData = encryptedOut.toString(StandardCharsets.UTF_8)
-        println(encryptedData) // Your encrypted data
-    }
-
-    companion object {
-        init {
-            Security.addProvider(BouncyCastleProvider())
-        }
+        println(gnuPG!!.encrypt("Hello World!"))
     }
 }
