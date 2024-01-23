@@ -22,6 +22,19 @@ spring:
       ddl-auto: update
     open-in-view: false
 minerva:
-  keyvalue:
-    encrypt: false
-    encryption-key: "1234567890123456"
+  gnupg:
+    publicKeyString: |+
+      -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+      mDMEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
+      umnaeIy0LG1pbmVydmEtdGVzdCA8bWluZXJ2YS10ZXN0QG1pbmVydmEtdGVzdC5j
+      b20+iJkEExYKAEEWIQR/tX7WJd7W0WbxhY/rY/cBPZC6AAUCZa70AAIbAwUJBaOa
+      gAULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAKCRDrY/cBPZC6AP0OAQCnWQJg
+      EDHdRIugMORCBLo9i7gTnTNgV3ov9n3h+yMPmgD9HN29m9o0OIQbDyFCqE4jwbU0
+      UDB6/aX2dgXgwF0xagC4OARlrvQAEgorBgEEAZdVAQUBAQdAemolmqy4kFq5iEtF
+      ZyEELwf73OY7DcWFK5NIv0xCz18DAQgHiH4EGBYKACYWIQR/tX7WJd7W0WbxhY/r
+      Y/cBPZC6AAUCZa70AAIbDAUJBaOagAAKCRDrY/cBPZC6AJ8eAP4qOtZ535X89wei
+      q3J5c9sV9jopcu6BJtXrXhk23W3fhgD/fAbW3Daqa2mNLLYSkLH06b6+tjpOxsd2
+      /aPa84R3hAw=
+      =kgso
+      -----END PGP PUBLIC KEY BLOCK-----
