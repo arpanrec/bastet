@@ -1,15 +1,19 @@
 package com.arpanrec.minerva.gnupg
 
 import org.bouncycastle.bcpg.ArmoredOutputStream
+import org.bouncycastle.bcpg.CompressionAlgorithmTags
 import org.bouncycastle.jce.provider.BouncyCastleProvider
+import org.bouncycastle.openpgp.PGPCompressedDataGenerator
 import org.bouncycastle.openpgp.PGPEncryptedData
 import org.bouncycastle.openpgp.PGPEncryptedDataGenerator
+import org.bouncycastle.openpgp.PGPLiteralData
+import org.bouncycastle.openpgp.PGPLiteralDataGenerator
 import org.bouncycastle.openpgp.PGPPublicKey
 import org.bouncycastle.openpgp.PGPPublicKeyRingCollection
 import org.bouncycastle.openpgp.PGPUtil
+import org.bouncycastle.openpgp.operator.bc.BcPublicKeyKeyEncryptionMethodGenerator
 import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator
 import org.bouncycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder
-import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.io.ByteArrayInputStream
@@ -19,6 +23,7 @@ import java.io.OutputStream
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 import java.security.Security
+import java.util.Date
 
 @ConfigurationProperties(prefix = "minerva.gnupg")
 class GnuPG {
@@ -69,20 +74,27 @@ class GnuPG {
             JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256).setWithIntegrityPacket(true)
                 .setSecureRandom(SecureRandom()).setProvider(BouncyCastleProvider.PROVIDER_NAME)
         )
-        encryptedDataGenerator.addMethod(
-            JcePublicKeyKeyEncryptionMethodGenerator(pgpPublicKey).setProvider(BouncyCastleProvider.PROVIDER_NAME)
-        )
+        encryptedDataGenerator.addMethod(BcPublicKeyKeyEncryptionMethodGenerator(pgpPublicKey))
+
         this.encryptedDataGenerator = encryptedDataGenerator
     }
 
-    fun encrypt(data: String): String {
+    fun encrypt(clearTextData: String): String {
         if (this.encryptedDataGenerator == null) {
             this.setEncryptedDataGenerator()
         }
+        val bOut = ByteArrayOutputStream()
+        val comData = PGPCompressedDataGenerator(CompressionAlgorithmTags.ZIP)
+        val lData = PGPLiteralDataGenerator()
+        val pOut = lData.open(comData.open(bOut), PGPLiteralData.UTF8, "noFile", clearTextData.length.toLong(), Date())
+        pOut.write(clearTextData.toByteArray(StandardCharsets.UTF_8))
+        pOut.close()
+        comData.close()
+
         val encryptedOut = ByteArrayOutputStream()
         val out: OutputStream = ArmoredOutputStream(encryptedOut)
-        val encryptedOutStream = encryptedDataGenerator!!.open(out, ByteArray(1 shl 16))
-        encryptedOutStream.write(data.toByteArray(StandardCharsets.UTF_8))
+        val encryptedOutStream = encryptedDataGenerator!!.open(out, bOut.toByteArray().size.toLong())
+        encryptedOutStream.write(bOut.toByteArray())
         encryptedOutStream.close()
         out.close()
         val encryptedData = encryptedOut.toString(StandardCharsets.UTF_8)
