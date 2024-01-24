@@ -8,13 +8,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import java.io.IOException
 
 @SpringBootTest
-class GpGTest {
+class GnuPGTest {
     @Autowired
     private var gnuPG: GnuPG? = null
 
     @Test
     @Throws(IOException::class, PGPException::class)
-    fun test() {
+    fun testEncrypt() {
         println(gnuPG!!.encrypt("Hello World!"))
     }
 }
