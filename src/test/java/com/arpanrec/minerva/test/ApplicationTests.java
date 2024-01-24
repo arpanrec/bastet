@@ -24,7 +24,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
@@ -62,23 +61,27 @@ class ApplicationTests {
                 -----BEGIN PGP MESSAGE-----
                 Version: BCPG v1.77.00
 
-                wV4DubSNXBIhRMMSAQdAzVJhAeRnTuzFaDBlvAxuJd5xoTyHVdXNkTQXb6RG5ycw
-                cKmspaTgntPZ/zgdX+sTnYbWlWSR383x6+CzI72PSu+fsovkvCaheafqhNZX95Kd
-                0i0BIrGTGT3OLe2dxfZLru58eD2R6QlEA+Pmco98qUiT5YjwfbF6NwGOPQN4KeU=
-                =ke0z
+                wV4DubSNXBIhRMMSAQdA7ywEj5XiEqzfjKfYBw2sCoUAexrM0/Cxos8fftzC0k4w
+                EsYhtv+siMLVZydNjzBCazkQN0c8VG42+8+Mr0BuXQl3wIdKD5CAgbeOh2UuZlc0
+                0kEBToPuek9wysc70FA8woybdSAzfKDbFTWVWMvB4MwDN/s5/e+CzHGmI/vF96ZP
+                b18r34wN8L7Ej9P5e//J1EbGOQ==
+                =SeUg
                 -----END PGP MESSAGE-----
 
                 """;
 
         // Convert strings to streams
-        InputStream privateKeyStream = new ByteArrayInputStream(privateKeyString.getBytes(StandardCharsets.UTF_8));
-        InputStream encryptedDataStream = new ArmoredInputStream(new FileInputStream("/home/arpan/Downloads/bc-encrypted.gpg"));
-
+        InputStream privateKeyStream =
+                new ByteArrayInputStream(privateKeyString.getBytes(StandardCharsets.US_ASCII));
+        InputStream encryptedDataStream = new ArmoredInputStream(
+                new ByteArrayInputStream(encryptedDataString.getBytes(StandardCharsets.US_ASCII)));
         decrypt(privateKeyStream, passphraseString.toCharArray(), encryptedDataStream);
     }
 
-    void decrypt(InputStream privateKeyStream, char[] passphrase, InputStream encryptedDataStream) throws Exception {
-        PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(PGPUtil.getDecoderStream(privateKeyStream), new JcaKeyFingerprintCalculator());
+    void decrypt(InputStream privateKeyStream, char[] passphrase, InputStream encryptedDataStream)
+            throws Exception {
+        PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(
+                PGPUtil.getDecoderStream(privateKeyStream), new JcaKeyFingerprintCalculator());
 
         PGPPrivateKey pgpPrivateKey = null;
         PGPPublicKeyEncryptedData publicKeyEncryptedData = null;
@@ -90,9 +93,12 @@ class ApplicationTests {
             while (keyIter.hasNext()) {
                 PGPSecretKey key = keyIter.next();
 
-                if (key.isSigningKey()) continue;
+                if (key.isSigningKey())
+                    continue;
 
-                PGPPrivateKey privateKey = key.extractPrivateKey(new JcePBESecretKeyDecryptorBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME).build(passphrase));
+                PGPPrivateKey privateKey =
+                        key.extractPrivateKey(new JcePBESecretKeyDecryptorBuilder()
+                                .setProvider(BouncyCastleProvider.PROVIDER_NAME).build(passphrase));
                 if (privateKey != null) {
                     pgpPrivateKey = privateKey;
                     break;
@@ -108,7 +114,8 @@ class ApplicationTests {
             throw new IllegalArgumentException("No private key found.");
         }
 
-        PGPObjectFactory pgpObjectFactory = new PGPObjectFactory(PGPUtil.getDecoderStream(encryptedDataStream), new JcaKeyFingerprintCalculator());
+        PGPObjectFactory pgpObjectFactory = new PGPObjectFactory(
+                PGPUtil.getDecoderStream(encryptedDataStream), new JcaKeyFingerprintCalculator());
         Object o = pgpObjectFactory.nextObject();
         PGPEncryptedDataList encryptedDataList;
 
@@ -132,14 +139,16 @@ class ApplicationTests {
             throw new IllegalArgumentException("No encrypted data found.");
         }
 
-        InputStream clear = publicKeyEncryptedData.getDataStream(new JcePublicKeyDataDecryptorFactoryBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME)
-                .build(pgpPrivateKey));
+        InputStream clear =
+                publicKeyEncryptedData.getDataStream(new JcePublicKeyDataDecryptorFactoryBuilder()
+                        .setProvider(BouncyCastleProvider.PROVIDER_NAME).build(pgpPrivateKey));
         PGPObjectFactory plainFact = new PGPObjectFactory(clear, new JcaKeyFingerprintCalculator());
         Object message = plainFact.nextObject();
 
 
         if (message instanceof PGPCompressedData cData) {
-            PGPObjectFactory pgpFact = new PGPObjectFactory(cData.getDataStream(), new JcaKeyFingerprintCalculator());
+            PGPObjectFactory pgpFact =
+                    new PGPObjectFactory(cData.getDataStream(), new JcaKeyFingerprintCalculator());
 
             message = pgpFact.nextObject();
         }
@@ -158,7 +167,8 @@ class ApplicationTests {
                 throw new PGPException("Failed to decrypt message", e);
             }
         } else if (message instanceof PGPOnePassSignatureList) {
-            throw new PGPException("Encrypted message contains a signed message - not literal data.");
+            throw new PGPException(
+                    "Encrypted message contains a signed message - not literal data.");
         } else {
             throw new PGPException("Message is not a simple encrypted file - type unknown.");
         }
