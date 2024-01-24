@@ -48,12 +48,8 @@ class GnuPG {
     private fun setEncryptedDataGenerator() {
         log.info("Setting up encrypted data generator.")
         requireNotNull(this.publicKeyString) { "Public key string is null." }
-        val publicKeyStream: InputStream = ByteArrayInputStream(
-            this.publicKeyString!!.toByteArray(StandardCharsets.UTF_8)
-        )
-        val pgpPubRingCollection = PGPPublicKeyRingCollection(
-            PGPUtil.getDecoderStream(publicKeyStream), JcaKeyFingerprintCalculator()
-        )
+        val publicKeyStream: InputStream = ByteArrayInputStream(this.publicKeyString!!.toByteArray(StandardCharsets.UTF_8))
+        val pgpPubRingCollection = PGPPublicKeyRingCollection(PGPUtil.getDecoderStream(publicKeyStream), JcaKeyFingerprintCalculator())
         var pgpPublicKey: PGPPublicKey? = null
         val keyRingIter = pgpPubRingCollection.keyRings
         while (keyRingIter.hasNext() && pgpPublicKey == null) {
@@ -70,15 +66,11 @@ class GnuPG {
         requireNotNull(pgpPublicKey) { "Can't find encryption key in key ring." }
 
         val encryptedDataGenerator = PGPEncryptedDataGenerator(
-            JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256)
-                .setWithIntegrityPacket(true)
-                .setSecureRandom(SecureRandom())
-                .setProvider(BouncyCastleProvider.PROVIDER_NAME)
+            JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256).setWithIntegrityPacket(true)
+                .setSecureRandom(SecureRandom()).setProvider(BouncyCastleProvider.PROVIDER_NAME)
         )
         encryptedDataGenerator.addMethod(
-            JcePublicKeyKeyEncryptionMethodGenerator(pgpPublicKey).setProvider(
-                "BC"
-            )
+            JcePublicKeyKeyEncryptionMethodGenerator(pgpPublicKey).setProvider(BouncyCastleProvider.PROVIDER_NAME)
         )
         this.encryptedDataGenerator = encryptedDataGenerator
     }
