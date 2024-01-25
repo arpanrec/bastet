@@ -6,17 +6,17 @@
             "description": "Header used to pass the authentication token to the service."
         },
         {
-            "name": "minerva.gnupg.privateKey",
+            "name": "minerva.gnupg.armored-private-key",
             "type": "java.lang.String",
             "description": "The GPG Private Key to use for decryption."
         },
         {
-            "name": "minerva.gnupg.publicKeyString",
+            "name": "minerva.gnupg.armored-public-key",
             "type": "java.lang.String",
             "description": "The GPG Public Key to use for encryption."
         },
         {
-            "name": "minerva.gnupg.passphrase",
+            "name": "minerva.gnupg.private-key-passphrase",
             "type": "java.lang.String",
             "description": "The passphrase to use for GPG Private Key."
         }
