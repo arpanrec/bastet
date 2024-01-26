@@ -29,3 +29,4 @@ gradle*
 build/
 *.db
 .vscode/
+storage/
