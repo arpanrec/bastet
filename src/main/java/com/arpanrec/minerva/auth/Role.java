@@ -11,7 +11,5 @@ public class Role {
 
     private String name;
 
-    private Collection<User> users;
-
     private Collection<Privilege> privileges;
 }

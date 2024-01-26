@@ -2,12 +2,14 @@ package com.arpanrec.minerva.physical
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.springframework.boot.context.properties.ConfigurationProperties
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Optional
 
-class KeyValueFileStorage(path: String = "storage") : KeyValueStorage {
+@ConfigurationProperties(prefix = "minerva.key-value.file")
+class KeyValueFileStorage(path: String) : KeyValueStorage {
 
     private val storageRootPath: Path = Paths.get(path).toAbsolutePath()
 

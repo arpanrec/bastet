@@ -10,10 +10,12 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 class KeyValueTests {
 
-    private val keyValuePersistence = KeyValuePersistence()
+    @Autowired
+    private var keyValuePersistence: KeyValuePersistence? = null
+
     @Test
     fun testSave() {
         val keyValue = KeyValue("key", "value")
-        keyValuePersistence.save(keyValue)
+        keyValuePersistence!!.save(keyValue)
     }
 }

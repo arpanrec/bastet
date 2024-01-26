@@ -1,6 +1,10 @@
 package com.arpanrec.minerva.physical
 
+import jakarta.annotation.PostConstruct
 import kotlinx.serialization.Serializable
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.context.ApplicationContext
 import java.nio.file.Path
 import java.util.Optional
 
@@ -22,15 +26,32 @@ interface KeyValueStorage {
     fun getLatestVersion(keyPath: Path): Int
 }
 
-class KeyValuePersistence {
+@ConfigurationProperties(prefix = "minerva.key-value")
+class KeyValuePersistence(private var persistenceType: KeyValuePersistenceType) {
 
-    private val keyValueStorage: KeyValueStorage = KeyValueFileStorage()
+    @Autowired
+    private var applicationContext: ApplicationContext? = null
+
+    private var keyValueStorage: KeyValueStorage? = null
+
+    @PostConstruct
+    fun setKeyValueStorage() {
+        keyValueStorage = when (persistenceType) {
+            KeyValuePersistenceType.FILE -> {
+                applicationContext!!.getBean(KeyValueFileStorage::class.java)
+            }
+        }
+    }
 
     fun get(key: String, version: Int): Optional<KeyValue> {
-        return keyValueStorage.get(key = key, version = version)
+        return keyValueStorage!!.get(key = key, version = version)
     }
 
     fun save(keyValue: KeyValue): KeyValue {
-        return keyValueStorage.save(keyValue)
+        return keyValueStorage!!.save(keyValue)
     }
+}
+
+enum class KeyValuePersistenceType {
+    FILE
 }

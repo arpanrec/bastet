@@ -45,3 +45,7 @@ minerva:
       =SQ4t
       -----END PGP PRIVATE KEY BLOCK-----
     private-key-passphrase: password
+  key-value:
+    persistence-type: file
+    file:
+      path: /tmp/minerva

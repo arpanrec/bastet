@@ -18,7 +18,11 @@ import java.util.Optional;
 @RestController
 public class KeyValueApi {
 
-    KeyValuePersistence keyValuePersistence = new KeyValuePersistence();
+    private final KeyValuePersistence keyValuePersistence;
+
+    public KeyValueApi(@Autowired KeyValuePersistence keyValuePersistence) {
+        this.keyValuePersistence = keyValuePersistence;
+    }
 
 
     @GetMapping(path = "/keyvaule/**", produces = "application/json", consumes = "application/json")
