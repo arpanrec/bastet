@@ -8,11 +8,13 @@ spring:
     active: default
   application:
     name: minerva
+  main:
+    lazy-initialization: true
 minerva:
   gnupg:
     armored-public-key: |+
       -----BEGIN PGP PUBLIC KEY BLOCK-----
-      
+
       mDMEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
       umnaeIy0LG1pbmVydmEtdGVzdCA8bWluZXJ2YS10ZXN0QG1pbmVydmEtdGVzdC5j
       b20+iJkEExYKAEEWIQR/tX7WJd7W0WbxhY/rY/cBPZC6AAUCZa70AAIbAwUJBaOa
@@ -44,6 +46,7 @@ minerva:
       1tw2qmtpjSy2EpCx9Om+vrY6TsbHdv2j2vOEd4QM
       =SQ4t
       -----END PGP PRIVATE KEY BLOCK-----
+
     private-key-passphrase: password
   key-value:
     persistence-type: file
