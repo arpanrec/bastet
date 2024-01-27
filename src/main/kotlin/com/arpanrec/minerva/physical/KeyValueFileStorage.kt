@@ -31,16 +31,14 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
     }
 
     override fun save(keyValue: KeyValue): KeyValue {
-        val currentVersion = getLatestVersion(Paths.get(storageRootPath.toString(), keyValue.key!!))
-        if (currentVersion > 0) {
+        if (getLatestVersion(Paths.get(storageRootPath.toString(), keyValue.key!!)) > 0) {
             throw MinervaException("Key ${keyValue.key} already exists")
         }
         return saveOrUpdate(keyValue)
     }
 
     override fun update(keyValue: KeyValue): KeyValue {
-        val currentVersion = getLatestVersion(Paths.get(storageRootPath.toString(), keyValue.key!!))
-        if (currentVersion == 0) {
+        if (getLatestVersion(Paths.get(storageRootPath.toString(), keyValue.key!!)) == 0) {
             throw MinervaException("Key ${keyValue.key} does not exist")
         }
         return saveOrUpdate(keyValue)
@@ -93,5 +91,4 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
             it.toString().replaceFirst("${keyPath.toAbsolutePath()}/", "")
         }.toList()
     }
-
 }
