@@ -13,6 +13,8 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
 
     private val storageRootPath: Path = Paths.get(path).toAbsolutePath()
 
+    private val valueFileName = "value.json"
+
     override fun save(keyValue: KeyValue): KeyValue {
         val keyPath: Path = Paths.get(storageRootPath.toString(), keyValue.key)
         Files.createDirectories(keyPath)
@@ -21,7 +23,7 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
         }
         val keyVersionPath = Paths.get(keyPath.toString(), keyValue.version.toString())
         Files.createDirectories(keyVersionPath)
-        val keyVersionFilePath = Paths.get(keyVersionPath.toString(), "value")
+        val keyVersionFilePath = Paths.get(keyVersionPath.toString(), valueFileName)
         val json = Json.encodeToString(keyValue)
         Files.writeString(keyVersionFilePath, json)
         return keyValue
@@ -40,7 +42,7 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
             }
         }
 
-        val filePath = Paths.get(storageRootPath.toString(), key, workingVersion.toString(), "value")
+        val filePath = Paths.get(storageRootPath.toString(), key, workingVersion.toString(), valueFileName)
         val json = Files.readString(filePath)
         return Optional.of(Json.decodeFromString(KeyValue.serializer(), json))
     }
@@ -58,8 +60,8 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
             return 0
         }
         val dirs: List<Int> = Files.walk(keyPath, 1).filter { Files.isDirectory(it) && !it.equals(keyPath) }.map {
-                it.toString().replaceFirst("${keyPath.toAbsolutePath()}/", "").toInt()
-            }.toList().sorted()
+            it.toString().replaceFirst("${keyPath.toAbsolutePath()}/", "").toInt()
+        }.toList().sorted()
         return if (dirs.isEmpty()) 0 else dirs.last()
     }
 
