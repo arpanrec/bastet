@@ -19,6 +19,16 @@
             "name": "minerva.gnupg.private-key-passphrase",
             "type": "java.lang.String",
             "description": "The passphrase to use for GPG Private Key."
+        },
+        {
+            "name": "minerva.key-value.persistence-type",
+            "type": "com.arpanrec.minerva.physical.KeyValuePersistenceType",
+            "description": "The persistence type for the key-value store. Valid values are 'file'."
+        },
+        {
+            "name": "minerva.key-value.file.path",
+            "type": "java.lang.String",
+            "description": "The path to the file to use for the key-value store."
         }
     ]
 }
