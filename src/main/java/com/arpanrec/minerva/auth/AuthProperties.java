@@ -1,17 +1,19 @@
 package com.arpanrec.minerva.auth;
 
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Slf4j
-@Data
+@Setter
 @ConfigurationProperties(prefix = "minerva.auth")
 public class AuthProperties implements CommandLineRunner {
 
+    @Getter
     private String headerKey = "Authorization";
     private String rootUsername = "root";
     private String rootPassword = "root";
@@ -19,10 +21,11 @@ public class AuthProperties implements CommandLineRunner {
     @Autowired
     UserDetailsServiceImpl userDetailsServiceImpl;
 
-
     @Override
     public void run(String... args) {
-        User rootUser = new User(0L, rootUsername, rootPassword, "", null, true, true, true, true);
+        User rootUser = new User();
+        rootUser.setUsername(rootUsername);
+        rootUser.setPassword(rootPassword);
         userDetailsServiceImpl.getKeyValuePersistence().get(UserDetailsServiceImpl.USER_KEY_PREFIX + "/" + rootUsername, 0).ifPresentOrElse(
                 (kv) -> log.info("Root user already exists"),
                 () -> {
