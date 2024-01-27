@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContext
 
 @Serializable
 data class KeyValue(
-    var key: String? = null, var value: String, var isBinary: Boolean = false, var metadata: Map<String, String> = mapOf(), var version: Int = 0
+    var key: String? = null, var value: String? = null, var isBinary: Boolean = false, var metadata: Map<String, String> = mapOf(), var version: Int = 0
 )
 
 interface KeyValueStorage {
@@ -46,13 +46,13 @@ class KeyValuePersistence(private var persistenceType: KeyValuePersistenceType) 
     fun get(key: String, version: Int = 0): Optional<KeyValue> {
         val keyValue = keyValueStorage!!.get(key = key, version = version)
         keyValue.ifPresent { keyValuePresent: KeyValue ->
-            keyValuePresent.value = gnuPG!!.decrypt(keyValuePresent.value)
+            keyValuePresent.value = keyValuePresent.value?.let { gnuPG!!.decrypt(it) }
         }
         return keyValue
     }
 
     fun save(keyValue: KeyValue): KeyValue {
-        keyValue.value = gnuPG!!.encrypt(keyValue.value)
+        keyValue.value = keyValue.value!!.let { gnuPG!!.encrypt(it) }
         return keyValueStorage!!.save(keyValue)
     }
 }
