@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.security.auth.Subject;
+import java.io.Serial;
 import java.util.Collection;
 
 @Getter
@@ -17,6 +18,9 @@ import java.util.Collection;
 @NoArgsConstructor
 @Builder
 public class AuthImpl implements Authentication {
+
+    @Serial
+    private static final long serialVersionUID = -8620294545092862085L;
 
     private boolean authenticated;
     private User user;
@@ -40,7 +44,7 @@ public class AuthImpl implements Authentication {
 
     @Override
     public String getName() {
-        return this.user.getName();
+        return this.user.getUsername();
     }
 
     @Override
