@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+import com.arpanrec.minerva.hash.Argon2Kt;
 
 @Slf4j
 @Component
@@ -15,9 +16,9 @@ public class AuthProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         AuthImpl auth = (AuthImpl) authentication;
-        log.debug("User authentication started");
-        if (auth.getCredentials().equals(auth.getProvidedPassword())) {
-            log.info("User authenticated");
+        log.debug("User authentication started for {}", auth.getName());
+        if (auth.getCredentials().equals(Argon2Kt.hashString(auth.getProvidedPassword()))) {
+            log.info("User {} authenticated", auth.getName());
             auth.setAuthenticated(true);
         } else {
             throw new BadCredentialsException("Wrong password");
