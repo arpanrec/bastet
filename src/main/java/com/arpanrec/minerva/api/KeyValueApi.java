@@ -4,8 +4,6 @@ import com.arpanrec.minerva.physical.KeyValue;
 import com.arpanrec.minerva.physical.KeyValuePersistence;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,10 +23,10 @@ public class KeyValueApi {
     }
 
     @GetMapping(path = "/keyvaule/**", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<String> get(HttpServletRequest request) {
+    public KeyValue get(HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
         Optional<KeyValue> keyValue = keyValuePersistence.get(key, 0);
-        return keyValue.map(value -> ResponseEntity.ok(value.getValue())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found"));
+        return keyValue.orElseThrow(() -> new RuntimeException("Key not found"));
     }
 
     @PostMapping(path = "/keyvaule/**", consumes = "application/json", produces = "application/json")
