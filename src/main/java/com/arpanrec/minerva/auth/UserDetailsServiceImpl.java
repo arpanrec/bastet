@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Base64;
-import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 
 @Getter
@@ -37,7 +37,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         log.debug("Loading user by username: {}", username);
         Optional<KeyValue> userData = keyValuePersistence.get(USER_KEY_PREFIX + "/" + username, 0);
         userData.orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        byte[] data = Base64.getDecoder().decode(userData.get().getValue().getBytes());
+        byte[] data = Base64.getDecoder().decode(Objects.requireNonNull(userData.get().getValue()).getBytes());
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
              ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
             return (User) objectInputStream.readObject();
@@ -53,7 +53,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(); ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
             objectOutputStream.writeObject(user);
             objectOutputStream.flush();
-            KeyValue userData = new KeyValue(USER_KEY_PREFIX + "/" + user.getUsername(), Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray()), false, new HashMap<>(), 0);
+            KeyValue userData = new KeyValue();
+            userData.setKey(USER_KEY_PREFIX + "/" + user.getUsername());
+            userData.setValue(Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray()));
             keyValuePersistence.save(userData);
         } catch (Exception e) {
             throw new MinervaException("Error while saving user", e);
