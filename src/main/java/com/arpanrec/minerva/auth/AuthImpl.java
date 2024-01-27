@@ -22,7 +22,6 @@ public class AuthImpl implements Authentication {
     private User user;
     private String providedPassword;
 
-
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }

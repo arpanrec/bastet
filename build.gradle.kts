@@ -4,6 +4,7 @@ import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
+    application
     groovy
     java
     id("org.springframework.boot") version "3.2.2"
@@ -11,6 +12,7 @@ plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
     kotlin("plugin.jpa") version "1.9.22"
+    kotlin("plugin.serialization") version "1.9.22"
     idea
     eclipse
     id("org.graalvm.buildtools.native") version "0.9.28"
@@ -26,26 +28,14 @@ java {
 
 sourceSets {
     main {
-        java {
-            srcDirs("src/main/java")
-        }
-        kotlin {
-            srcDirs("src/main/kotlin")
-        }
-        groovy {
-            srcDirs("src/main/groovy")
-        }
+        java { srcDirs("src/main/java") }
+        kotlin { srcDirs("src/main/kotlin") }
+        groovy { srcDirs("src/main/groovy") }
     }
     test {
-        java {
-            srcDirs("src/test/java")
-        }
-        kotlin {
-            srcDirs("src/test/kotlin")
-        }
-        groovy {
-            srcDirs("src/test/groovy")
-        }
+        java { srcDirs("src/test/java") }
+        kotlin { srcDirs("src/test/kotlin") }
+        groovy { srcDirs("src/test/groovy") }
     }
 }
 
@@ -81,9 +71,10 @@ dependencies {
     implementation("org.apache.groovy:groovy")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
 
@@ -128,7 +119,11 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "17"
     }
 }
-
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 tasks.create<Delete>("cleanAll") {
     group = "clean"
     delete("logs", "bin", "build")
