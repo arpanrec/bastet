@@ -11,8 +11,16 @@ import org.springframework.context.ApplicationContext
 
 @Serializable
 data class KeyValue(
-    var key: String? = null, var value: String? = null, var isBinary: Boolean = false, var metadata: Map<String, String> = mapOf(), var version: Int = 0
+    var key: String? = null,
+    var value: String? = null,
+    var metadata: Map<String, String> = mapOf(),
+    var version: Int = 0,
+    var isBinary: Boolean = false,
+    var keyValueBinary: KeyValueBinary? = null
 )
+
+@Serializable
+data class KeyValueBinary(var name: String? = null)
 
 interface KeyValueStorage {
     fun save(keyValue: KeyValue): KeyValue
