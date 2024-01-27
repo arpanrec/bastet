@@ -1,5 +1,6 @@
 package com.arpanrec.minerva.physical
 
+import com.arpanrec.minerva.exceptions.MinervaException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -15,24 +16,6 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
 
     private val valueFileName = "value.json"
 
-    override fun save(keyValue: KeyValue): KeyValue {
-        val keyPath: Path = Paths.get(storageRootPath.toString(), keyValue.key)
-        Files.createDirectories(keyPath)
-        if (keyValue.version == 0) {
-            keyValue.version = getNextVersion(keyPath)
-        }
-        val keyVersionPath = Paths.get(keyPath.toString(), keyValue.version.toString())
-        Files.createDirectories(keyVersionPath)
-        val keyVersionFilePath = Paths.get(keyVersionPath.toString(), valueFileName)
-        val json = Json.encodeToString(keyValue)
-        Files.writeString(keyVersionFilePath, json)
-        return keyValue
-    }
-
-    override fun update(keyValue: KeyValue): KeyValue {
-        TODO("Not yet implemented")
-    }
-
     override fun get(key: String, version: Int): Optional<KeyValue> {
         var workingVersion = version
         if (workingVersion == 0) {
@@ -47,8 +30,40 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
         return Optional.of(Json.decodeFromString(KeyValue.serializer(), json))
     }
 
-    override fun delete(keyValue: KeyValue): KeyValue {
-        TODO("Not yet implemented")
+    override fun save(keyValue: KeyValue): KeyValue {
+        return saveOrUpdate(keyValue)
+    }
+
+    override fun update(keyValue: KeyValue): KeyValue {
+        return saveOrUpdate(keyValue)
+    }
+
+    private fun saveOrUpdate(keyValue: KeyValue): KeyValue {
+        val keyPath: Path = Paths.get(storageRootPath.toString(), keyValue.key)
+        Files.createDirectories(keyPath)
+        if (keyValue.version == 0) {
+            keyValue.version = getNextVersion(keyPath)
+        }
+        val keyVersionPath = Paths.get(keyPath.toString(), keyValue.version.toString())
+        Files.createDirectories(keyVersionPath)
+        val keyVersionFilePath = Paths.get(keyVersionPath.toString(), valueFileName)
+        val json = Json.encodeToString(keyValue)
+        Files.writeString(keyVersionFilePath, json)
+        return keyValue
+    }
+
+    override fun delete(keyValue: KeyValue, version: Int): KeyValue {
+        var workingVersion = version
+        if (workingVersion == 0) {
+            workingVersion = getLatestVersion(Paths.get(storageRootPath.toString(), keyValue.key!!))
+            if (workingVersion == 0) {
+                throw MinervaException("Key ${keyValue.key} with version ${keyValue.version} does not exist")
+            }
+        }
+        val keyPath: Path = Paths.get(storageRootPath.toString(), keyValue.key!!)
+        val keyVersionPath = Paths.get(keyPath.toString(), workingVersion.toString())
+        Files.deleteIfExists(keyVersionPath)
+        return keyValue
     }
 
     override fun getNextVersion(keyPath: Path): Int {
@@ -63,6 +78,12 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
             it.toString().replaceFirst("${keyPath.toAbsolutePath()}/", "").toInt()
         }.toList().sorted()
         return if (dirs.isEmpty()) 0 else dirs.last()
+    }
+
+    override fun listKeys(keyPath: Path): List<String> {
+        return Files.walk(keyPath, 1).filter { Files.isDirectory(it) && !it.equals(keyPath) }.map {
+            it.toString().replaceFirst("${keyPath.toAbsolutePath()}/", "")
+        }.toList()
     }
 
 }
