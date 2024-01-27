@@ -126,7 +126,7 @@ java {
 }
 tasks.create<Delete>("cleanAll") {
     group = "clean"
-    delete("logs", "bin", "build")
+    delete("logs", "bin", "build", "storage")
 }
 
 //springBoot() {
