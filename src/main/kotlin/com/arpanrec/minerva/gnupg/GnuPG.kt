@@ -75,8 +75,7 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
 
     private fun createEncryptedDataGenerator(gpgPublicKey: PGPPublicKey): PGPEncryptedDataGenerator {
         val encryptedDataGenerator = PGPEncryptedDataGenerator(
-            JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256).setWithIntegrityPacket(true)
-                .setSecureRandom(SecureRandom()).setProvider(BouncyCastleProvider.PROVIDER_NAME)
+            JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256).setWithIntegrityPacket(true).setSecureRandom(SecureRandom()).setProvider(BouncyCastleProvider.PROVIDER_NAME)
         )
         encryptedDataGenerator.addMethod(BcPublicKeyKeyEncryptionMethodGenerator(gpgPublicKey))
         return encryptedDataGenerator

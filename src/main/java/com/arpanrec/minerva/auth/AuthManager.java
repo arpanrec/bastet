@@ -13,8 +13,7 @@ public class AuthManager implements AuthenticationManager {
     private final AuthProvider authProvider;
 
     @Override
-    public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         return authProvider.authenticate(authentication);
     }
 }

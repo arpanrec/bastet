@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory
 class GnuPGTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val message = "Hello, World!"
-    private val armoredBcEncryptedMessage =
-            """-----BEGIN PGP MESSAGE-----
+    private val armoredBcEncryptedMessage = """-----BEGIN PGP MESSAGE-----
 Version: BCPG v1.77.00
 
 wV4DubSNXBIhRMMSAQdAMzXed6cKZmK5X/PkUavSUSXUyxfCqcCs1kYUhGxRDkQw
@@ -20,8 +19,7 @@ bEfLuDjkxbJffFsILsiy4JukCOT2YOS1g2eop3Coc+QGbpdVNfmbj2YB5m46ZiJL
 -----END PGP MESSAGE-----
 
 """
-    private val armoredCliEncryptedMessage =
-            """-----BEGIN PGP MESSAGE-----
+    private val armoredCliEncryptedMessage = """-----BEGIN PGP MESSAGE-----
 
 hF4DubSNXBIhRMMSAQdAt9CNm3Bpm/jWLJhs8CKTnw13kV7m3hgzFw0AbuZqBlow
 MMwyyeFE92pUNljB6OW7ayl1gKkw4K6b2GK+AckTHZTKG7VTihSV/p/WN6Z1/mba
@@ -32,8 +30,7 @@ GVD/xf7huNGhmdOr8OLf1X7jmzpUdEZLblbZ0fFR9V68E59oU6TT87nt4NVc
 
 """
 
-    private val armoredPublicKey =
-            """-----BEGIN PGP PUBLIC KEY BLOCK-----
+    private val armoredPublicKey = """-----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mDMEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
 umnaeIy0LG1pbmVydmEtdGVzdCA8bWluZXJ2YS10ZXN0QG1pbmVydmEtdGVzdC5j
@@ -50,8 +47,7 @@ q3J5c9sV9jopcu6BJtXrXhk23W3fhgD/fAbW3Daqa2mNLLYSkLH06b6+tjpOxsd2
 
       """
 
-    private val armoredPrivateKey =
-            """-----BEGIN PGP PRIVATE KEY BLOCK-----
+    private val armoredPrivateKey = """-----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lIYEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
 umnaeIz+BwMCdNs9UHB91Gn/sq1FqE2sz9/ZguQjtGCOsmqjAUr5WJqGB2NE9RR4
@@ -73,12 +69,9 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
 
     private val privateKeyPassphrase = "password"
 
-    private val gnuPG: GnuPG =
-            GnuPG(
-                    armoredPublicKey = armoredPublicKey,
-                    armoredPrivateKey = armoredPrivateKey,
-                    privateKeyPassphrase = privateKeyPassphrase
-            )
+    private val gnuPG: GnuPG = GnuPG(
+        armoredPublicKey = armoredPublicKey, armoredPrivateKey = armoredPrivateKey, privateKeyPassphrase = privateKeyPassphrase
+    )
 
     @Test
     fun testEncrypt() {

@@ -11,5 +11,6 @@ class ApplicationTests {
     private static final Logger log = LoggerFactory.getLogger(ApplicationTests.class);
 
     @Test
-    void testGpg() {}
+    void testGpg() {
+    }
 }

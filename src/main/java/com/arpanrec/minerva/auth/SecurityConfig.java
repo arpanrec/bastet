@@ -25,16 +25,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
-        http.headers(
-                headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-        http.sessionManagement(sessionManagement -> sessionManagement
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+        http.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authenticationProvider(authProvider);
         http.addFilterAfter(authReqFilter, BasicAuthenticationFilter.class);
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll());
-        http.authorizeHttpRequests(
-                authorizeRequests -> authorizeRequests.anyRequest().authenticated());
+        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll());
+        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated());
 
         return http.build();
     }

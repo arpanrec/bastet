@@ -10,11 +10,7 @@ import org.springframework.context.ApplicationContext
 
 @Serializable
 data class KeyValue(
-        var key: String? = null,
-        var value: String? = null,
-        var isBinary: Boolean = false,
-        var metadata: Map<String, String> = mapOf(),
-        var version: Int = 0
+    var key: String? = null, var value: String? = null, var isBinary: Boolean = false, var metadata: Map<String, String> = mapOf(), var version: Int = 0
 )
 
 interface KeyValueStorage {
@@ -29,18 +25,18 @@ interface KeyValueStorage {
 @ConfigurationProperties(prefix = "minerva.key-value")
 class KeyValuePersistence(private var persistenceType: KeyValuePersistenceType) {
 
-    @Autowired private var applicationContext: ApplicationContext? = null
+    @Autowired
+    private var applicationContext: ApplicationContext? = null
 
     private var keyValueStorage: KeyValueStorage? = null
 
     @PostConstruct
     fun setKeyValueStorage() {
-        keyValueStorage =
-                when (persistenceType) {
-                    KeyValuePersistenceType.FILE -> {
-                        applicationContext!!.getBean(KeyValueFileStorage::class.java)
-                    }
-                }
+        keyValueStorage = when (persistenceType) {
+            KeyValuePersistenceType.FILE -> {
+                applicationContext!!.getBean(KeyValueFileStorage::class.java)
+            }
+        }
     }
 
     fun get(key: String, version: Int): Optional<KeyValue> {

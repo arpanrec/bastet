@@ -28,26 +28,14 @@ java {
 
 sourceSets {
     main {
-        java {
-            srcDirs("src/main/java")
-        }
-        kotlin {
-            srcDirs("src/main/kotlin")
-        }
-        groovy {
-            srcDirs("src/main/groovy")
-        }
+        java { srcDirs("src/main/java") }
+        kotlin { srcDirs("src/main/kotlin") }
+        groovy { srcDirs("src/main/groovy") }
     }
     test {
-        java {
-            srcDirs("src/test/java")
-        }
-        kotlin {
-            srcDirs("src/test/kotlin")
-        }
-        groovy {
-            srcDirs("src/test/groovy")
-        }
+        java { srcDirs("src/test/java") }
+        kotlin { srcDirs("src/test/kotlin") }
+        groovy { srcDirs("src/test/groovy") }
     }
 }
 

@@ -18,8 +18,7 @@ import java.util.Base64;
 @Component
 public class AuthReqFilter extends OncePerRequestFilter {
 
-    public AuthReqFilter(AuthManager authManager, UserDetailsServiceImpl userDetailsServiceImpl,
-                         AuthProperties authProperties) {
+    public AuthReqFilter(AuthManager authManager, UserDetailsServiceImpl userDetailsServiceImpl, AuthProperties authProperties) {
         this.authManager = authManager;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.authProperties = authProperties;
@@ -27,14 +26,10 @@ public class AuthReqFilter extends OncePerRequestFilter {
 
     private final AuthManager authManager;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
-
     private final AuthProperties authProperties;
 
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-
 
         var base64Cred = request.getHeader(authProperties.getHeaderKey());
         if (base64Cred == null) {
@@ -43,9 +38,7 @@ public class AuthReqFilter extends OncePerRequestFilter {
         }
         log.debug("headerKey: {}, base64Cred: {}", authProperties.getHeaderKey(), base64Cred);
 
-        String[] credential = new String(Base64.getDecoder().decode(
-                base64Cred.substring(6))
-        ).split(":");
+        String[] credential = new String(Base64.getDecoder().decode(base64Cred.substring(6))).split(":");
         String username = credential[0];
         String providedPassword = credential[1];
 

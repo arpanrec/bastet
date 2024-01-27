@@ -24,22 +24,16 @@ public class KeyValueApi {
         this.keyValuePersistence = keyValuePersistence;
     }
 
-
     @GetMapping(path = "/keyvaule/**", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> get(HttpServletRequest request) {
-        String key = new AntPathMatcher().extractPathWithinPattern(
-                request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(),
-                request.getRequestURI());
+        String key = new AntPathMatcher().extractPathWithinPattern(request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
         Optional<KeyValue> keyValue = keyValuePersistence.get(key, 0);
-        return keyValue.map(value -> ResponseEntity.ok(value.getValue()))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found"));
+        return keyValue.map(value -> ResponseEntity.ok(value.getValue())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found"));
     }
 
     @PostMapping(path = "/keyvaule/**", consumes = "application/json", produces = "application/json")
     public KeyValue set(@RequestBody KeyValue keyValue, HttpServletRequest request) {
-        String key = new AntPathMatcher().extractPathWithinPattern(
-                request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(),
-                request.getRequestURI());
+        String key = new AntPathMatcher().extractPathWithinPattern(request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
         keyValue.setKey(key);
         return keyValuePersistence.save(keyValue);
     }

@@ -57,9 +57,7 @@ class KeyValueFileStorage(path: String) : KeyValueStorage {
         if (!Files.exists(keyPath)) {
             return 0
         }
-        val dirs: List<Int> = Files.walk(keyPath, 1)
-            .filter { Files.isDirectory(it) && !it.equals(keyPath) }
-            .map {
+        val dirs: List<Int> = Files.walk(keyPath, 1).filter { Files.isDirectory(it) && !it.equals(keyPath) }.map {
                 it.toString().replaceFirst("${keyPath.toAbsolutePath()}/", "").toInt()
             }.toList().sorted()
         return if (dirs.isEmpty()) 0 else dirs.last()
