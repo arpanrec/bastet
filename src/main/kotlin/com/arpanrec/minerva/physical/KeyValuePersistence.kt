@@ -18,9 +18,10 @@ interface KeyValueStorage {
     fun save(keyValue: KeyValue): KeyValue
     fun update(keyValue: KeyValue): KeyValue
     fun get(key: String, version: Int = 0): Optional<KeyValue>
-    fun delete(keyValue: KeyValue): KeyValue
+    fun delete(keyValue: KeyValue, version: Int = 0): KeyValue
     fun getNextVersion(keyPath: Path): Int
     fun getLatestVersion(keyPath: Path): Int
+    fun listKeys(keyPath: Path): List<String>
 }
 
 @ConfigurationProperties(prefix = "minerva.key-value")
@@ -54,6 +55,11 @@ class KeyValuePersistence(private var persistenceType: KeyValuePersistenceType) 
     fun save(keyValue: KeyValue): KeyValue {
         keyValue.value = keyValue.value!!.let { gnuPG!!.encrypt(it) }
         return keyValueStorage!!.save(keyValue)
+    }
+
+    fun update(keyValue: KeyValue): KeyValue {
+        keyValue.value = keyValue.value!!.let { gnuPG!!.encrypt(it) }
+        return keyValueStorage!!.update(keyValue)
     }
 }
 
