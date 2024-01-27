@@ -47,8 +47,11 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
     init {
         log.info("Adding BouncyCastle provider.")
         Security.addProvider(BouncyCastleProvider())
+        log.info("Loading GPG armored public key.")
         val gpgPublicKey = this.loadGpgPublicKeyFromArmoredString(armoredPublicKey)
+        log.info("Creating encrypted data generator.")
         this.encryptedDataGenerator = this.createEncryptedDataGenerator(gpgPublicKey)
+        log.info("Loading GPG armored private key.")
         this.pgpPrivateKey = this.loadGpgPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
     }
 
@@ -70,6 +73,7 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
             }
         }
         requireNotNull(pgpPublicKey) { "Can't find encryption key in key ring." }
+        log.info("Public key loaded.")
         return pgpPublicKey
     }
 
@@ -78,6 +82,7 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
             JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256).setWithIntegrityPacket(true).setSecureRandom(SecureRandom()).setProvider(BouncyCastleProvider.PROVIDER_NAME)
         )
         encryptedDataGenerator.addMethod(BcPublicKeyKeyEncryptionMethodGenerator(gpgPublicKey))
+        log.info("Encrypted data generator created with AES-256.")
         return encryptedDataGenerator
     }
 
@@ -99,6 +104,7 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
         encryptedOutStream.close()
         out.close()
         val encryptedData = encryptedOut.toString(StandardCharsets.UTF_8)
+        log.debug("Encrypted data: {}", encryptedData)
         return encryptedData
     }
 
@@ -138,10 +144,13 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
         }
 
         requireNotNull(pgpPrivateKey) { "No private key found." }
+        log.info("Private key loaded.")
         return pgpPrivateKey
     }
 
     fun decrypt(encryptedArmoredData: String): String {
+
+        log.debug("Decrypting data: {}", encryptedArmoredData)
 
         val encryptedDataStream: InputStream = ArmoredInputStream(ByteArrayInputStream(encryptedArmoredData.toByteArray(StandardCharsets.US_ASCII)))
 
