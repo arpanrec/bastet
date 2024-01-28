@@ -7,17 +7,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Data
 @Builder
-public class User implements UserDetails, Serializable {
+public class User implements UserDetails {
 
     @Serial
-    private static final long serialVersionUID = 1003772465463552427L;
+    private static final long serialVersionUID = 2915242437438173088L;
 
     private String username;
 
@@ -48,7 +47,7 @@ public class User implements UserDetails, Serializable {
         return authorities;
     }
 
-    public record Role(String name, Collection<Privilege> privileges) implements GrantedAuthority, Serializable {
+    public record Role(String name, Collection<Privilege> privileges) implements GrantedAuthority {
 
         public Role {
             if (privileges == null) {
@@ -56,18 +55,13 @@ public class User implements UserDetails, Serializable {
             }
         }
 
-        @Serial
-        private static final long serialVersionUID = 1003772487463552427L;
-
         @Override
         public String getAuthority() {
             return name;
         }
     }
 
-    public record Privilege(String name) implements GrantedAuthority, Serializable {
-        @Serial
-        private static final long serialVersionUID = 1003772487463552427L;
+    public record Privilege(String name) implements GrantedAuthority {
 
         @Override
         public String getAuthority() {
