@@ -69,15 +69,19 @@ configurations {
 }
 dependencies {
     implementation("org.apache.groovy:groovy")
+    implementation("org.apache.commons:commons-lang3")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains:annotations")
+
+    implementation("org.bouncycastle:bcpg-jdk18on:1.77")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.77")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.77")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-hateoas")
-
+    implementation("org.springframework.boot:spring-boot-starter-security")
     // Log4j2
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl")
@@ -91,22 +95,9 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
-    implementation("org.springframework.boot:spring-boot-starter-security")
-
-    implementation("org.apache.commons:commons-lang3")
-    implementation("org.jetbrains:annotations")
-    implementation("org.postgresql:postgresql:42.7.1")
-    // implementation("org.xerial:sqlite-jdbc")
-    // implementation("org.hibernate.orm:hibernate-community-dialects")
-
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.junit.platform:junit-platform-launcher")
-    testImplementation("com.h2database:h2")
-
-    implementation("org.bouncycastle:bcpg-jdk18on:1.77")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.77")
-    implementation("org.bouncycastle:bcpkix-jdk18on:1.77")
 }
 
 tasks.withType<Test> {
@@ -125,8 +116,8 @@ java {
     }
 }
 tasks.create<Delete>("cleanAll") {
-    group = "clean"
-    delete("logs", "bin", "build", "storage")
+    group = "build"
+    delete("logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle")
 }
 
 //springBoot() {
@@ -135,7 +126,7 @@ tasks.create<Delete>("cleanAll") {
 
 tasks.getByName<Jar>("jar") {
     enabled = true
-
+    archiveAppendix.set("original")
 }
 
 tasks.getByName<BootJar>("bootJar") {

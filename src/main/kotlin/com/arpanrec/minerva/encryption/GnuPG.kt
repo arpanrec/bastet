@@ -1,6 +1,14 @@
-package com.arpanrec.minerva.gnupg
+package com.arpanrec.minerva.encryption
 
 import com.arpanrec.minerva.exceptions.MinervaException
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.nio.charset.StandardCharsets
+import java.security.SecureRandom
+import java.security.Security
+import java.util.Date
 import org.bouncycastle.bcpg.ArmoredInputStream
 import org.bouncycastle.bcpg.ArmoredOutputStream
 import org.bouncycastle.bcpg.CompressionAlgorithmTags
@@ -27,22 +35,19 @@ import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder
 import org.bouncycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder
 import org.slf4j.LoggerFactory
-import org.springframework.boot.context.properties.ConfigurationProperties
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
-import java.io.OutputStream
-import java.nio.charset.StandardCharsets
-import java.security.SecureRandom
-import java.security.Security
-import java.util.Date
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
 
-@ConfigurationProperties(prefix = "minerva.gnupg")
-class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassphrase: String?) {
-
+@Component
+class GnuPG(
+    @Value("\${minerva.encryption.gnupg.armored-public-key}") private val armoredPublicKey: String,
+    @Value("\${minerva.encryption.gnupg.armored-private-key}") private val armoredPrivateKey: String,
+    @Value("\${minerva.encryption.gnupg.private-key-passphrase}") private val privateKeyPassphrase: String?
+) {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val pgpPrivateKey: PGPPrivateKey
-    private val encryptedDataGenerator: PGPEncryptedDataGenerator
+
+    private lateinit var pgpPrivateKey: PGPPrivateKey
+    private lateinit var encryptedDataGenerator: PGPEncryptedDataGenerator
 
     init {
         log.info("Adding BouncyCastle provider.")
@@ -55,10 +60,11 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
         this.pgpPrivateKey = this.loadGpgPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
     }
 
-
     private fun loadGpgPublicKeyFromArmoredString(armoredPublicKey: String): PGPPublicKey {
         val publicKeyStream: InputStream = ByteArrayInputStream(armoredPublicKey.toByteArray(StandardCharsets.UTF_8))
-        val pgpPubRingCollection = PGPPublicKeyRingCollection(PGPUtil.getDecoderStream(publicKeyStream), JcaKeyFingerprintCalculator())
+        val pgpPubRingCollection = PGPPublicKeyRingCollection(
+            PGPUtil.getDecoderStream(publicKeyStream), JcaKeyFingerprintCalculator()
+        )
         var pgpPublicKey: PGPPublicKey? = null
         val keyRingIter = pgpPubRingCollection.keyRings
         while (keyRingIter.hasNext() && pgpPublicKey == null) {
@@ -77,7 +83,9 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
         return pgpPublicKey
     }
 
-    private fun createEncryptedDataGenerator(gpgPublicKey: PGPPublicKey): PGPEncryptedDataGenerator {
+    private fun createEncryptedDataGenerator(
+        gpgPublicKey: PGPPublicKey
+    ): PGPEncryptedDataGenerator {
         val encryptedDataGenerator = PGPEncryptedDataGenerator(
             JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256).setWithIntegrityPacket(true).setSecureRandom(SecureRandom()).setProvider(BouncyCastleProvider.PROVIDER_NAME)
         )
@@ -99,7 +107,9 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
 
         val encryptedOut = ByteArrayOutputStream()
         val out: OutputStream = ArmoredOutputStream(encryptedOut)
-        val encryptedOutStream = encryptedDataGenerator.open(out, clearTextDataByteOutputStream.toByteArray().size.toLong())
+        val encryptedOutStream = encryptedDataGenerator.open(
+            out, clearTextDataByteOutputStream.toByteArray().size.toLong()
+        )
         encryptedOutStream.write(clearTextDataByteOutputStream.toByteArray())
         encryptedOutStream.close()
         out.close()
@@ -109,14 +119,18 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
     }
 
     private fun loadGpgPrivateKeyFromArmoredString(armoredPrivateKey: String, privateKeyPassphrase: String?): PGPPrivateKey {
-        val armoredPrivateKeyInputStreamStream: InputStream = ArmoredInputStream(ByteArrayInputStream(armoredPrivateKey.toByteArray(StandardCharsets.UTF_8)))
+        val armoredPrivateKeyInputStreamStream: InputStream = ArmoredInputStream(
+            ByteArrayInputStream(armoredPrivateKey.toByteArray(StandardCharsets.UTF_8))
+        )
         var privateKeyPassphraseCharArray: CharArray? = null
 
         if (privateKeyPassphrase != null) {
             privateKeyPassphraseCharArray = privateKeyPassphrase.toCharArray()
         }
 
-        val pgpSec = PGPSecretKeyRingCollection(PGPUtil.getDecoderStream(armoredPrivateKeyInputStreamStream), JcaKeyFingerprintCalculator())
+        val pgpSec = PGPSecretKeyRingCollection(
+            PGPUtil.getDecoderStream(armoredPrivateKeyInputStreamStream), JcaKeyFingerprintCalculator()
+        )
         var pgpPrivateKey: PGPPrivateKey? = null
         val keyRingIter = pgpSec.keyRings
         while (keyRingIter.hasNext()) {
@@ -127,9 +141,7 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
 
                 if (key.isSigningKey) continue
                 val privateKey = key.extractPrivateKey(
-                    JcePBESecretKeyDecryptorBuilder().setProvider(
-                        BouncyCastleProvider.PROVIDER_NAME
-                    ).build(privateKeyPassphraseCharArray)
+                    JcePBESecretKeyDecryptorBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME).build(privateKeyPassphraseCharArray)
                 )
 
                 if (privateKey != null) {
@@ -152,7 +164,11 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
 
         log.debug("Decrypting data: {}", encryptedArmoredData)
 
-        val encryptedDataStream: InputStream = ArmoredInputStream(ByteArrayInputStream(encryptedArmoredData.toByteArray(StandardCharsets.US_ASCII)))
+        val encryptedDataStream: InputStream = ArmoredInputStream(
+            ByteArrayInputStream(
+                encryptedArmoredData.toByteArray(StandardCharsets.US_ASCII)
+            )
+        )
 
         var publicKeyEncryptedData: PGPPublicKeyEncryptedData? = null
 
@@ -185,7 +201,6 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
         val plainFact = PGPObjectFactory(clear, JcaKeyFingerprintCalculator())
         var message: Any = plainFact.nextObject()
 
-
         if (message is PGPCompressedData) {
             val pgpFact = PGPObjectFactory(message.dataStream, JcaKeyFingerprintCalculator())
             message = pgpFact.nextObject()
@@ -206,7 +221,9 @@ class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassp
                 throw PGPException("Failed to decrypt message", e)
             }
         } else if (message is PGPOnePassSignatureList) {
-            throw MinervaException("Encrypted message contains a signed message - not literal data.")
+            throw MinervaException(
+                "Encrypted message contains a signed message - not literal data."
+            )
         } else {
             throw MinervaException("Message is not a simple encrypted file - type unknown.")
         }

@@ -48,7 +48,7 @@ public class User implements UserDetails, Serializable {
         return authorities;
     }
 
-    public record Role(Long id, String name, Collection<Privilege> privileges) implements GrantedAuthority, Serializable {
+    public record Role(String name, Collection<Privilege> privileges) implements GrantedAuthority, Serializable {
 
         public Role {
             if (privileges == null) {
@@ -65,7 +65,7 @@ public class User implements UserDetails, Serializable {
         }
     }
 
-    public record Privilege(Long id, String name) implements GrantedAuthority, Serializable {
+    public record Privilege(String name) implements GrantedAuthority, Serializable {
         @Serial
         private static final long serialVersionUID = 1003772487463552427L;
 
