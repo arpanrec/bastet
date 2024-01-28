@@ -20,12 +20,15 @@ import java.util.Base64;
 @Component
 public class AuthReqFilter extends OncePerRequestFilter {
 
-    @Value("${minerva.auth.filter.header-key:Authorization}")
-    private String headerKey = "Authorization";
+    private final String headerKey;
     private final AuthManager authManager;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public AuthReqFilter(@Autowired AuthManager authManager, @Autowired UserDetailsServiceImpl userDetailsServiceImpl) {
+    public AuthReqFilter(@Autowired AuthManager authManager,
+                         @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
+                         @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey
+    ) {
+        this.headerKey = headerKey;
         this.authManager = authManager;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
     }

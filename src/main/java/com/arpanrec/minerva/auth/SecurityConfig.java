@@ -1,6 +1,5 @@
 package com.arpanrec.minerva.auth;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,11 +19,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${minerva.auth.security-config.root-username:root}")
-    private String rootUsername;
-
-    @Value("${minerva.auth.security-config.root-password:root}")
-    private String rootPassword;
+    private final String rootUsername;
+    private final String rootPassword;
 
     private final AuthReqFilter authReqFilter;
 
@@ -32,11 +28,19 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public SecurityConfig(@Autowired AuthReqFilter authReqFilter, @Autowired AuthProvider authProvider, @Autowired UserDetailsServiceImpl userDetailsServiceImpl
+    public SecurityConfig(
+            @Autowired AuthReqFilter authReqFilter,
+            @Autowired AuthProvider authProvider,
+            @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
+            @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
+            @Value("${minerva.auth.security-config.root-password:root}") String rootPassword
     ) {
         this.authReqFilter = authReqFilter;
         this.authProvider = authProvider;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
+        this.rootUsername = rootUsername;
+        this.rootPassword = rootPassword;
+        doRootUserSetup();
     }
 
     @Bean
@@ -54,8 +58,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @PostConstruct
-    public void run() {
+    private void doRootUserSetup() {
         User rootUser = User.builder().username(this.rootUsername).password(this.rootPassword).accountNonExpired(true)
                 .accountNonLocked(true).credentialsNonExpired(true).enabled(true).build();
         userDetailsServiceImpl.getKeyValuePersistence().get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername, 0).ifPresentOrElse(

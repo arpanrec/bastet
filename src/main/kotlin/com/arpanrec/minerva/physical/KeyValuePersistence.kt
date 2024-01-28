@@ -1,6 +1,7 @@
 package com.arpanrec.minerva.physical
 
 import com.arpanrec.minerva.encryption.GnuPG
+import org.springframework.beans.factory.annotation.Autowired
 import java.util.Optional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
@@ -9,8 +10,8 @@ import org.springframework.stereotype.Component
 @Component
 class KeyValuePersistence(
     @Value("\${minerva.physical.key-value-persistence.persistence-type:FILE}") private val persistenceType: KeyValuePersistenceType,
-    applicationContext: ApplicationContext,
-    private val gnuPG: GnuPG
+    @Autowired applicationContext: ApplicationContext,
+    @Autowired private val gnuPG: GnuPG
 ) {
 
     private var keyValueStorage: KeyValueStorage = when (persistenceType) {
