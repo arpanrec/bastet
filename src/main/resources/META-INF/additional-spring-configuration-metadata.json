@@ -40,9 +40,10 @@
             "defaultValue": "file"
         },
         {
-            "name": "minerva.key-value.file.path",
+            "name": "minerva.physical.key-value-file-storage.path",
             "type": "java.lang.String",
-            "description": "The path to the file to use for the key-value store."
+            "description": "The path to the file to use for the key-value store.",
+            "defaultValue": "./storage"
         }
     ]
 }

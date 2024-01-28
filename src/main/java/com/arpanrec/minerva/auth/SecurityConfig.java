@@ -20,6 +20,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     private final String rootUsername;
+
     private final String rootPassword;
 
     private final AuthReqFilter authReqFilter;

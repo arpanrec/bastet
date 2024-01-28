@@ -3,14 +3,17 @@ package com.arpanrec.minerva.physical
 import com.arpanrec.minerva.exceptions.MinervaException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Optional
 
-@ConfigurationProperties(prefix = "minerva.key-value.file")
-class KeyValueFileStorage(path: String) : KeyValueStorage {
+@Component
+class KeyValueFileStorage(
+    @Value("\${minerva.physical.key-value-file-storage.path:./storage}") private val path: String
+) : KeyValueStorage {
 
     private val storageRootPath: Path = Paths.get(path).toAbsolutePath()
 

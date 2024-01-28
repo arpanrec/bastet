@@ -49,9 +49,6 @@ minerva:
         -----END PGP PRIVATE KEY BLOCK-----
 
       private-key-passphrase: password
-  key-value:
-    file:
-      path: storage
   auth:
     filter:
       header-key: Authorization
@@ -61,3 +58,5 @@ minerva:
   physical:
     key-value-persistence:
       persistence-type: file
+    key-value-file-storage:
+      path: ./storage
