@@ -49,6 +49,14 @@ minerva:
 
     private-key-passphrase: password
   key-value:
-    persistence-type: file
     file:
       path: storage
+  auth:
+    filter:
+      header-key: Authorization
+    security-config:
+      root-username: root1
+      root-password: root1
+  physical:
+    key-value-persistence:
+      persistence-type: file

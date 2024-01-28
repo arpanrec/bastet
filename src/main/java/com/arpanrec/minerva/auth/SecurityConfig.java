@@ -1,6 +1,9 @@
 package com.arpanrec.minerva.auth;
 
-import lombok.AllArgsConstructor;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,14 +15,30 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
 public class SecurityConfig {
 
-    private final AuthReqFilter authReqFilter;
+    @Value("${minerva.auth.security-config.root-username:root}")
+    private String rootUsername;
 
+    @Value("${minerva.auth.security-config.root-password:root}")
+    private String rootPassword;
+
+    private final AuthReqFilter authReqFilter;
     private final AuthProvider authProvider;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
+
+    public SecurityConfig(@Autowired AuthReqFilter authReqFilter,
+                          @Autowired AuthProvider authProvider,
+                          @Autowired UserDetailsServiceImpl userDetailsServiceImpl
+
+    ) {
+        this.authReqFilter = authReqFilter;
+        this.authProvider = authProvider;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,4 +55,19 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @PostConstruct
+    public void run() {
+        User rootUser = User.builder().username(rootUsername).password(rootPassword).accountNonExpired(true).accountNonLocked(true).credentialsNonExpired(true).enabled(true).build();
+        userDetailsServiceImpl.getKeyValuePersistence().get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername, 0).ifPresentOrElse(
+                (kv) -> log.info("Root user already exists"),
+                () -> {
+                    try {
+                        userDetailsServiceImpl.saveUser(rootUser);
+                        log.info("Root user created");
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error while creating root user", e);
+                    }
+                }
+        );
+    }
 }

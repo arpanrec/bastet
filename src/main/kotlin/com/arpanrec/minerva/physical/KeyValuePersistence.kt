@@ -2,38 +2,14 @@ package com.arpanrec.minerva.physical
 
 import com.arpanrec.minerva.gnupg.GnuPG
 import jakarta.annotation.PostConstruct
-import java.nio.file.Path
 import java.util.Optional
-import kotlinx.serialization.Serializable
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
+import org.springframework.stereotype.Component
 
-@Serializable
-data class KeyValue(
-    var key: String? = null,
-    var value: String? = null,
-    var metadata: Map<String, String> = mapOf(),
-    var version: Int = 0,
-    var isBinary: Boolean = false,
-    var keyValueBinary: KeyValueBinary? = null
-)
-
-@Serializable
-data class KeyValueBinary(var name: String? = null)
-
-interface KeyValueStorage {
-    fun save(keyValue: KeyValue): KeyValue
-    fun update(keyValue: KeyValue): KeyValue
-    fun get(key: String, version: Int = 0): Optional<KeyValue>
-    fun delete(keyValue: KeyValue, version: Int = 0): KeyValue
-    fun getNextVersion(keyPath: Path): Int
-    fun getLatestVersion(keyPath: Path): Int
-    fun listKeys(keyPath: Path): List<String>
-}
-
-@ConfigurationProperties(prefix = "minerva.key-value")
-class KeyValuePersistence(private var persistenceType: KeyValuePersistenceType) {
+@Component
+class KeyValuePersistence(@Value("\${minerva.physical.key-value-persistence.persistence-type:FILE}") private val persistenceType: KeyValuePersistenceType) {
 
     @Autowired
     private var applicationContext: ApplicationContext? = null
@@ -71,8 +47,4 @@ class KeyValuePersistence(private var persistenceType: KeyValuePersistenceType) 
         keyValue.value = keyValue.value!!.let { gnuPG!!.encrypt(it) }
         return keyValueStorage!!.update(keyValue)
     }
-}
-
-enum class KeyValuePersistenceType {
-    FILE
 }

@@ -125,8 +125,8 @@ java {
     }
 }
 tasks.create<Delete>("cleanAll") {
-    group = "clean"
-    delete("logs", "bin", "build", "storage")
+    group = "build"
+    delete("logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle")
 }
 
 //springBoot() {
@@ -135,7 +135,7 @@ tasks.create<Delete>("cleanAll") {
 
 tasks.getByName<Jar>("jar") {
     enabled = true
-
+    archiveAppendix.set("original")
 }
 
 tasks.getByName<BootJar>("bootJar") {

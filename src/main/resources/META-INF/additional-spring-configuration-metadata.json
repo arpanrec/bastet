@@ -1,9 +1,22 @@
 {
     "properties": [
         {
-            "name": "minerva.auth.header-key",
+            "name": "minerva.auth.filter.header-key",
             "type": "java.lang.String",
-            "description": "Header used to pass the authentication token to the service."
+            "description": "Header used to pass the authentication token to the service.",
+            "defaultValue": "Authorization"
+        },
+        {
+            "name": "minerva.auth.security-config.root-username",
+            "type": "java.lang.String",
+            "description": "The username for the root user.",
+            "defaultValue": "root"
+        },
+        {
+            "name": "minerva.auth.security-config.root-password",
+            "type": "java.lang.String",
+            "description": "The password for the root user.",
+            "defaultValue": "root"
         },
         {
             "name": "minerva.gnupg.armored-private-key",
@@ -21,7 +34,7 @@
             "description": "The passphrase to use for GPG Private Key."
         },
         {
-            "name": "minerva.key-value.persistence-type",
+            "name": "minerva.physical.key-value-persistence.persistence-type",
             "type": "com.arpanrec.minerva.physical.KeyValuePersistenceType",
             "description": "The persistence type for the key-value store. Valid values are 'file'."
         },
