@@ -23,9 +23,7 @@ public class AuthProperties implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User rootUser = new User();
-        rootUser.setUsername(rootUsername);
-        rootUser.setPassword(rootPassword);
+        User rootUser = User.builder().username(rootUsername).password(rootPassword).accountNonExpired(true).accountNonLocked(true).credentialsNonExpired(true).enabled(true).build();
         userDetailsServiceImpl.getKeyValuePersistence().get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername, 0).ifPresentOrElse(
                 (kv) -> log.info("Root user already exists"),
                 () -> {

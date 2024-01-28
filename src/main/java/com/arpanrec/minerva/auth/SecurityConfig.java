@@ -30,6 +30,7 @@ public class SecurityConfig {
         http.authenticationProvider(authProvider);
         http.addFilterAfter(authReqFilter, BasicAuthenticationFilter.class);
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll());
+        //http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated());
 
         return http.build();

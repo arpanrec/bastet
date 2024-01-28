@@ -43,10 +43,8 @@ public class AuthReqFilter extends OncePerRequestFilter {
         String providedPassword = credential[1];
 
         User user = userDetailsServiceImpl.loadUserByUsername(username);
-        AuthImpl authImpl = new AuthImpl();
-        authImpl.setProvidedPassword(providedPassword);
-        authImpl.setUser(user);
-        authImpl.setAuthenticated(false);
+
+        AuthImpl authImpl = AuthImpl.builder().providedPassword(providedPassword).user(user).authenticated(false).build();
 
         Authentication authentication = authManager.authenticate(authImpl);
 
