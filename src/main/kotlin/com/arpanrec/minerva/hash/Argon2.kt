@@ -12,13 +12,13 @@ import java.security.SecureRandom
 import java.util.Base64
 
 @Component
-class Argon2(@Autowired val keyValuePersistence: KeyValuePersistence) {
+class Argon2(@Autowired keyValuePersistence: KeyValuePersistence) {
 
     private val log: Logger = LoggerFactory.getLogger(Argon2::class.java)
 
-    var argon2Salt: ByteArray? = null
+    private var argon2Salt: ByteArray? = null
 
-    var internalArgon2SaltPath: String? = null
+    private var internalArgon2SaltPath: String? = null
 
     private fun generateSalt16ByteBase64EncodedString(): String {
         val secureRandom = SecureRandom()
@@ -27,7 +27,7 @@ class Argon2(@Autowired val keyValuePersistence: KeyValuePersistence) {
         return Base64.getEncoder().encodeToString(salt)
     }
 
-    private final fun checkArgon2Salt() {
+    private final fun checkArgon2Salt(keyValuePersistence: KeyValuePersistence) {
         internalArgon2SaltPath = keyValuePersistence.internalStorageKey + "/argon2Salt"
         keyValuePersistence.get(internalArgon2SaltPath!!, 0).ifPresentOrElse({ kv: KeyValue ->
             log.info("Argon2 salt already exists")
@@ -48,7 +48,7 @@ class Argon2(@Autowired val keyValuePersistence: KeyValuePersistence) {
     }
 
     init {
-        checkArgon2Salt()
+        checkArgon2Salt(keyValuePersistence)
     }
 
     fun hashString(inputString: String): String {

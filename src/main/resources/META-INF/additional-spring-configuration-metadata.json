@@ -19,24 +19,25 @@
             "defaultValue": "root"
         },
         {
-            "name": "minerva.gnupg.armored-private-key",
+            "name": "minerva.encryption.gnupg.armored-private-key",
             "type": "java.lang.String",
             "description": "The GPG Private Key to use for decryption."
         },
         {
-            "name": "minerva.gnupg.armored-public-key",
+            "name": "minerva.encryption.gnupg.armored-public-key",
             "type": "java.lang.String",
             "description": "The GPG Public Key to use for encryption."
         },
         {
-            "name": "minerva.gnupg.private-key-passphrase",
+            "name": "minerva.encryption.gnupg.private-key-passphrase",
             "type": "java.lang.String",
             "description": "The passphrase to use for GPG Private Key."
         },
         {
             "name": "minerva.physical.key-value-persistence.persistence-type",
             "type": "com.arpanrec.minerva.physical.KeyValuePersistenceType",
-            "description": "The persistence type for the key-value store. Valid values are 'file'."
+            "description": "The persistence type for the key-value store. Valid values are 'file'.",
+            "defaultValue": "file"
         },
         {
             "name": "minerva.key-value.file.path",

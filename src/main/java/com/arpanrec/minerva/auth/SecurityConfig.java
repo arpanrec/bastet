@@ -27,13 +27,12 @@ public class SecurityConfig {
     private String rootPassword;
 
     private final AuthReqFilter authReqFilter;
+
     private final AuthProvider authProvider;
+
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public SecurityConfig(@Autowired AuthReqFilter authReqFilter,
-                          @Autowired AuthProvider authProvider,
-                          @Autowired UserDetailsServiceImpl userDetailsServiceImpl
-
+    public SecurityConfig(@Autowired AuthReqFilter authReqFilter, @Autowired AuthProvider authProvider, @Autowired UserDetailsServiceImpl userDetailsServiceImpl
     ) {
         this.authReqFilter = authReqFilter;
         this.authProvider = authProvider;
@@ -49,7 +48,7 @@ public class SecurityConfig {
         http.authenticationProvider(authProvider);
         http.addFilterAfter(authReqFilter, BasicAuthenticationFilter.class);
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll());
-        //http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
+        // http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(newAntPathRequestMatcher("/**")).permitAll());
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated());
 
         return http.build();
@@ -57,7 +56,8 @@ public class SecurityConfig {
 
     @PostConstruct
     public void run() {
-        User rootUser = User.builder().username(rootUsername).password(rootPassword).accountNonExpired(true).accountNonLocked(true).credentialsNonExpired(true).enabled(true).build();
+        User rootUser = User.builder().username(this.rootUsername).password(this.rootPassword).accountNonExpired(true)
+                .accountNonLocked(true).credentialsNonExpired(true).enabled(true).build();
         userDetailsServiceImpl.getKeyValuePersistence().get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername, 0).ifPresentOrElse(
                 (kv) -> log.info("Root user already exists"),
                 () -> {
@@ -67,7 +67,6 @@ public class SecurityConfig {
                     } catch (Exception e) {
                         throw new RuntimeException("Error while creating root user", e);
                     }
-                }
-        );
+                });
     }
 }
