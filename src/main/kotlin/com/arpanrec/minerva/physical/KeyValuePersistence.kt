@@ -43,6 +43,8 @@ class KeyValuePersistence(private var persistenceType: KeyValuePersistenceType) 
 
     private var keyValueStorage: KeyValueStorage? = null
 
+    var internalStorageKey: String = "internal"
+
     @PostConstruct
     fun setKeyValueStorage() {
         keyValueStorage = when (persistenceType) {

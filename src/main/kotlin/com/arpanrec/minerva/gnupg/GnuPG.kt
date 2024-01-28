@@ -35,7 +35,7 @@ import java.io.OutputStream
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 import java.security.Security
-import java.util.*
+import java.util.Date
 
 @ConfigurationProperties(prefix = "minerva.gnupg")
 class GnuPG(armoredPublicKey: String, armoredPrivateKey: String, privateKeyPassphrase: String?) {

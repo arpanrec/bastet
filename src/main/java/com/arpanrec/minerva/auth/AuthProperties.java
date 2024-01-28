@@ -26,7 +26,7 @@ public class AuthProperties implements CommandLineRunner {
         User rootUser = new User();
         rootUser.setUsername(rootUsername);
         rootUser.setPassword(rootPassword);
-        userDetailsServiceImpl.getKeyValuePersistence().get(UserDetailsServiceImpl.USER_KEY_PREFIX + "/" + rootUsername, 0).ifPresentOrElse(
+        userDetailsServiceImpl.getKeyValuePersistence().get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername, 0).ifPresentOrElse(
                 (kv) -> log.info("Root user already exists"),
                 () -> {
                     try {

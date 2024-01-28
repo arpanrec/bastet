@@ -1,6 +1,7 @@
 package com.arpanrec.minerva.auth;
 
 import com.arpanrec.minerva.exceptions.MinervaException;
+import com.arpanrec.minerva.hash.Argon2;
 import com.arpanrec.minerva.physical.KeyValue;
 import com.arpanrec.minerva.physical.KeyValuePersistence;
 import lombok.Getter;
@@ -26,16 +27,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final KeyValuePersistence keyValuePersistence;
 
-    public UserDetailsServiceImpl(@Autowired KeyValuePersistence keyValuePersistence) {
-        this.keyValuePersistence = keyValuePersistence;
-    }
+    private final String internalUsersKeyPath;
 
-    public static final String USER_KEY_PREFIX = "internal/users";
+    private final Argon2 argon2;
+
+    public UserDetailsServiceImpl(@Autowired KeyValuePersistence keyValuePersistence, @Autowired Argon2 argon2) {
+        this.argon2 = argon2;
+        this.keyValuePersistence = keyValuePersistence;
+        internalUsersKeyPath = keyValuePersistence.getInternalStorageKey() + "/users";
+    }
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
         log.debug("Loading user by username: {}", username);
-        Optional<KeyValue> userData = keyValuePersistence.get(USER_KEY_PREFIX + "/" + username, 0);
+        Optional<KeyValue> userData = keyValuePersistence.get(internalUsersKeyPath + "/" + username, 0);
         userData.orElseThrow(() -> new UsernameNotFoundException("User not found"));
         byte[] data = Base64.getDecoder().decode(Objects.requireNonNull(userData.get().getValue()).getBytes());
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
@@ -49,12 +54,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public void saveUser(User user) throws MinervaException {
-        log.debug("Saving user: {}", user);
+        log.debug("Saving user: {}", user.toString());
+        user.setPassword(argon2.hashString(user.getPassword()));
+        log.debug("User password hashed: {}", user.toString());
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(); ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
             objectOutputStream.writeObject(user);
             objectOutputStream.flush();
             KeyValue userData = new KeyValue();
-            userData.setKey(USER_KEY_PREFIX + "/" + user.getUsername());
+            userData.setKey(internalUsersKeyPath + "/" + user.getUsername());
             userData.setValue(Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray()));
             keyValuePersistence.save(userData);
         } catch (Exception e) {

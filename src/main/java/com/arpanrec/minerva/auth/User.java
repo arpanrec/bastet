@@ -1,10 +1,7 @@
 package com.arpanrec.minerva.auth;
 
 
-import com.arpanrec.minerva.hash.Argon2Kt;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,43 +11,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Data
 public class User implements UserDetails, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1003772465463552427L;
 
-    @Setter
-    private Long id;
-
-    @Setter
-    @Getter
     private String username;
 
-    @Getter
     private String password;
 
-    @Getter
-    @Setter
     private String email;
 
-    @Getter
-    @Setter
     private List<Role> roles;
 
-    @Getter
-    @Setter
     private boolean accountNonExpired;
 
-    @Getter
-    @Setter
     private boolean accountNonLocked;
 
-    @Getter
-    @Setter
     private boolean credentialsNonExpired;
 
-    @Getter
-    @Setter
     private boolean enabled;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -64,10 +44,6 @@ public class User implements UserDetails, Serializable {
         }
 
         return authorities;
-    }
-
-    public void setPassword(String password) {
-        this.password = Argon2Kt.hashString(password);
     }
 
     public record Role(Long id, String name, Collection<Privilege> privileges) implements GrantedAuthority, Serializable {
