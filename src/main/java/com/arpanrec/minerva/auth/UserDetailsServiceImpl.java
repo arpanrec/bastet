@@ -43,7 +43,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<KeyValue> userData = keyValuePersistence.get(internalUsersKeyPath + "/" + username, 0);
         userData.orElseThrow(() -> new UsernameNotFoundException("User not found"));
         byte[] data = Base64.getDecoder().decode(Objects.requireNonNull(userData.get().getValue()).getBytes());
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data); ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
             return (User) objectInputStream.readObject();
         } catch (IOException e) {
             throw new UsernameNotFoundException("Error while loading user", e);
@@ -55,7 +56,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private KeyValue encryptPasswordAndGetKeyValue(User user) throws MinervaException {
         user.setPassword(argon2.hashString(user.getPassword()));
         log.debug("User password hashed: {}", user);
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(); ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
             objectOutputStream.writeObject(user);
             objectOutputStream.flush();
             KeyValue userData = new KeyValue();

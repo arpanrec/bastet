@@ -24,14 +24,16 @@ public class KeyValueApi {
 
     @GetMapping(path = "/api/v1/keyvaule/**", produces = "application/json", consumes = "application/json")
     public KeyValue get(HttpServletRequest request) {
-        String key = new AntPathMatcher().extractPathWithinPattern(request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
+        String key = new AntPathMatcher().extractPathWithinPattern(
+            request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
         Optional<KeyValue> keyValue = keyValuePersistence.get(key, 0);
         return keyValue.orElseThrow(() -> new RuntimeException("Key not found"));
     }
 
     @PostMapping(path = "/api/v1/keyvaule/**", consumes = "application/json", produces = "application/json")
     public KeyValue set(@RequestBody KeyValue keyValue, HttpServletRequest request) {
-        String key = new AntPathMatcher().extractPathWithinPattern(request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
+        String key = new AntPathMatcher().extractPathWithinPattern(
+            request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
         keyValue.setKey(key);
         return keyValuePersistence.save(keyValue);
     }

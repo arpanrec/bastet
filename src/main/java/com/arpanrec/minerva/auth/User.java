@@ -83,5 +83,47 @@ public class User implements UserDetails {
         return this.enabled;
     }
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Privilege implements GrantedAuthority {
 
+        @Serial
+        private static final long serialVersionUID = -1453442487053691797L;
+
+        private String name;
+
+        @JsonIgnore
+        @Override
+        public String getAuthority() {
+            return name;
+        }
+
+        public enum Type {
+            READ, WRITE, DELETE, SUDO,
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Role implements GrantedAuthority {
+
+        @Serial
+        private static final long serialVersionUID = 1425911275852559225L;
+
+        private String name;
+
+        private Collection<Privilege> privileges;
+
+        @JsonIgnore
+        @Override
+        public String getAuthority() {
+            return name;
+        }
+
+        public enum Type {
+            ADMIN, USER,
+        }
+    }
 }

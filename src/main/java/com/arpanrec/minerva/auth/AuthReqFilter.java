@@ -24,16 +24,15 @@ public class AuthReqFilter extends OncePerRequestFilter {
     private final AuthManager authManager;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public AuthReqFilter(@Autowired AuthManager authManager,
-                         @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
-                         @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey
-    ) {
+    public AuthReqFilter(@Autowired AuthManager authManager, @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
+                         @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey) {
         this.headerKey = headerKey;
         this.authManager = authManager;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         var base64Cred = request.getHeader(headerKey);
         if (base64Cred == null) {
@@ -48,7 +47,8 @@ public class AuthReqFilter extends OncePerRequestFilter {
 
         User user = userDetailsServiceImpl.loadUserByUsername(username);
 
-        AuthImpl authImpl = AuthImpl.builder().providedPassword(providedPassword).user(user).authenticated(false).build();
+        AuthImpl authImpl = AuthImpl.builder().providedPassword(providedPassword).user(user).authenticated(false)
+            .build();
 
         Authentication authentication = authManager.authenticate(authImpl);
 

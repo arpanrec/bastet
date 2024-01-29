@@ -21,8 +21,7 @@ public class AuthProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         AuthImpl auth = (AuthImpl) authentication;
         log.debug("User authentication started for {}", auth.getName());
         String hashedProvidedPassword = argon2.hashString(auth.getProvidedPassword());
