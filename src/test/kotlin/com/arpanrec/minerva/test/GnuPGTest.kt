@@ -1,6 +1,6 @@
 package com.arpanrec.minerva.test
 
-import com.arpanrec.minerva.gnupg.GnuPG
+import com.arpanrec.minerva.encryption.GnuPG
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 

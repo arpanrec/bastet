@@ -19,12 +19,11 @@ plugins {
 }
 
 group = "com.arpanrec"
-version = "0.0.0-SNAPSHOT"
+version = getVersions()
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
-
 
 sourceSets {
     main {
@@ -62,11 +61,13 @@ configurations {
 repositories {
     mavenCentral()
 }
+
 configurations {
     all {
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
     }
 }
+
 dependencies {
     implementation("org.apache.groovy:groovy")
     implementation("org.apache.commons:commons-lang3")
@@ -110,19 +111,17 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "17"
     }
 }
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
+
 tasks.create<Delete>("cleanAll") {
     group = "build"
     delete("logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle")
 }
-
-//springBoot() {
-//    mainClass.set("com.arpanrec.minerva.Application")
-//}
 
 tasks.getByName<Jar>("jar") {
     enabled = true
@@ -142,7 +141,17 @@ graalvmNative {
         }
     }
 }
+
 fun getMainClassName(): String {
     val mainClass = "com.arpanrec.minerva.Application"
     return mainClass
+}
+
+fun getVersions(): String {
+    val file = File("VERSION")
+    return if (file.exists()) {
+        file.readText()
+    } else {
+        "9.9.9-SNAPSHOT"
+    }
 }
