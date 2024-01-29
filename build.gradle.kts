@@ -15,7 +15,6 @@ plugins {
     kotlin("plugin.serialization") version "1.9.22"
     idea
     eclipse
-    id("org.graalvm.buildtools.native") version "0.9.28"
 }
 
 group = "com.arpanrec"
@@ -132,14 +131,6 @@ tasks.getByName<BootJar>("bootJar") {
     enabled = true
     mainClass = getMainClassName()
     archiveAppendix.set("boot")
-}
-
-graalvmNative {
-    binaries {
-        named("main") {
-            buildArgs.add("-Dorg.sqlite.lib.exportPath=${layout.buildDirectory}")
-        }
-    }
 }
 
 fun getMainClassName(): String {
