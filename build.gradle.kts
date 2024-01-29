@@ -5,7 +5,6 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     application
-    groovy
     java
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
@@ -28,12 +27,10 @@ sourceSets {
     main {
         java { srcDirs("src/main/java") }
         kotlin { srcDirs("src/main/kotlin") }
-        groovy { srcDirs("src/main/groovy") }
     }
     test {
         java { srcDirs("src/test/java") }
         kotlin { srcDirs("src/test/kotlin") }
-        groovy { srcDirs("src/test/groovy") }
     }
 }
 
@@ -68,7 +65,6 @@ configurations {
 }
 
 dependencies {
-    implementation("org.apache.groovy:groovy")
     implementation("org.apache.commons:commons-lang3")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
