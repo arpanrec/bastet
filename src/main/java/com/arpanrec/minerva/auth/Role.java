@@ -1,5 +1,6 @@
 package com.arpanrec.minerva.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class Role implements GrantedAuthority {
 
     private Collection<Privilege> privileges;
 
+    @JsonIgnore
     @Override
     public String getAuthority() {
         return name;

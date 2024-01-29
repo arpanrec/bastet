@@ -31,7 +31,11 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public SecurityConfig(@Autowired AuthReqFilter authReqFilter, @Autowired AuthProvider authProvider, @Autowired UserDetailsServiceImpl userDetailsServiceImpl, @Value("${minerva.auth.security-config.root-username:root}") String rootUsername, @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) {
+    public SecurityConfig(@Autowired AuthReqFilter authReqFilter,
+            @Autowired AuthProvider authProvider,
+            @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
+            @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
+            @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) {
         this.authReqFilter = authReqFilter;
         this.authProvider = authProvider;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
@@ -44,16 +48,21 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
-        http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-        http.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.headers(
+                headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+        http.sessionManagement(sessionManagement -> sessionManagement
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authenticationProvider(authProvider);
         http.addFilterAfter(authReqFilter, BasicAuthenticationFilter.class);
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll());
-        // http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(newAntPathRequestMatcher("/**")).permitAll());
-        // any get call to /keyvalue/internal should have "INTERNAL READ" permission
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(
-                new AntPathRequestMatcher("/api/v1/keyvalue/internal/**")).hasAuthority(RoleEnum.ADMIN.name()));
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated());
+        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll());
+        // http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new
+        // AntPathRequestMatcher("/**")).permitAll());
+        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvalue/internal/**"))
+                .hasAuthority(RoleEnum.ADMIN.name()));
+        http.authorizeHttpRequests(
+                authorizeRequests -> authorizeRequests.anyRequest().authenticated());
 
         return http.build();
     }
@@ -61,19 +70,18 @@ public class SecurityConfig {
     private void doRootUserSetup() {
         List<Privilege> rootPrivileges = List.of(new Privilege(PrivilegeEnum.SUDO.name()));
         List<Role> rootRoles = List.of(new Role(RoleEnum.ADMIN.name(), rootPrivileges));
-        User rootUser = User.builder()
-                .username(this.rootUsername)
-                .password(this.rootPassword)
-                .accountNonExpired(true).accountNonLocked(true).credentialsNonExpired(true).enabled(true)
-                .roles(rootRoles)
-                .build();
-        userDetailsServiceImpl.getKeyValuePersistence().get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername, 0).ifPresentOrElse((kv) -> log.info("Root user already exists"), () -> {
-            try {
-                userDetailsServiceImpl.saveUser(rootUser);
-                log.info("Root user created");
-            } catch (Exception e) {
-                throw new RuntimeException("Error while creating root user", e);
-            }
-        });
+        User rootUser = User.builder().username(this.rootUsername).password(this.rootPassword)
+                .accountNonExpired(true).accountNonLocked(true).credentialsNonExpired(true)
+                .enabled(true).roles(rootRoles).build();
+        userDetailsServiceImpl.getKeyValuePersistence()
+                .get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername, 0)
+                .ifPresentOrElse((kv) -> log.info("Root user already exists"), () -> {
+                    try {
+                        userDetailsServiceImpl.saveUser(rootUser);
+                        log.info("Root user created");
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error while creating root user", e);
+                    }
+                });
     }
 }

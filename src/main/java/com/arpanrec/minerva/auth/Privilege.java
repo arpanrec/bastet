@@ -1,5 +1,6 @@
 package com.arpanrec.minerva.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class Privilege implements GrantedAuthority {
 
     private String name;
 
+    @JsonIgnore
     @Override
     public String getAuthority() {
         return name;
