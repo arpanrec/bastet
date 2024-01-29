@@ -8,12 +8,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Component
 
 @Component
-class KeyValuePersistence(
-    @Value("\${minerva.physical.key-value-persistence.persistence-type:FILE}")
-    private val persistenceType: KeyValuePersistenceType,
-    @Autowired applicationContext: ApplicationContext,
-    @Autowired private val gnuPG: GnuPG
-) {
+class KeyValuePersistence(@Value("\${minerva.physical.key-value-persistence.persistence-type:FILE}") private val persistenceType: KeyValuePersistenceType, @Autowired applicationContext: ApplicationContext, @Autowired private val gnuPG: GnuPG) {
 
     private var keyValueStorage: KeyValueStorage = when (persistenceType) {
         KeyValuePersistenceType.FILE -> {

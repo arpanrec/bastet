@@ -123,7 +123,7 @@ public class User implements UserDetails {
         }
 
         public enum Type {
-            ADMIN, USER,
+            ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS
         }
     }
 }

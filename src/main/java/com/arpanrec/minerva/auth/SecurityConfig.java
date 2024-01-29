@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.List;
 
@@ -31,12 +32,9 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public SecurityConfig(
-        @Autowired AuthReqFilter authReqFilter, @Autowired AuthProvider authProvider,
-        @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
-        @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
-        @Value("${minerva.auth.security-config.root-password:root}") String rootPassword
-    ) {
+    public SecurityConfig(@Autowired AuthReqFilter authReqFilter, @Autowired AuthProvider authProvider,
+                          @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
+                          @Value("${minerva.auth.security-config.root-username:root}") String rootUsername, @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) {
         this.authReqFilter = authReqFilter;
         this.authProvider = authProvider;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
@@ -45,8 +43,15 @@ public class SecurityConfig {
         doRootUserSetup();
     }
 
+    private RequestMatcher[] getPermitAllRequestMatchers() {
+        return new RequestMatcher[]{
+            new AntPathRequestMatcher("/h2-console/**"),
+            new AntPathRequestMatcher("/error")};
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http.cors(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
@@ -56,14 +61,15 @@ public class SecurityConfig {
         http.addFilterAfter(authReqFilter, BasicAuthenticationFilter.class);
 
         http.authorizeHttpRequests(
-            authorizeRequests -> authorizeRequests.requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+            authorizeRequests -> authorizeRequests.requestMatchers(getPermitAllRequestMatchers())
                 .permitAll());
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(
-            new AntPathRequestMatcher("/api/v1/keyvalue/internal/**")).hasAuthority(User.Role.Type.ADMIN.name()));
+        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
+            .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvalue/internal/**")).hasAuthority(
+                User.Role.Type.ROLE_ADMIN.name())
+        );
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated());
 
-        // http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new
-        // AntPathRequestMatcher("/**")).permitAll());
+        // http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
 
         return http.build();
     }
@@ -73,15 +79,17 @@ public class SecurityConfig {
         List<User.Role> rootRoles = List.of(new User.Role(User.Role.Type.ADMIN.name(), rootPrivileges));
         User rootUser = User.builder().username(this.rootUsername).password(this.rootPassword).accountNonExpired(true)
             .accountNonLocked(true).credentialsNonExpired(true).enabled(true).roles(rootRoles).build();
-        userDetailsServiceImpl.getKeyValuePersistence()
-            .get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername, 0)
-            .ifPresentOrElse((kv) -> log.info("Root " + "user" + " already exists"), () -> {
-                try {
-                    userDetailsServiceImpl.saveUser(rootUser);
-                    log.info("Root user created");
-                } catch (Exception e) {
-                    throw new RuntimeException("Error while creating root user", e);
-                }
-            });
+        userDetailsServiceImpl.getKeyValuePersistence().get(
+                userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername, 0)
+            .ifPresentOrElse(
+                (kv) -> log.info("Root user already exists"),
+                () -> {
+                    try {
+                        userDetailsServiceImpl.saveUser(rootUser);
+                        log.info("Root user created");
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error while creating root user", e);
+                    }
+                });
     }
 }
