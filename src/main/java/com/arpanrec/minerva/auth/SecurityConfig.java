@@ -60,9 +60,7 @@ public class SecurityConfig {
         http.authenticationProvider(authProvider);
         http.addFilterAfter(authReqFilter, BasicAuthenticationFilter.class);
 
-        http.authorizeHttpRequests(
-            authorizeRequests -> authorizeRequests.requestMatchers(getPermitAllRequestMatchers())
-                .permitAll());
+        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(getPermitAllRequestMatchers()).permitAll());
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
             .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvalue/internal/**")).hasAuthority(
                 User.Role.Type.ROLE_ADMIN.name())
@@ -76,7 +74,11 @@ public class SecurityConfig {
 
     private void doRootUserSetup() {
         List<User.Privilege> rootPrivileges = List.of(new User.Privilege(User.Privilege.Type.SUDO.name()));
-        List<User.Role> rootRoles = List.of(new User.Role(User.Role.Type.ADMIN.name(), rootPrivileges));
+        List<User.Role> rootRoles = List.of(
+            new User.Role(User.Role.Type.ROLE_ADMIN.name(), rootPrivileges),
+            new User.Role(User.Role.Type.ROLE_ANONYMOUS.name(), rootPrivileges),
+            new User.Role(User.Role.Type.ROLE_USER.name(), rootPrivileges)
+        );
         User rootUser = User.builder().username(this.rootUsername).password(this.rootPassword).accountNonExpired(true)
             .accountNonLocked(true).credentialsNonExpired(true).enabled(true).roles(rootRoles).build();
         userDetailsServiceImpl.getKeyValuePersistence().get(
