@@ -53,19 +53,31 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
-    public void saveUser(User user) throws MinervaException {
-        log.debug("Saving user: {}", user.toString());
+    private KeyValue encryptPasswordAndGetKeyValue(User user) throws MinervaException {
         user.setPassword(argon2.hashString(user.getPassword()));
-        log.debug("User password hashed: {}", user.toString());
+        log.debug("User password hashed: {}", user);
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(); ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
             objectOutputStream.writeObject(user);
             objectOutputStream.flush();
             KeyValue userData = new KeyValue();
             userData.setKey(internalUsersKeyPath + "/" + user.getUsername());
             userData.setValue(Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray()));
-            keyValuePersistence.save(userData);
+            return userData;
         } catch (Exception e) {
             throw new MinervaException("Error while saving user", e);
         }
+    }
+
+    public void saveUser(User user) throws MinervaException {
+        log.debug("Saving user: {}", user.toString());
+        user.setPassword(argon2.hashString(user.getPassword()));
+        KeyValue userData = encryptPasswordAndGetKeyValue(user);
+        keyValuePersistence.save(userData);
+    }
+
+    public void updateUser(User user) throws MinervaException {
+        log.debug("Updating user: {}", user.toString());
+        KeyValue userData = encryptPasswordAndGetKeyValue(user);
+        keyValuePersistence.update(userData);
     }
 }

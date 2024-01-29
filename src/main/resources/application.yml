@@ -10,6 +10,9 @@ spring:
     name: minerva
   main:
     lazy-initialization: true
+  devtools:
+    livereload:
+      enabled: true
 minerva:
   encryption:
     gnupg:

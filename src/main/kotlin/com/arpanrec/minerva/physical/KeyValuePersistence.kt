@@ -35,7 +35,6 @@ class KeyValuePersistence(
         return keyValueStorage.save(keyValue)
     }
 
-    @Suppress("unused")
     fun update(keyValue: KeyValue): KeyValue {
         keyValue.value = keyValue.value!!.let { gnuPG.encrypt(it) }
         return keyValueStorage.update(keyValue)

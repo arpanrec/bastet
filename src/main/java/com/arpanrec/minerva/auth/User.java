@@ -1,8 +1,12 @@
 package com.arpanrec.minerva.auth;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,8 +15,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Data
 @Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails {
 
     @Serial
@@ -41,31 +47,41 @@ public class User implements UserDetails {
         }
         for (Role role : this.roles) {
             authorities.add(role);
-            authorities.addAll(role.privileges);
+            authorities.addAll(role.getPrivileges());
         }
 
         return authorities;
     }
 
-    public record Role(String name, Collection<Privilege> privileges) implements GrantedAuthority {
-
-        public Role {
-            if (privileges == null) {
-                privileges = new ArrayList<>();
-            }
-        }
-
-        @Override
-        public String getAuthority() {
-            return name;
-        }
+    @Override
+    public String getPassword() {
+        return this.password;
     }
 
-    public record Privilege(String name) implements GrantedAuthority {
-
-        @Override
-        public String getAuthority() {
-            return name;
-        }
+    @Override
+    public String getUsername() {
+        return this.username;
     }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.accountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.accountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.credentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+
 }
