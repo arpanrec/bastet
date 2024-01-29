@@ -60,7 +60,7 @@ public class SecurityConfig {
         // AntPathRequestMatcher("/**")).permitAll());
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvalue/internal/**"))
-                .hasAuthority(RoleEnum.ADMIN.name()));
+                .hasAuthority(Role.RoleEnum.ADMIN.name()));
         http.authorizeHttpRequests(
                 authorizeRequests -> authorizeRequests.anyRequest().authenticated());
 
@@ -68,8 +68,8 @@ public class SecurityConfig {
     }
 
     private void doRootUserSetup() {
-        List<Privilege> rootPrivileges = List.of(new Privilege(PrivilegeEnum.SUDO.name()));
-        List<Role> rootRoles = List.of(new Role(RoleEnum.ADMIN.name(), rootPrivileges));
+        List<Privilege> rootPrivileges = List.of(new Privilege(Privilege.PrivilegeEnum.SUDO.name()));
+        List<Role> rootRoles = List.of(new Role(Role.RoleEnum.ADMIN.name(), rootPrivileges));
         User rootUser = User.builder().username(this.rootUsername).password(this.rootPassword)
                 .accountNonExpired(true).accountNonLocked(true).credentialsNonExpired(true)
                 .enabled(true).roles(rootRoles).build();

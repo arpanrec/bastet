@@ -23,4 +23,11 @@ public class Privilege implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
+
+    public enum PrivilegeEnum {
+        READ,
+        WRITE,
+        DELETE,
+        SUDO,
+    }
 }
