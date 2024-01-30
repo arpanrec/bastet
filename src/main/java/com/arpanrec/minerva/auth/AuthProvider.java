@@ -8,23 +8,24 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class AuthProvider implements AuthenticationProvider {
 
-    private final Argon2 argon2;
+    private final PasswordEncoder encoder;
 
     public AuthProvider(@Autowired Argon2 argon2) {
-        this.argon2 = argon2;
+        this.encoder = argon2;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         AuthImpl auth = (AuthImpl) authentication;
         log.debug("User authentication started for {}", auth.getName());
-        String hashedProvidedPassword = argon2.hashString(auth.getProvidedPassword());
+        String hashedProvidedPassword = encoder.encode(auth.getProvidedPassword());
         log.debug("Hashed provided password: {}", hashedProvidedPassword);
         log.debug("User password: {}", auth.getCredentials());
         if (auth.getCredentials().equals(hashedProvidedPassword)) {

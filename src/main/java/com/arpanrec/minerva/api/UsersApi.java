@@ -1,6 +1,6 @@
 package com.arpanrec.minerva.api;
 
-import com.arpanrec.minerva.auth.User;
+import com.arpanrec.minerva.auth.AuthUser;
 import com.arpanrec.minerva.auth.UserDetailsServiceImpl;
 import com.arpanrec.minerva.exceptions.MinervaException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +21,17 @@ public class UsersApi {
     }
 
     @GetMapping(path = "/api/v1/users/{username}", produces = "application/json", consumes = "application/json")
-    public User get(@PathVariable String username) {
-        return userDetailsServiceImpl.loadUserByUsername(username);
+    public AuthUser get(@PathVariable String username) throws MinervaException {
+        return userDetailsServiceImpl.loadAuthUserByUsername(username);
     }
 
     @PostMapping(path = "/api/v1/users", produces = "application/json", consumes = "application/json")
-    public void set(@RequestBody User user) throws MinervaException {
+    public void set(@RequestBody AuthUser user) throws MinervaException {
         userDetailsServiceImpl.saveUser(user);
     }
 
     @PutMapping(path = "/api/v1/users", produces = "application/json", consumes = "application/json")
-    public void update(@RequestBody User user) throws MinervaException {
+    public void update(@RequestBody AuthUser user) throws MinervaException {
         userDetailsServiceImpl.updateUser(user);
     }
 

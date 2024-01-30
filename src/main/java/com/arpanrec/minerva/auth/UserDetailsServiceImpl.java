@@ -7,13 +7,16 @@ import com.arpanrec.minerva.physical.KeyValuePersistence;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Base64;
@@ -29,16 +32,26 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final String internalUsersKeyPath;
 
-    private final Argon2 argon2;
+    private final PasswordEncoder encoder;
+
 
     public UserDetailsServiceImpl(@Autowired KeyValuePersistence keyValuePersistence, @Autowired Argon2 argon2) {
-        this.argon2 = argon2;
+        this.encoder = argon2;
         this.keyValuePersistence = keyValuePersistence;
         internalUsersKeyPath = keyValuePersistence.getInternalStorageKey() + "/users";
     }
 
     @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        try {
+            AuthUser user = loadAuthUserByUsername(username);
+            return User.withUserDetails(user).build();
+        } catch (MinervaException e) {
+            throw new UsernameNotFoundException("User not found", e);
+        }
+    }
+
+    public AuthUser loadAuthUserByUsername(String username) throws MinervaException {
         log.debug("Loading user by username: {}", username);
         Optional<KeyValue> userData = keyValuePersistence.get(internalUsersKeyPath + "/" + username, 0);
         userData.orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -47,16 +60,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)
         ) {
-            return (User) objectInputStream.readObject();
-        } catch (IOException e) {
-            throw new UsernameNotFoundException("Error while loading user", e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            return (AuthUser) objectInputStream.readObject();
+        } catch (Exception e) {
+            throw new MinervaException("Error while loading user", e);
         }
     }
 
-    private KeyValue encryptPasswordAndGetKeyValue(User user) throws MinervaException {
-        user.setPassword(argon2.hashString(user.getPassword()));
+    private KeyValue encryptPasswordAndGetKeyValue(AuthUser user) throws MinervaException {
+        user.setPassword(encoder.encode(user.getPassword()));
         log.debug("User password hashed: {}", user);
         try (
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -73,13 +84,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
-    public void saveUser(User user) throws MinervaException {
+    public void saveUser(AuthUser user) throws MinervaException {
         log.debug("Saving user: {}", user.toString());
         KeyValue userData = encryptPasswordAndGetKeyValue(user);
         keyValuePersistence.save(userData);
     }
 
-    public void updateUser(User user) throws MinervaException {
+    public void updateUser(AuthUser user) throws MinervaException {
         log.debug("Updating user: {}", user.toString());
         KeyValue userData = encryptPasswordAndGetKeyValue(user);
         keyValuePersistence.update(userData);
