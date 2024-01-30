@@ -8,8 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,17 +21,18 @@ import java.util.Base64;
 
 @Slf4j
 @Component
-public class AuthReqFilter extends OncePerRequestFilter {
+public class MinervaOncePerRequestFilter extends OncePerRequestFilter {
 
     private final String headerKey;
-    private final AuthManager authManager;
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
 
-    public AuthReqFilter(@Autowired AuthManager authManager, @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
+    public MinervaOncePerRequestFilter(@Autowired MinervaAuthenticationManager minervaAuthenticationManager,
+                                       @Autowired MinervaUserDetailsService minervaUserDetailsService,
                          @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey) {
         this.headerKey = headerKey;
-        this.authManager = authManager;
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
+        this.authenticationManager = minervaAuthenticationManager;
+        this.userDetailsService = minervaUserDetailsService;
     }
 
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -45,12 +49,13 @@ public class AuthReqFilter extends OncePerRequestFilter {
         String username = credential[0];
         String providedPassword = credential[1];
 
-        User user = userDetailsServiceImpl.loadUserByUsername(username);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
 
-        AuthImpl authImpl = AuthImpl.builder().providedPassword(providedPassword).user(user).authenticated(false)
+        MinervaAuthentication minervaAuthentication =
+            MinervaAuthentication.builder().providedPassword(providedPassword).user(user).authenticated(false)
             .build();
 
-        Authentication authentication = authManager.authenticate(authImpl);
+        Authentication authentication = authenticationManager.authenticate(minervaAuthentication);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

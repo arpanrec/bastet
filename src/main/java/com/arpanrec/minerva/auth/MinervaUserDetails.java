@@ -6,14 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Role;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +19,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails, CredentialsContainer {
+public class MinervaUserDetails implements UserDetails, CredentialsContainer {
 
     @Serial
     private static final long serialVersionUID = 2915242437438173088L;
@@ -111,12 +108,12 @@ public class User implements UserDetails, CredentialsContainer {
         @JsonIgnore
         @Override
         public String getAuthority() {
-            return name.toString();
+            return "ROLE_" + name.toString();
         }
 
         public enum Type {
             // ADMIN, USER, ANONYMOUS,
-            ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS,
+            ADMIN, USER, ANONYMOUS,
         }
     }
 
@@ -136,10 +133,8 @@ public class User implements UserDetails, CredentialsContainer {
             return name.toString();
         }
 
-
         public enum Type {
             READ, WRITE, DELETE, SUDO,
         }
     }
-
 }
