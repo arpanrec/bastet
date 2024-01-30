@@ -35,13 +35,14 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(@Autowired AuthReqFilter authReqFilter, @Autowired AuthProvider authProvider,
-                          @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
+    public SecurityConfig(@Autowired MinervaOncePerRequestFilter minervaOncePerRequestFilter,
+                          @Autowired MinervaAuthenticationProvider minervaAuthenticationProvider,
+                          @Autowired MinervaUserDetailsService minervaUserDetailsService,
                           @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
                           @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) {
-        this.authenticationOncePerRequestFilter = authReqFilter;
-        this.authenticationProvider = authProvider;
-        this.userDetailsService = userDetailsServiceImpl;
+        this.authenticationOncePerRequestFilter = minervaOncePerRequestFilter;
+        this.authenticationProvider = minervaAuthenticationProvider;
+        this.userDetailsService = minervaUserDetailsService;
         this.rootUsername = rootUsername;
         this.rootPassword = rootPassword;
         doRootUserSetup();
@@ -68,7 +69,7 @@ public class SecurityConfig {
             .requestMatchers(getPermitAllRequestMatchers()).permitAll()
 
             .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/**"))
-            .hasAuthority(AuthUser.Privilege.Type.READ.name())
+            .hasAuthority(MinervaUserDetails.Privilege.Type.READ.name())
             // .hasRole(AuthUser.Role.Type.ADMIN.name())
 
             .anyRequest().authenticated()
@@ -78,18 +79,20 @@ public class SecurityConfig {
     }
 
     private void doRootUserSetup() {
-        List<AuthUser.Privilege> rootPrivileges = List.of(new AuthUser.Privilege(AuthUser.Privilege.Type.SUDO));
-        List<AuthUser.Role> rootRoles = List.of(new AuthUser.Role(AuthUser.Role.Type.ADMIN, rootPrivileges),
-            new AuthUser.Role(AuthUser.Role.Type.ANONYMOUS, rootPrivileges),
-            new AuthUser.Role(AuthUser.Role.Type.USER, rootPrivileges));
-        AuthUser rootUser =
-            AuthUser.builder().username(this.rootUsername).password(this.rootPassword).accountNonExpired(true)
-            .accountNonLocked(true).credentialsNonExpired(true).enabled(true).roles(rootRoles).build();
-        ((UserDetailsServiceImpl) userDetailsService).getKeyValuePersistence()
-            .get(((UserDetailsServiceImpl) userDetailsService).getInternalUsersKeyPath() + "/" + rootUsername)
+        List<MinervaUserDetails.Privilege> rootPrivileges =
+            List.of(new MinervaUserDetails.Privilege(MinervaUserDetails.Privilege.Type.SUDO));
+        List<MinervaUserDetails.Role> rootRoles =
+            List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges),
+            new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ANONYMOUS, rootPrivileges),
+            new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.USER, rootPrivileges));
+        MinervaUserDetails rootUser =
+            MinervaUserDetails.builder().username(this.rootUsername).password(this.rootPassword).accountNonExpired(true)
+                .accountNonLocked(true).credentialsNonExpired(true).enabled(true).roles(rootRoles).build();
+        ((MinervaUserDetailsService) userDetailsService).getKeyValuePersistence()
+            .get(((MinervaUserDetailsService) userDetailsService).getInternalUsersKeyPath() + "/" + rootUsername)
             .ifPresentOrElse((kv) -> log.info("Root user already exists"), () -> {
                 try {
-                    ((UserDetailsServiceImpl) userDetailsService).saveUser(rootUser);
+                    ((MinervaUserDetailsService) userDetailsService).saveUser(rootUser);
                     log.info("Root user created");
                 } catch (Exception e) {
                     throw new RuntimeException("Error while creating root user", e);

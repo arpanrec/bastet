@@ -13,17 +13,17 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class AuthProvider implements AuthenticationProvider {
+public class MinervaAuthenticationProvider implements AuthenticationProvider {
 
     private final PasswordEncoder encoder;
 
-    public AuthProvider(@Autowired Argon2 argon2) {
+    public MinervaAuthenticationProvider(@Autowired Argon2 argon2) {
         this.encoder = argon2;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        AuthImpl auth = (AuthImpl) authentication;
+        MinervaAuthentication auth = (MinervaAuthentication) authentication;
         log.debug("User authentication started for {}", auth.getName());
         String hashedProvidedPassword = encoder.encode(auth.getProvidedPassword());
         log.debug("Hashed provided password: {}", hashedProvidedPassword);

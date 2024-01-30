@@ -21,17 +21,18 @@ import java.util.Base64;
 
 @Slf4j
 @Component
-public class AuthReqFilter extends OncePerRequestFilter {
+public class MinervaOncePerRequestFilter extends OncePerRequestFilter {
 
     private final String headerKey;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
 
-    public AuthReqFilter(@Autowired AuthManager authManager, @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
+    public MinervaOncePerRequestFilter(@Autowired MinervaAuthenticationManager minervaAuthenticationManager,
+                                       @Autowired MinervaUserDetailsService minervaUserDetailsService,
                          @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey) {
         this.headerKey = headerKey;
-        this.authenticationManager = authManager;
-        this.userDetailsService = userDetailsServiceImpl;
+        this.authenticationManager = minervaAuthenticationManager;
+        this.userDetailsService = minervaUserDetailsService;
     }
 
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -50,10 +51,11 @@ public class AuthReqFilter extends OncePerRequestFilter {
 
         UserDetails user = userDetailsService.loadUserByUsername(username);
 
-        AuthImpl authImpl = AuthImpl.builder().providedPassword(providedPassword).user(user).authenticated(false)
+        MinervaAuthentication minervaAuthentication =
+            MinervaAuthentication.builder().providedPassword(providedPassword).user(user).authenticated(false)
             .build();
 
-        Authentication authentication = authenticationManager.authenticate(authImpl);
+        Authentication authentication = authenticationManager.authenticate(minervaAuthentication);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

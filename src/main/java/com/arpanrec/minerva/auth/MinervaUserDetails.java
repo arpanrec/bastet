@@ -19,7 +19,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthUser implements UserDetails, CredentialsContainer {
+public class MinervaUserDetails implements UserDetails, CredentialsContainer {
 
     @Serial
     private static final long serialVersionUID = 2915242437438173088L;

@@ -26,7 +26,7 @@ import java.util.Optional;
 @Getter
 @Slf4j
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class MinervaUserDetailsService implements UserDetailsService {
 
     private final KeyValuePersistence keyValuePersistence;
 
@@ -35,7 +35,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final PasswordEncoder encoder;
 
 
-    public UserDetailsServiceImpl(@Autowired KeyValuePersistence keyValuePersistence, @Autowired Argon2 argon2) {
+    public MinervaUserDetailsService(@Autowired KeyValuePersistence keyValuePersistence, @Autowired Argon2 argon2) {
         this.encoder = argon2;
         this.keyValuePersistence = keyValuePersistence;
         internalUsersKeyPath = keyValuePersistence.getInternalStorageKey() + "/users";
@@ -44,14 +44,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            AuthUser user = loadAuthUserByUsername(username);
+            MinervaUserDetails user = loadAuthUserByUsername(username);
             return User.withUserDetails(user).build();
         } catch (MinervaException e) {
             throw new UsernameNotFoundException("User not found", e);
         }
     }
 
-    public AuthUser loadAuthUserByUsername(String username) throws MinervaException {
+    public MinervaUserDetails loadAuthUserByUsername(String username) throws MinervaException {
         log.debug("Loading user by username: {}", username);
         Optional<KeyValue> userData = keyValuePersistence.get(internalUsersKeyPath + "/" + username, 0);
         userData.orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -60,13 +60,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)
         ) {
-            return (AuthUser) objectInputStream.readObject();
+            return (MinervaUserDetails) objectInputStream.readObject();
         } catch (Exception e) {
             throw new MinervaException("Error while loading user", e);
         }
     }
 
-    private KeyValue encryptPasswordAndGetKeyValue(AuthUser user) throws MinervaException {
+    private KeyValue encryptPasswordAndGetKeyValue(MinervaUserDetails user) throws MinervaException {
         user.setPassword(encoder.encode(user.getPassword()));
         log.debug("User password hashed: {}", user);
         try (
@@ -84,13 +84,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
-    public void saveUser(AuthUser user) throws MinervaException {
+    public void saveUser(MinervaUserDetails user) throws MinervaException {
         log.debug("Saving user: {}", user.toString());
         KeyValue userData = encryptPasswordAndGetKeyValue(user);
         keyValuePersistence.save(userData);
     }
 
-    public void updateUser(AuthUser user) throws MinervaException {
+    public void updateUser(MinervaUserDetails user) throws MinervaException {
         log.debug("Updating user: {}", user.toString());
         KeyValue userData = encryptPasswordAndGetKeyValue(user);
         keyValuePersistence.update(userData);
