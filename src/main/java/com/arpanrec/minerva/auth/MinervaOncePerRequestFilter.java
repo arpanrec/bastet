@@ -29,7 +29,7 @@ public class MinervaOncePerRequestFilter extends OncePerRequestFilter {
 
     public MinervaOncePerRequestFilter(@Autowired MinervaAuthenticationManager minervaAuthenticationManager,
                                        @Autowired MinervaUserDetailsService minervaUserDetailsService,
-                         @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey) {
+                                       @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey) {
         this.headerKey = headerKey;
         this.authenticationManager = minervaAuthenticationManager;
         this.userDetailsService = minervaUserDetailsService;
@@ -53,7 +53,7 @@ public class MinervaOncePerRequestFilter extends OncePerRequestFilter {
 
         MinervaAuthentication minervaAuthentication =
             MinervaAuthentication.builder().providedPassword(providedPassword).user(user).authenticated(false)
-            .build();
+                .build();
 
         Authentication authentication = authenticationManager.authenticate(minervaAuthentication);
 
