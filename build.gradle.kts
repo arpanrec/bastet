@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     java
     id("org.springframework.boot") version "3.2.2"
@@ -107,7 +108,10 @@ java {
 
 tasks.create<Delete>("cleanAll") {
     group = "build"
-    delete("logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle")
+    delete(
+        "logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle", "node_modules",
+        "package-lock.json", "package.json"
+    )
 }
 
 tasks.getByName<Jar>("jar") {
