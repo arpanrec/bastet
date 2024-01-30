@@ -42,16 +42,14 @@ module.exports = {
             {
                 prepareCmd: "echo -n ${nextRelease.version} > VERSION",
                 successCmd:
-                    "git checkout -b release/${nextRelease.version} && git push --set-upstream origin release/${nextRelease.version}",
+                    "git checkout -b release/${nextRelease.version} && \
+                    git push --set-upstream origin release/${nextRelease.version}",
             },
         ],
         [
             "@semantic-release/git",
             {
-                assets: [
-                    "VERSION",
-                    "CHANGELOG.md",
-                ],
+                assets: ["VERSION", "CHANGELOG.md"],
                 message:
                     "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
             },
@@ -59,12 +57,12 @@ module.exports = {
         [
             "@semantic-release/github",
             {
-                // assets: [
-                //   {
-                //     path: "arpanrec-nebula-*.tar.gz",
-                //     label: "Collection tarball",
-                //   },
-                // ],
+                assets: [
+                    {
+                        path: "build/libs/minerva-boot-*.jar",
+                        label: "bootJarX86_64",
+                    },
+                ],
             },
         ],
     ],
