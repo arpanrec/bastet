@@ -96,9 +96,7 @@ class GnuPG(
         return pgpPublicKey
     }
 
-    private fun createEncryptedDataGenerator(
-        gpgPublicKey: PGPPublicKey
-    ): PGPEncryptedDataGenerator {
+    private fun createEncryptedDataGenerator(gpgPublicKey: PGPPublicKey): PGPEncryptedDataGenerator {
         val encryptedDataGenerator = PGPEncryptedDataGenerator(
             JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256).setWithIntegrityPacket(true)
                 .setSecureRandom(SecureRandom()).setProvider(BouncyCastleProvider.PROVIDER_NAME)
