@@ -33,7 +33,6 @@ public class MinervaUserDetailsService implements UserDetailsService {
 
     private final PasswordEncoder encoder;
 
-
     public MinervaUserDetailsService(@Autowired KeyValuePersistence keyValuePersistence, @Autowired Argon2 argon2) {
         this.encoder = argon2;
         this.keyValuePersistence = keyValuePersistence;
@@ -65,8 +64,7 @@ public class MinervaUserDetailsService implements UserDetailsService {
         }
     }
 
-    private KeyValue encryptPasswordAndGetKeyValue(MinervaUserDetails user) throws MinervaException {
-        user.setPassword(encoder.encode(user.getPassword()));
+    private KeyValue userDetailsToKeyValue(UserDetails user) throws MinervaException {
         log.debug("User password hashed: {}", user);
         try (
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -83,15 +81,15 @@ public class MinervaUserDetailsService implements UserDetailsService {
         }
     }
 
-    public void saveUser(MinervaUserDetails user) throws MinervaException {
+    public void saveUser(UserDetails user) throws MinervaException {
         log.debug("Saving user: {}", user.toString());
-        KeyValue userData = encryptPasswordAndGetKeyValue(user);
+        KeyValue userData = userDetailsToKeyValue(user);
         keyValuePersistence.save(userData);
     }
 
-    public void updateUser(MinervaUserDetails user) throws MinervaException {
+    public void updateUser(UserDetails user) throws MinervaException {
         log.debug("Updating user: {}", user.toString());
-        KeyValue userData = encryptPasswordAndGetKeyValue(user);
+        KeyValue userData = userDetailsToKeyValue(user);
         keyValuePersistence.update(userData);
     }
 }

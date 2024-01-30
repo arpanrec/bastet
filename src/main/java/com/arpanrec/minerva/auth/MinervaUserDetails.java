@@ -2,52 +2,39 @@ package com.arpanrec.minerva.auth;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.User;
 
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Builder
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class MinervaUserDetails implements UserDetails, CredentialsContainer {
+public class MinervaUserDetails extends User {
 
     @Serial
     private static final long serialVersionUID = 2915242437438173088L;
 
-    private String username;
+    Collection<Role> authorities;
 
-    private String password;
-
-    private String email;
-
-    private List<Role> roles;
-
-    private boolean accountNonExpired;
-
-    private boolean accountNonLocked;
-
-    private boolean credentialsNonExpired;
-
-    private boolean enabled;
+    public MinervaUserDetails(@JsonProperty("username") String username, @JsonProperty("password") String password,
+                              @JsonProperty("authorities") Collection<Role> authorities) {
+        super(username, password, authorities);
+        this.authorities = authorities;
+    }
 
     @JsonIgnore
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (this.roles == null) {
+        if (this.authorities == null) {
             return authorities;
         }
-        for (Role role : this.roles) {
+        for (Role role : this.authorities) {
             authorities.add(role);
             if (role.getPrivileges() == null) {
                 continue;
@@ -56,41 +43,6 @@ public class MinervaUserDetails implements UserDetails, CredentialsContainer {
         }
 
         return authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return this.accountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.accountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return this.credentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    @Override
-    public void eraseCredentials() {
-
     }
 
     @Data
