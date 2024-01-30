@@ -61,15 +61,15 @@ public class SecurityConfig {
         http.authenticationProvider(authProvider);
         http.addFilterAfter(authReqFilter, BasicAuthenticationFilter.class);
 
-        http.authorizeHttpRequests(
-            authorizeRequests -> authorizeRequests.requestMatchers(getPermitAllRequestMatchers()).permitAll()
-        );
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(
-            new AntPathRequestMatcher("/api/v1/keyvalue/internal/**")).hasAuthority(User.Role.Type.ROLE_ADMIN.name())
-        );
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated());
+        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
 
-        // http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
+            .requestMatchers(getPermitAllRequestMatchers()).permitAll()
+
+            .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/**"))
+            .hasAuthority("ADMIN")
+
+            .anyRequest().authenticated()
+        );
 
         return http.build();
     }
