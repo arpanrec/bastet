@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" monitorInterval="0">
+    <Properties>
+        <Property name="logsource_application_groupid">com.arpanrec</Property>
+        <Property name="logsource_application_artifactid">minerva</Property>
+        <Property name="logsource_application_name">${logsource_application_artifactid}</Property>
+        <Property name="logsource_application_rootloggername">
+            ${logsource_application_groupid}.${logsource_application_artifactid}
+        </Property>
+        <Property name="logsource_application_testloggername">
+            ${logsource_application_groupid}.${logsource_application_artifactid}.test
+        </Property>
+        <Property name="log_pattern_console">%date{ISO8601}{GMT+5:30}[%6level]-%location{.} -
+            %message%n%throwable{full}
+        </Property>
+        <Property name="log_pattern_archive_file">
+            %date{ISO8601}{GMT+5:30}-host[${hostName}]-pid[%pid]-logid[%u]-[%6level]-thread-id-priority-name[%threadId-%threadPriority-%threadName]-logger[%logger]-(%location)%n%highlight{%message%n%throwable{full}}
+        </Property>
+        <Property name="log_path">./logs/${logsource_application_name}</Property>
+    </Properties>
+    <Appenders>
+        <Console name="application-deep-to-console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${log_pattern_console}"/>
+        </Console>
+        <RollingFile name="application-to-file" append="true" immediateFlush="true"
+                     fileName="${log_path}/${logsource_application_name}.log"
+                     filePattern="${log_path}/%d{MM-dd-yyyy}/${logsource_application_name}-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>${log_pattern_archive_file}</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="application-test-to-file" append="true" immediateFlush="true"
+                     fileName="${log_path}/${logsource_application_name}-test.log"
+                     filePattern="${log_path}/%d{MM-dd-yyyy}/${logsource_application_name}-test-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>${log_pattern_archive_file}</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="application-deep-to-file" append="true" immediateFlush="true"
+                     fileName="${log_path}/${logsource_application_name}-deep.log"
+                     filePattern="${log_path}/%d{MM-dd-yyyy}/${logsource_application_name}-deep-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>${log_pattern_archive_file}</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="application-error-to-file" append="true" immediateFlush="true"
+                     fileName="${log_path}/${logsource_application_name}-error.log"
+                     filePattern="${log_path}/%d{MM-dd-yyyy}/${logsource_application_name}-error-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>${log_pattern_archive_file}</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="${logsource_application_testloggername}" additivity="false" level="trace">
+            <AppenderRef ref="application-deep-to-console" level="trace"/>
+            <AppenderRef ref="application-deep-to-file" level="trace"/>
+            <AppenderRef ref="application-error-to-file" level="error"/>
+            <AppenderRef ref="application-to-file" level="trace"/>
+            <AppenderRef ref="application-test-to-file" level="trace"/>
+        </Logger>
+        <Logger name="${logsource_application_rootloggername}" additivity="false" level="trace">
+            <AppenderRef ref="application-deep-to-console" level="trace"/>
+            <AppenderRef ref="application-deep-to-file" level="trace"/>
+            <AppenderRef ref="application-error-to-file" level="error"/>
+            <AppenderRef ref="application-to-file" level="trace"/>
+        </Logger>
+<!--        <Logger name="org.springframework" additivity="false" level="trace">-->
+        <!--            <AppenderRef ref="application-deep-to-console" level="trace"/>-->
+        <!--            <AppenderRef ref="application-deep-to-file" level="trace"/>-->
+        <!--            <AppenderRef ref="application-error-to-file" level="error"/>-->
+        <!--        </Logger>-->
+        <Root level="trace">
+            <AppenderRef ref="application-deep-to-console" level="info"/>
+            <AppenderRef ref="application-deep-to-file" level="info"/>
+            <AppenderRef ref="application-error-to-file" level="error"/>
+        </Root>
+    </Loggers>
+</Configuration>
