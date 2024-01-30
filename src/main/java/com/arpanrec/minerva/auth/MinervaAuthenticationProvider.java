@@ -23,18 +23,17 @@ public class MinervaAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        MinervaAuthentication auth = (MinervaAuthentication) authentication;
-        log.debug("User authentication started for {}", auth.getName());
-        String hashedProvidedPassword = encoder.encode(auth.getProvidedPassword());
+        log.debug("User authentication started for {}", authentication.getName());
+        String hashedProvidedPassword = encoder.encode(((MinervaAuthentication) authentication).getProvidedPassword());
         log.debug("Hashed provided password: {}", hashedProvidedPassword);
-        log.debug("User password: {}", auth.getCredentials());
-        if (auth.getCredentials().equals(hashedProvidedPassword)) {
-            log.info("User {} authenticated", auth.getName());
-            auth.setAuthenticated(true);
+        log.debug("User password: {}", authentication.getCredentials());
+        if (authentication.getCredentials().equals(hashedProvidedPassword)) {
+            log.info("User {} authenticated", authentication.getName());
+            authentication.setAuthenticated(true);
         } else {
             throw new BadCredentialsException("Wrong password");
         }
-        return auth;
+        return authentication;
     }
 
     @Override

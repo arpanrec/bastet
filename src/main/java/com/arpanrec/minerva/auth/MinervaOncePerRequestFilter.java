@@ -51,13 +51,13 @@ public class MinervaOncePerRequestFilter extends OncePerRequestFilter {
 
         UserDetails user = userDetailsService.loadUserByUsername(username);
 
-        MinervaAuthentication minervaAuthentication =
+        Authentication authentication =
             MinervaAuthentication.builder().providedPassword(providedPassword).user(user).authenticated(false)
                 .build();
 
-        Authentication authentication = authenticationManager.authenticate(minervaAuthentication);
+        Authentication authenticated = authenticationManager.authenticate(authentication);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authenticated);
 
         filterChain.doFilter(request, response);
     }

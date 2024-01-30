@@ -1,7 +1,10 @@
 package com.arpanrec.minerva.auth;
 
+import com.arpanrec.minerva.exceptions.MinervaException;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +13,6 @@ import javax.security.auth.Subject;
 import java.io.Serial;
 import java.util.Collection;
 
-@Data
 @Builder
 public class MinervaAuthentication implements Authentication {
 
@@ -19,6 +21,9 @@ public class MinervaAuthentication implements Authentication {
 
     private boolean authenticated;
     private UserDetails user;
+
+    @Getter
+    @Setter
     private String providedPassword;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -30,11 +35,21 @@ public class MinervaAuthentication implements Authentication {
     }
 
     public Object getDetails() {
-        return this.user;
+        return new MinervaException("Not implemented");
     }
 
     public Object getPrincipal() {
         return this.user;
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        return this.authenticated;
+    }
+
+    @Override
+    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+        this.authenticated = isAuthenticated;
     }
 
     @Override
