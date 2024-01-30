@@ -7,12 +7,13 @@ import org.bouncycastle.crypto.params.Argon2Parameters
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.security.SecureRandom
 import java.util.Base64
 
 @Component
-class Argon2(@Autowired keyValuePersistence: KeyValuePersistence) {
+class Argon2(@Autowired keyValuePersistence: KeyValuePersistence) : PasswordEncoder {
 
     private val log: Logger = LoggerFactory.getLogger(Argon2::class.java)
 
@@ -56,13 +57,22 @@ class Argon2(@Autowired keyValuePersistence: KeyValuePersistence) {
         val memLimit = 66536
         val hashLength = 32
         val parallelism = 1
-        val builder = Argon2Parameters.Builder(Argon2Parameters.ARGON2_id).withVersion(Argon2Parameters.ARGON2_VERSION_13).withIterations(iterations).withMemoryAsKB(memLimit)
-            .withParallelism(parallelism).withSalt(argon2Salt)
+        val builder =
+            Argon2Parameters.Builder(Argon2Parameters.ARGON2_id).withVersion(Argon2Parameters.ARGON2_VERSION_13)
+                .withIterations(iterations).withMemoryAsKB(memLimit).withParallelism(parallelism).withSalt(argon2Salt)
 
         val generate = Argon2BytesGenerator()
         generate.init(builder.build())
         val result = ByteArray(hashLength)
         generate.generateBytes(inputString.toByteArray(Charsets.UTF_8), result, 0, result.size)
         return Base64.getEncoder().encodeToString(result)
+    }
+
+    override fun encode(rawPassword: CharSequence?): String {
+        return hashString(rawPassword.toString())
+    }
+
+    override fun matches(rawPassword: CharSequence?, encodedPassword: String?): Boolean {
+        return hashString(rawPassword.toString()) == encodedPassword
     }
 }

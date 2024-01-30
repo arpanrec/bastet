@@ -81,6 +81,11 @@
             <AppenderRef ref="application-error-to-file" level="error"/>
             <AppenderRef ref="application-to-file" level="trace"/>
         </Logger>
+<!--        <Logger name="org.springframework" additivity="false" level="trace">-->
+        <!--            <AppenderRef ref="application-deep-to-console" level="trace"/>-->
+        <!--            <AppenderRef ref="application-deep-to-file" level="trace"/>-->
+        <!--            <AppenderRef ref="application-error-to-file" level="error"/>-->
+        <!--        </Logger>-->
         <Root level="trace">
             <AppenderRef ref="application-deep-to-console" level="info"/>
             <AppenderRef ref="application-deep-to-file" level="info"/>

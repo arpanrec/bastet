@@ -11,9 +11,7 @@ import java.nio.file.Paths
 import java.util.Optional
 
 @Component
-class KeyValueFileStorage(
-    @Value("\${minerva.physical.key-value-file-storage.path:./storage}") private val path: String
-) : KeyValueStorage {
+class KeyValueFileStorage(@Value("\${minerva.physical.key-value-file-storage.path:./storage}") private val path: String) : KeyValueStorage {
 
     private val storageRootPath: Path = Paths.get(path).toAbsolutePath()
 
@@ -28,8 +26,8 @@ class KeyValueFileStorage(
             }
         }
 
-        val filePath = Paths.get(storageRootPath.toString(), key, workingVersion.toString(), valueFileName)
-        val json = Files.readString(filePath)
+        val filePath: Path = Paths.get(storageRootPath.toString(), key, workingVersion.toString(), valueFileName)
+        val json: String = Files.readString(filePath)
         return Optional.of(Json.decodeFromString(KeyValue.serializer(), json))
     }
 
@@ -83,9 +81,10 @@ class KeyValueFileStorage(
         if (!Files.exists(keyPath)) {
             return 0
         }
-        val dirs: List<Int> = Files.walk(keyPath, 1).filter { Files.isDirectory(it) && !it.equals(keyPath) }.map {
-            it.toString().replaceFirst("${keyPath.toAbsolutePath()}/", "").toInt()
-        }.toList().sorted()
+        val dirs: List<Int> = Files.walk(keyPath, 1).filter { Files.isDirectory(it) && !it.equals(keyPath) }
+            .map {
+                it.toString().replaceFirst("${keyPath.toAbsolutePath()}/", "").toInt()
+            }.toList().sorted()
         return if (dirs.isEmpty()) 0 else dirs.last()
     }
 

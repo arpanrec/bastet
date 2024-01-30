@@ -1,7 +1,7 @@
 package com.arpanrec.minerva.api;
 
-import com.arpanrec.minerva.auth.User;
-import com.arpanrec.minerva.auth.UserDetailsServiceImpl;
+import com.arpanrec.minerva.auth.MinervaUserDetails;
+import com.arpanrec.minerva.auth.MinervaUserDetailsService;
 import com.arpanrec.minerva.exceptions.MinervaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,25 +14,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UsersApi {
 
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final MinervaUserDetailsService minervaUserDetailsService;
 
-    public UsersApi(@Autowired UserDetailsServiceImpl userDetailsServiceImpl) {
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
+    public UsersApi(@Autowired MinervaUserDetailsService minervaUserDetailsService) {
+        this.minervaUserDetailsService = minervaUserDetailsService;
     }
 
     @GetMapping(path = "/api/v1/users/{username}", produces = "application/json", consumes = "application/json")
-    public User get(@PathVariable String username) {
-        return userDetailsServiceImpl.loadUserByUsername(username);
+    public MinervaUserDetails get(@PathVariable String username) throws MinervaException {
+        return minervaUserDetailsService.loadAuthUserByUsername(username);
     }
 
     @PostMapping(path = "/api/v1/users", produces = "application/json", consumes = "application/json")
-    public void set(@RequestBody User user) throws MinervaException {
-        userDetailsServiceImpl.saveUser(user);
+    public void set(@RequestBody MinervaUserDetails user) throws MinervaException {
+        minervaUserDetailsService.saveUser(user);
     }
 
     @PutMapping(path = "/api/v1/users", produces = "application/json", consumes = "application/json")
-    public void update(@RequestBody User user) throws MinervaException {
-        userDetailsServiceImpl.updateUser(user);
+    public void update(@RequestBody MinervaUserDetails user) throws MinervaException {
+        minervaUserDetailsService.updateUser(user);
     }
 
 }
