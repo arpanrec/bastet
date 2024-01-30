@@ -59,8 +59,7 @@ class Argon2(@Autowired keyValuePersistence: KeyValuePersistence) : PasswordEnco
         val parallelism = 1
         val builder =
             Argon2Parameters.Builder(Argon2Parameters.ARGON2_id).withVersion(Argon2Parameters.ARGON2_VERSION_13)
-                .withIterations(iterations).withMemoryAsKB(memLimit)
-                .withParallelism(parallelism).withSalt(argon2Salt)
+                .withIterations(iterations).withMemoryAsKB(memLimit).withParallelism(parallelism).withSalt(argon2Salt)
 
         val generate = Argon2BytesGenerator()
         generate.init(builder.build())
