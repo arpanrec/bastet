@@ -26,8 +26,8 @@ class KeyValueFileStorage(@Value("\${minerva.physical.key-value-file-storage.pat
             }
         }
 
-        val filePath = Paths.get(storageRootPath.toString(), key, workingVersion.toString(), valueFileName)
-        val json = Files.readString(filePath)
+        val filePath: Path = Paths.get(storageRootPath.toString(), key, workingVersion.toString(), valueFileName)
+        val json: String = Files.readString(filePath)
         return Optional.of(Json.decodeFromString(KeyValue.serializer(), json))
     }
 

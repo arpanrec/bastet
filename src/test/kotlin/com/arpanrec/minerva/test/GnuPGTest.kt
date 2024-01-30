@@ -70,7 +70,9 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
     private val privateKeyPassphrase = "password"
 
     private val gnuPG: GnuPG = GnuPG(
-        armoredPublicKey = armoredPublicKey, armoredPrivateKey = armoredPrivateKey, privateKeyPassphrase = privateKeyPassphrase
+        armoredPublicKey = armoredPublicKey,
+        armoredPrivateKey = armoredPrivateKey,
+        privateKeyPassphrase = privateKeyPassphrase
     )
 
     @Test
