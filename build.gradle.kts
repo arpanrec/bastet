@@ -1,10 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.gradle.plugins.ide.eclipse.model.EclipseModel
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    application
     java
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
@@ -13,7 +11,6 @@ plugins {
     kotlin("plugin.jpa") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
     idea
-    eclipse
 }
 
 group = "com.arpanrec"
@@ -36,13 +33,6 @@ sourceSets {
 
 configure<IdeaModel> {
     module {
-        isDownloadJavadoc = true
-        isDownloadSources = true
-    }
-}
-
-configure<EclipseModel> {
-    classpath {
         isDownloadJavadoc = true
         isDownloadSources = true
     }
