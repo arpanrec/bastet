@@ -91,12 +91,12 @@ public class User implements UserDetails {
         @Serial
         private static final long serialVersionUID = -1453442487053691797L;
 
-        private String name;
+        private Type name;
 
         @JsonIgnore
         @Override
         public String getAuthority() {
-            return name;
+            return name.toString();
         }
 
         public enum Type {
@@ -112,14 +112,14 @@ public class User implements UserDetails {
         @Serial
         private static final long serialVersionUID = 1425911275852559225L;
 
-        private String name;
+        private Type name;
 
         private Collection<Privilege> privileges;
 
         @JsonIgnore
         @Override
         public String getAuthority() {
-            return name;
+            return name.toString();
         }
 
         public enum Type {
