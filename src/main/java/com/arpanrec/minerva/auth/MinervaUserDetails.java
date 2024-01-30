@@ -113,7 +113,7 @@ public class MinervaUserDetails implements UserDetails, CredentialsContainer {
 
         public enum Type {
             // ADMIN, USER, ANONYMOUS,
-            ADMIN, USER, ANONYMOUS,
+            ADMIN, USER
         }
     }
 
@@ -134,7 +134,7 @@ public class MinervaUserDetails implements UserDetails, CredentialsContainer {
         }
 
         public enum Type {
-            READ, WRITE, DELETE, SUDO,
+            SUDO
         }
     }
 }

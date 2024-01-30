@@ -68,9 +68,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
             .requestMatchers(getPermitAllRequestMatchers()).permitAll()
 
-            .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/**"))
-            .hasAuthority(MinervaUserDetails.Privilege.Type.READ.name())
-            // .hasRole(AuthUser.Role.Type.ADMIN.name())
+            .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/internal/**"))
+            .hasAuthority(MinervaUserDetails.Privilege.Type.SUDO.name())
 
             .anyRequest().authenticated()
         );
@@ -82,9 +81,7 @@ public class SecurityConfig {
         List<MinervaUserDetails.Privilege> rootPrivileges =
             List.of(new MinervaUserDetails.Privilege(MinervaUserDetails.Privilege.Type.SUDO));
         List<MinervaUserDetails.Role> rootRoles =
-            List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges),
-            new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ANONYMOUS, rootPrivileges),
-            new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.USER, rootPrivileges));
+            List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges));
         MinervaUserDetails rootUser =
             MinervaUserDetails.builder().username(this.rootUsername).password(this.rootPassword).accountNonExpired(true)
                 .accountNonLocked(true).credentialsNonExpired(true).enabled(true).roles(rootRoles).build();
