@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
@@ -18,6 +20,10 @@ public class MinervaUserDetails extends User {
 
     @Serial
     private static final long serialVersionUID = 2915242437438173088L;
+
+    @Getter
+    @Setter
+    private String password;
 
     Collection<Role> authorities;
 

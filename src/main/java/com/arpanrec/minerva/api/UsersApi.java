@@ -22,7 +22,7 @@ public class UsersApi {
 
     @GetMapping(path = "/api/v1/users/{username}", produces = "application/json", consumes = "application/json")
     public MinervaUserDetails get(@PathVariable String username) throws MinervaException {
-        return minervaUserDetailsService.loadAuthUserByUsername(username);
+        return minervaUserDetailsService.loadMinervaUserDetailsByUsername(username);
     }
 
     @PostMapping(path = "/api/v1/users", produces = "application/json", consumes = "application/json")

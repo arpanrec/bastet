@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -73,12 +72,12 @@ public class SecurityConfig {
         http.addFilterAfter(authenticationOncePerRequestFilter, BasicAuthenticationFilter.class);
 
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-            .requestMatchers(getPermitAllRequestMatchers()).permitAll()
+//            .requestMatchers(getPermitAllRequestMatchers()).permitAll()
+//
+//            .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/internal/**"))
+//            .hasAuthority(MinervaUserDetails.Privilege.Type.SUDO.name())
 
-            .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/internal/**"))
-            .hasAuthority(MinervaUserDetails.Privilege.Type.SUDO.name())
-
-            .anyRequest().authenticated()
+            .anyRequest().permitAll()
         );
 
         return http.build();
@@ -90,7 +89,7 @@ public class SecurityConfig {
             List.of(new MinervaUserDetails.Privilege(MinervaUserDetails.Privilege.Type.SUDO));
         List<MinervaUserDetails.Role> rootRoles =
             List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges));
-        UserDetails rootUser = new MinervaUserDetails(rootUsername, hashedRootPassword, rootRoles);
+        MinervaUserDetails rootUser = new MinervaUserDetails(rootUsername, hashedRootPassword, rootRoles);
         ((MinervaUserDetailsService) userDetailsService).getKeyValuePersistence()
             .get(((MinervaUserDetailsService) userDetailsService).getInternalUsersKeyPath() + "/" + rootUsername)
             .ifPresentOrElse((kv) -> log.info("Root user already exists"), () -> {
