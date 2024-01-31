@@ -1,5 +1,6 @@
 package com.arpanrec.minerva.auth;
 
+import com.arpanrec.minerva.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,8 +44,8 @@ public class SecurityConfig {
         this.authenticationOncePerRequestFilter = minervaOncePerRequestFilter;
         this.authenticationProvider = minervaAuthenticationProvider;
         this.userDetailsService = minervaUserDetailsService;
-        this.rootUsername = rootUsername;
-        this.rootPassword = rootPassword;
+        this.rootUsername = FileUtils.fileOrString(rootUsername);
+        this.rootPassword = FileUtils.fileOrString(rootPassword);
         doRootUserSetup();
     }
 
