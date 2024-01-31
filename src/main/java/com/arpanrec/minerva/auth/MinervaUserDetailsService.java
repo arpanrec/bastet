@@ -7,7 +7,6 @@ import com.arpanrec.minerva.physical.KeyValuePersistence;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,7 +32,6 @@ public class MinervaUserDetailsService implements UserDetailsService {
 
     private final PasswordEncoder encoder;
 
-
     public MinervaUserDetailsService(@Autowired KeyValuePersistence keyValuePersistence, @Autowired Argon2 argon2) {
         this.encoder = argon2;
         this.keyValuePersistence = keyValuePersistence;
@@ -43,14 +41,13 @@ public class MinervaUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            MinervaUserDetails user = loadAuthUserByUsername(username);
-            return User.withUserDetails(user).build();
+            return loadMinervaUserDetailsByUsername(username);
         } catch (MinervaException e) {
             throw new UsernameNotFoundException("User not found", e);
         }
     }
 
-    public MinervaUserDetails loadAuthUserByUsername(String username) throws MinervaException {
+    public MinervaUserDetails loadMinervaUserDetailsByUsername(String username) throws MinervaException {
         log.debug("Loading user by username: {}", username);
         Optional<KeyValue> userData = keyValuePersistence.get(internalUsersKeyPath + "/" + username, 0);
         userData.orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -65,17 +62,21 @@ public class MinervaUserDetailsService implements UserDetailsService {
         }
     }
 
-    private KeyValue encryptPasswordAndGetKeyValue(MinervaUserDetails user) throws MinervaException {
-        user.setPassword(encoder.encode(user.getPassword()));
-        log.debug("User password hashed: {}", user);
+    private KeyValue minervaUserDetailsToKeyValue(MinervaUserDetails minervaUserDetails) throws MinervaException {
+        String hashedPassword = encoder.encode(minervaUserDetails.getPassword());
+        minervaUserDetails = new MinervaUserDetails(
+            minervaUserDetails.getUsername(),
+            hashedPassword,
+            minervaUserDetails.getRoles());
+        log.debug("User password hashed: {}", minervaUserDetails);
         try (
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)
         ) {
-            objectOutputStream.writeObject(user);
+            objectOutputStream.writeObject(minervaUserDetails);
             objectOutputStream.flush();
             KeyValue userData = new KeyValue();
-            userData.setKey(internalUsersKeyPath + "/" + user.getUsername());
+            userData.setKey(internalUsersKeyPath + "/" + minervaUserDetails.getUsername());
             userData.setValue(Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray()));
             return userData;
         } catch (Exception e) {
@@ -83,15 +84,15 @@ public class MinervaUserDetailsService implements UserDetailsService {
         }
     }
 
-    public void saveUser(MinervaUserDetails user) throws MinervaException {
-        log.debug("Saving user: {}", user.toString());
-        KeyValue userData = encryptPasswordAndGetKeyValue(user);
+    public void saveMinervaUserDetails(MinervaUserDetails minervaUserDetails) throws MinervaException {
+        log.debug("Saving user: {}", minervaUserDetails.toString());
+        KeyValue userData = minervaUserDetailsToKeyValue(minervaUserDetails);
         keyValuePersistence.save(userData);
     }
 
-    public void updateUser(MinervaUserDetails user) throws MinervaException {
-        log.debug("Updating user: {}", user.toString());
-        KeyValue userData = encryptPasswordAndGetKeyValue(user);
+    public void updateMinervaUserDetails(MinervaUserDetails minervaUserDetails) throws MinervaException {
+        log.debug("Updating user: {}", minervaUserDetails.toString());
+        KeyValue userData = minervaUserDetailsToKeyValue(minervaUserDetails);
         keyValuePersistence.update(userData);
     }
 }

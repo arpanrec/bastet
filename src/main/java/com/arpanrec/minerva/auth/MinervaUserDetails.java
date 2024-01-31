@@ -2,47 +2,38 @@ package com.arpanrec.minerva.auth;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.CredentialsContainer;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.User;
 
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Builder
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class MinervaUserDetails implements UserDetails, CredentialsContainer {
+@Setter
+@Getter
+public class MinervaUserDetails extends User {
 
     @Serial
     private static final long serialVersionUID = 2915242437438173088L;
 
-    private String username;
+    List<Role> roles;
 
-    private String password;
-
-    private String email;
-
-    private List<Role> roles;
-
-    private boolean accountNonExpired;
-
-    private boolean accountNonLocked;
-
-    private boolean credentialsNonExpired;
-
-    private boolean enabled;
+    public MinervaUserDetails(@JsonProperty("username") String username, @JsonProperty("password") String password,
+                              @JsonProperty("roles") List<Role> roles) {
+        super(username, password, roles);
+        this.roles = roles;
+    }
 
     @JsonIgnore
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (this.roles == null) {
             return authorities;
@@ -56,41 +47,6 @@ public class MinervaUserDetails implements UserDetails, CredentialsContainer {
         }
 
         return authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return this.accountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.accountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return this.credentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    @Override
-    public void eraseCredentials() {
-
     }
 
     @Data

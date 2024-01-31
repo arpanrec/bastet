@@ -1,5 +1,6 @@
 package com.arpanrec.minerva.auth;
 
+import com.arpanrec.minerva.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,8 +44,8 @@ public class SecurityConfig {
         this.authenticationOncePerRequestFilter = minervaOncePerRequestFilter;
         this.authenticationProvider = minervaAuthenticationProvider;
         this.userDetailsService = minervaUserDetailsService;
-        this.rootUsername = rootUsername;
-        this.rootPassword = rootPassword;
+        this.rootUsername = FileUtils.fileOrString(rootUsername);
+        this.rootPassword = FileUtils.fileOrString(rootPassword);
         doRootUserSetup();
     }
 
@@ -82,14 +83,12 @@ public class SecurityConfig {
             List.of(new MinervaUserDetails.Privilege(MinervaUserDetails.Privilege.Type.SUDO));
         List<MinervaUserDetails.Role> rootRoles =
             List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges));
-        MinervaUserDetails rootUser =
-            MinervaUserDetails.builder().username(this.rootUsername).password(this.rootPassword).accountNonExpired(true)
-                .accountNonLocked(true).credentialsNonExpired(true).enabled(true).roles(rootRoles).build();
+        MinervaUserDetails rootUser = new MinervaUserDetails(rootUsername, rootPassword, rootRoles);
         ((MinervaUserDetailsService) userDetailsService).getKeyValuePersistence()
             .get(((MinervaUserDetailsService) userDetailsService).getInternalUsersKeyPath() + "/" + rootUsername)
             .ifPresentOrElse((kv) -> log.info("Root user already exists"), () -> {
                 try {
-                    ((MinervaUserDetailsService) userDetailsService).saveUser(rootUser);
+                    ((MinervaUserDetailsService) userDetailsService).saveMinervaUserDetails(rootUser);
                     log.info("Root user created");
                 } catch (Exception e) {
                     throw new RuntimeException("Error while creating root user", e);
