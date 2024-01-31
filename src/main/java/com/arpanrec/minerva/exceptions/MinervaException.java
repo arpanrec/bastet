@@ -13,4 +13,8 @@ public class MinervaException extends RuntimeException {
     public MinervaException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public MinervaException(Throwable cause) {
+        super(cause);
+    }
 }

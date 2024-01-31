@@ -1,5 +1,7 @@
 package com.arpanrec.minerva.auth;
 
+import com.arpanrec.minerva.state.ApplicationState;
+import com.arpanrec.minerva.state.ApplicationStateManage;
 import com.arpanrec.minerva.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +38,18 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
+    private final ApplicationStateManage applicationStateManage;
+
     public SecurityConfig(@Autowired MinervaOncePerRequestFilter minervaOncePerRequestFilter,
                           @Autowired MinervaAuthenticationProvider minervaAuthenticationProvider,
                           @Autowired MinervaUserDetailsService minervaUserDetailsService,
+                          @Autowired ApplicationStateManage applicationStateManage,
                           @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
                           @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) {
         this.authenticationOncePerRequestFilter = minervaOncePerRequestFilter;
         this.authenticationProvider = minervaAuthenticationProvider;
         this.userDetailsService = minervaUserDetailsService;
+        this.applicationStateManage = applicationStateManage;
         this.rootUsername = FileUtils.fileOrString(rootUsername);
         this.rootPassword = FileUtils.fileOrString(rootPassword);
         doRootUserSetup();
@@ -79,20 +85,28 @@ public class SecurityConfig {
     }
 
     private void doRootUserSetup() {
+        if (applicationStateManage.isRootUserCreated()) {
+            log.info("Root user already created");
+            return;
+        }
+
+        MinervaUserDetailsService minervaUserDetailsService = (MinervaUserDetailsService) userDetailsService;
+
         List<MinervaUserDetails.Privilege> rootPrivileges =
             List.of(new MinervaUserDetails.Privilege(MinervaUserDetails.Privilege.Type.SUDO));
         List<MinervaUserDetails.Role> rootRoles =
             List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges));
         MinervaUserDetails rootUser = new MinervaUserDetails(rootUsername, rootPassword, rootRoles);
-        ((MinervaUserDetailsService) userDetailsService).getKeyValuePersistence()
-            .get(((MinervaUserDetailsService) userDetailsService).getInternalUsersKeyPath() + "/" + rootUsername)
-            .ifPresentOrElse((kv) -> log.info("Root user already exists"), () -> {
+        minervaUserDetailsService.getKeyValuePersistence()
+            .get(minervaUserDetailsService.getInternalUsersKeyPath() + "/" + rootUsername)
+            .ifPresentOrElse((kv) -> log.info("Root user already exists, {}", kv.getValue()), () -> {
                 try {
-                    ((MinervaUserDetailsService) userDetailsService).saveMinervaUserDetails(rootUser);
-                    log.info("Root user created");
+                    minervaUserDetailsService.saveMinervaUserDetails(rootUser);
+                    log.info("Root user created, {}", rootUser);
                 } catch (Exception e) {
                     throw new RuntimeException("Error while creating root user", e);
                 }
             });
+        applicationStateManage.setRootUserCreated(true);
     }
 }
