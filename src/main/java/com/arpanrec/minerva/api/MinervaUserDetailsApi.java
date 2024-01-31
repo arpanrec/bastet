@@ -38,7 +38,7 @@ public class MinervaUserDetailsApi {
     }
 
     @PutMapping(path = "", produces = "application/json", consumes = "application/json")
-    public HttpEntity<?> update(@RequestBody MinervaUserDetails user) throws MinervaException {
+    public HttpEntity<?> update(@RequestBody MinervaUserDetails user) {
         minervaUserDetailsService.updateMinervaUserDetails(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
