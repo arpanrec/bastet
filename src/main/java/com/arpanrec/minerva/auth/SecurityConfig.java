@@ -1,6 +1,5 @@
 package com.arpanrec.minerva.auth;
 
-import com.arpanrec.minerva.state.ApplicationState;
 import com.arpanrec.minerva.state.ApplicationStateManage;
 import com.arpanrec.minerva.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +84,7 @@ public class SecurityConfig {
     }
 
     private void doRootUserSetup() {
-        if (applicationStateManage.isRootUserCreated()) {
+        if (applicationStateManage.isRootUserCreated() || applicationStateManage.getRootUserName() != null) {
             log.info("Root user already created");
             return;
         }
@@ -108,5 +107,6 @@ public class SecurityConfig {
                 }
             });
         applicationStateManage.setRootUserCreated(true);
+        applicationStateManage.setRootUserName(rootUsername);
     }
 }

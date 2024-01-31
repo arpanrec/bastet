@@ -2,7 +2,6 @@ package com.arpanrec.minerva.api;
 
 import com.arpanrec.minerva.auth.MinervaUserDetails;
 import com.arpanrec.minerva.auth.MinervaUserDetailsService;
-import com.arpanrec.minerva.exceptions.MinervaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;

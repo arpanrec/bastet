@@ -60,12 +60,20 @@ public class ApplicationStateManage {
     }
 
     public boolean isRootUserCreated() {
-        return applicationStateObj.isRootUserCreated();
+        return applicationStateObj.rootUserCreated;
     }
 
     public void setRootUserCreated(boolean rootUserCreated) {
-        applicationStateObj.setRootUserCreated(rootUserCreated);
+        applicationStateObj.rootUserCreated = rootUserCreated;
         save();
     }
 
+    public String getRootUserName() {
+        return applicationStateObj.rootUserName;
+    }
+
+    public void setRootUserName(String rootUserName) {
+        applicationStateObj.rootUserName = rootUserName;
+        save();
+    }
 }
