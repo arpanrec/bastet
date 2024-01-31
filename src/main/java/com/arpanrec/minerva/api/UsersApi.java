@@ -27,12 +27,12 @@ public class UsersApi {
 
     @PostMapping(path = "/api/v1/users", produces = "application/json", consumes = "application/json")
     public void set(@RequestBody MinervaUserDetails user) throws MinervaException {
-        minervaUserDetailsService.saveUser(user);
+        minervaUserDetailsService.saveMinervaUserDetails(user);
     }
 
     @PutMapping(path = "/api/v1/users", produces = "application/json", consumes = "application/json")
     public void update(@RequestBody MinervaUserDetails user) throws MinervaException {
-        minervaUserDetailsService.updateUser(user);
+        minervaUserDetailsService.updateMinervaUserDetails(user);
     }
 
 }

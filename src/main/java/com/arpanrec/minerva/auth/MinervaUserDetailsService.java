@@ -64,7 +64,10 @@ public class MinervaUserDetailsService implements UserDetailsService {
 
     private KeyValue minervaUserDetailsToKeyValue(MinervaUserDetails minervaUserDetails) throws MinervaException {
         String hashedPassword = encoder.encode(minervaUserDetails.getPassword());
-        minervaUserDetails.setPassword(hashedPassword);
+        minervaUserDetails = new MinervaUserDetails(
+            minervaUserDetails.getUsername(),
+            hashedPassword,
+            minervaUserDetails.getRoles());
         log.debug("User password hashed: {}", minervaUserDetails);
         try (
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -81,13 +84,13 @@ public class MinervaUserDetailsService implements UserDetailsService {
         }
     }
 
-    public void saveUser(MinervaUserDetails minervaUserDetails) throws MinervaException {
+    public void saveMinervaUserDetails(MinervaUserDetails minervaUserDetails) throws MinervaException {
         log.debug("Saving user: {}", minervaUserDetails.toString());
         KeyValue userData = minervaUserDetailsToKeyValue(minervaUserDetails);
         keyValuePersistence.save(userData);
     }
 
-    public void updateUser(MinervaUserDetails minervaUserDetails) throws MinervaException {
+    public void updateMinervaUserDetails(MinervaUserDetails minervaUserDetails) throws MinervaException {
         log.debug("Updating user: {}", minervaUserDetails.toString());
         KeyValue userData = minervaUserDetailsToKeyValue(minervaUserDetails);
         keyValuePersistence.update(userData);

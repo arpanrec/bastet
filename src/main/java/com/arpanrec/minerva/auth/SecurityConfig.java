@@ -1,6 +1,5 @@
 package com.arpanrec.minerva.auth;
 
-import com.arpanrec.minerva.hash.Argon2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -37,18 +35,14 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
-    private final PasswordEncoder encoder;
-
     public SecurityConfig(@Autowired MinervaOncePerRequestFilter minervaOncePerRequestFilter,
                           @Autowired MinervaAuthenticationProvider minervaAuthenticationProvider,
                           @Autowired MinervaUserDetailsService minervaUserDetailsService,
-                          @Autowired Argon2 argon2,
                           @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
                           @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) {
         this.authenticationOncePerRequestFilter = minervaOncePerRequestFilter;
         this.authenticationProvider = minervaAuthenticationProvider;
         this.userDetailsService = minervaUserDetailsService;
-        this.encoder = argon2;
         this.rootUsername = rootUsername;
         this.rootPassword = rootPassword;
         doRootUserSetup();
@@ -72,29 +66,28 @@ public class SecurityConfig {
         http.addFilterAfter(authenticationOncePerRequestFilter, BasicAuthenticationFilter.class);
 
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-//            .requestMatchers(getPermitAllRequestMatchers()).permitAll()
-//
-//            .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/internal/**"))
-//            .hasAuthority(MinervaUserDetails.Privilege.Type.SUDO.name())
+            .requestMatchers(getPermitAllRequestMatchers()).permitAll()
 
-            .anyRequest().permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/internal/**"))
+            .hasAuthority(MinervaUserDetails.Privilege.Type.SUDO.name())
+
+            .anyRequest().authenticated()
         );
 
         return http.build();
     }
 
     private void doRootUserSetup() {
-        String hashedRootPassword = encoder.encode(rootPassword);
         List<MinervaUserDetails.Privilege> rootPrivileges =
             List.of(new MinervaUserDetails.Privilege(MinervaUserDetails.Privilege.Type.SUDO));
         List<MinervaUserDetails.Role> rootRoles =
             List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges));
-        MinervaUserDetails rootUser = new MinervaUserDetails(rootUsername, hashedRootPassword, rootRoles);
+        MinervaUserDetails rootUser = new MinervaUserDetails(rootUsername, rootPassword, rootRoles);
         ((MinervaUserDetailsService) userDetailsService).getKeyValuePersistence()
             .get(((MinervaUserDetailsService) userDetailsService).getInternalUsersKeyPath() + "/" + rootUsername)
             .ifPresentOrElse((kv) -> log.info("Root user already exists"), () -> {
                 try {
-                    ((MinervaUserDetailsService) userDetailsService).saveUser(rootUser);
+                    ((MinervaUserDetailsService) userDetailsService).saveMinervaUserDetails(rootUser);
                     log.info("Root user created");
                 } catch (Exception e) {
                     throw new RuntimeException("Error while creating root user", e);

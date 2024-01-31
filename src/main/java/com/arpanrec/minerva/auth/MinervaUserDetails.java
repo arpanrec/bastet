@@ -16,31 +16,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Setter
+@Getter
 public class MinervaUserDetails extends User {
 
     @Serial
     private static final long serialVersionUID = 2915242437438173088L;
 
-    @Getter
-    @Setter
-    private String password;
-
-    Collection<Role> authorities;
+    List<Role> roles;
 
     public MinervaUserDetails(@JsonProperty("username") String username, @JsonProperty("password") String password,
-                              @JsonProperty("authorities") Collection<Role> authorities) {
-        super(username, password, authorities);
-        this.authorities = authorities;
+                              @JsonProperty("roles") List<Role> roles) {
+        super(username, password, roles);
+        this.roles = roles;
     }
 
     @JsonIgnore
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (this.authorities == null) {
+        if (this.roles == null) {
             return authorities;
         }
-        for (Role role : this.authorities) {
+        for (Role role : this.roles) {
             authorities.add(role);
             if (role.getPrivileges() == null) {
                 continue;
