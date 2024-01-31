@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/arpanrec/minerva/compare/1.0.0...1.1.0) (2024-01-31)
+
+
+### Features
+
+* Optimize ([#11](https://github.com/arpanrec/minerva/issues/11)) ([b193b7a](https://github.com/arpanrec/minerva/commit/b193b7a2aeada017dc29f0ef7aa54d18d4727068))
+
 # 1.0.0 (2024-01-30)
 
 
