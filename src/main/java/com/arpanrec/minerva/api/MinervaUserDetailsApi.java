@@ -2,7 +2,6 @@ package com.arpanrec.minerva.api;
 
 import com.arpanrec.minerva.auth.MinervaUserDetails;
 import com.arpanrec.minerva.auth.MinervaUserDetailsService;
-import com.arpanrec.minerva.exceptions.MinervaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,7 @@ public class MinervaUserDetailsApi {
     }
 
     @PutMapping(path = "", produces = "application/json", consumes = "application/json")
-    public HttpEntity<?> update(@RequestBody MinervaUserDetails user) throws MinervaException {
+    public HttpEntity<?> update(@RequestBody MinervaUserDetails user) {
         minervaUserDetailsService.updateMinervaUserDetails(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
