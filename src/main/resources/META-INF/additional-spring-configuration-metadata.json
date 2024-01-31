@@ -44,6 +44,11 @@
             "type": "java.lang.String",
             "description": "The path to the file to use for the key-value store.",
             "defaultValue": "./storage"
+        },
+        {
+            "name": "minerva.hash.argon2.bring-your-own-salt",
+            "type": "java.lang.String",
+            "description": "Argon2 Salt String. Base64 encoded 16 bytes."
         }
     ]
 }
