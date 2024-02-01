@@ -9,18 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class KeyValueTests {
+class KeyValueTests(@Autowired private var keyValuePersistence: KeyValuePersistence) {
 
     private val log: Logger = LoggerFactory.getLogger(KeyValueTests::class.java)
 
-    @Autowired
-    private var keyValuePersistence: KeyValuePersistence? = null
-
     @Test
     fun testSave() {
-        val keyValue = KeyValue("key", "value")
-        keyValuePersistence!!.save(keyValue)
-        val keyValue2 = keyValuePersistence!!.get("key")
+        val keyValue = KeyValue("key", "1")
+        keyValuePersistence.save(keyValue)
+        val keyValue2 = keyValuePersistence.get("key")
         if (keyValue2.isPresent) {
             log.info("keyValue2: {}", keyValue2.get())
         }

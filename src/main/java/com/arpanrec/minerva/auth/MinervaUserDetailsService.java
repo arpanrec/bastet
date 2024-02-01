@@ -54,7 +54,7 @@ public class MinervaUserDetailsService implements UserDetailsService {
             try {
                 MinervaUserDetails minervaUserDetails = objectMapper.readValue(userData.get().getValue(),
                     MinervaUserDetails.class);
-                log.debug("User loaded: {}", minervaUserDetails);
+                log.trace("User loaded: {}", minervaUserDetails);
                 return minervaUserDetails;
             } catch (Exception e) {
                 throw new MinervaException("Error while loading user", e);

@@ -3,7 +3,9 @@ package com.arpanrec.minerva.test.encryption
 import com.arpanrec.minerva.encryption.GnuPG
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
+import org.springframework.boot.test.context.SpringBootTest
 
+@SpringBootTest
 class GnuPGTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val message = "Hello, World!"

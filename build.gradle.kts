@@ -18,6 +18,9 @@ version = getVersions()
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 sourceSets {
@@ -42,16 +45,22 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+    all {
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    }
+    create("binaryTestResultsElements") {
+        isCanBeResolved = false
+        isCanBeConsumed = true
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.DOCUMENTATION))
+            attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named("test-report-data"))
+        }
+        outgoing.artifact(tasks.test.map { task -> task.binaryResultsDirectory.get() })
+    }
 }
 
 repositories {
     mavenCentral()
-}
-
-configurations {
-    all {
-        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
-    }
 }
 
 dependencies {
@@ -89,40 +98,40 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "17"
+tasks {
+    getByName<Jar>("jar") {
+        enabled = true
+        archiveAppendix.set("original")
     }
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+    getByName<BootJar>("bootJar") {
+        enabled = true
+        mainClass = getMainClassName()
+        archiveAppendix.set("boot")
     }
-}
-
-tasks.create<Delete>("cleanAll") {
-    group = "build"
-    delete(
-        "logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle", "node_modules",
-        "package-lock.json", "package.json"
-    )
-}
-
-tasks.getByName<Jar>("jar") {
-    enabled = true
-    archiveAppendix.set("original")
-}
-
-tasks.getByName<BootJar>("bootJar") {
-    enabled = true
-    mainClass = getMainClassName()
-    archiveAppendix.set("boot")
+    create<Delete>("cleanAll") {
+        group = "build"
+        delete(
+            "logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle", "node_modules",
+            "package-lock.json", "package.json"
+        )
+    }
+    withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs += "-Xjsr305=strict"
+            jvmTarget = "17"
+        }
+    }
+    withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+        reports {
+            html.required = true
+            junitXml.required = true
+        }
+    }
 }
 
 fun getMainClassName(): String {
