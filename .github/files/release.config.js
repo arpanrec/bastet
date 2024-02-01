@@ -40,16 +40,18 @@ module.exports = {
         [
             "@semantic-release/exec",
             {
-                prepareCmd: "echo -n ${nextRelease.version} > VERSION",
+                prepareCmd: "echo -n ${nextRelease.version} > MINERVA_VERSION",
                 successCmd:
-                    "git checkout -b release/${nextRelease.version} && \
+                    "gradle cleanAll clean build bootJar -x test && \
+                    rm -rf ./MINERVA_VERSION && \
+                    git checkout -b release/${nextRelease.version} && \
                     git push --set-upstream origin release/${nextRelease.version}",
             },
         ],
         [
             "@semantic-release/git",
             {
-                assets: ["VERSION", "CHANGELOG.md"],
+                assets: ["CHANGELOG.md"],
                 message:
                     "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
             },
