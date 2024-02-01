@@ -12,6 +12,8 @@ spring:
     devtools:
         livereload:
             enabled: true
+        restart:
+            enabled: on
 minerva:
     encryption:
         gnupg:
