@@ -3,7 +3,6 @@ package com.arpanrec.minerva.utils;
 import com.arpanrec.minerva.exceptions.MinervaException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
