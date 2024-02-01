@@ -18,9 +18,17 @@ class OpenSSLTest(
 
     @Test
     fun test() {
-        val name: String = openSSL.getX509Certificate().getSubjectX500Principal().name
+        val name: String = openSSL.getX509CertificateCa().getSubjectX500Principal().name
         log.info("name: $name")
         assert(name == this.name)
-        log.info("Certificate: ${openSSL.getX509Certificate()}")
+        log.info("Certificate: ${openSSL.getX509CertificateCa()}")
+
+        val keyPair = openSSL.getKeyPair()
+        log.info("Private Key: ${keyPair.private}")
+
+        log.info("Public Key from X509Certificate: ${openSSL.getX509CertificateCa().publicKey.algorithm}")
+        log.info("Public Key from KeyPair: ${keyPair.public}")
+
+        assert(openSSL.getX509CertificateCa().publicKey.equals(keyPair.public)) { "Public keys are not equal." }
     }
 }
