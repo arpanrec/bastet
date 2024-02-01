@@ -40,10 +40,8 @@ module.exports = {
         [
             "@semantic-release/exec",
             {
-                prepareCmd: "echo -n ${nextRelease.version} > MINERVA_VERSION",
                 successCmd:
-                    "gradle cleanAll clean build bootJar -x test && \
-                    rm -rf ./MINERVA_VERSION && \
+                    "gradle cleanAll clean build bootJar -x test -Pversion=${nextRelease.version} && \
                     git checkout -b release/${nextRelease.version} && \
                     git push --set-upstream origin release/${nextRelease.version}",
             },
