@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/arpanrec/minerva/compare/1.2.2...1.2.3) (2024-02-01)
+
+
+### Bug Fixes
+
+* Refactor release.config.js to remove unnecessary git commands ([5f3e716](https://github.com/arpanrec/minerva/commit/5f3e716d43169ba88bdb7376f76fbc57e192b9c0))
+
 ## [1.2.2](https://github.com/arpanrec/minerva/compare/1.2.1...1.2.2) (2024-02-01)
 
 
