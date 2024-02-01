@@ -53,17 +53,17 @@
         {
             "name": "minerva.pki.openssl.ca-private-key",
             "type": "java.lang.String",
-            "description": "The OpenSSL Private Key to use for signing."
+            "description": "The OpenSSL RSA PKCS8 PEM Private Key."
         },
         {
             "name": "minerva.pki.openssl.ca-private-key-passphrase",
             "type": "java.lang.String",
-            "description": "The OpenSSL Private Key passphrase."
+            "description": "The OpenSSL RSA PKCS8 PEM Private Key Passphrase."
         },
         {
             "name": "minerva.pki.openssl.ca-certificate",
             "type": "java.lang.String",
-            "description": "The OpenSSL CA Certificate."
+            "description": "The OpenSSL X509 RSA PKCS8 PEM Certificate."
         }
     ]
 }
