@@ -1,19 +1,13 @@
 ---
-server:
-    port: 8081
-debug: true
-spring:
-    devtools:
-        livereload:
-            enabled: true
-        restart:
-            enabled: on
 minerva:
+    hash:
+        argon2:
+            bring-your-own-salt: vQlm0mVHOcpEiEYI3GEYxw==
     encryption:
         gnupg:
             armored-public-key: |+
                 -----BEGIN PGP PUBLIC KEY BLOCK-----
-
+                
                 mDMEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
                 umnaeIy0LG1pbmVydmEtdGVzdCA8bWluZXJ2YS10ZXN0QG1pbmVydmEtdGVzdC5j
                 b20+iJkEExYKAEEWIQR/tX7WJd7W0WbxhY/rY/cBPZC6AAUCZa70AAIbAwUJBaOa
@@ -29,7 +23,7 @@ minerva:
 
             armored-private-key: |+
                 -----BEGIN PGP PRIVATE KEY BLOCK-----
-
+                
                 lIYEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
                 umnaeIz+BwMCdNs9UHB91Gn/sq1FqE2sz9/ZguQjtGCOsmqjAUr5WJqGB2NE9RR4
                 2GgMEWy5UzDZzcO5ckHEZVuqE0HbAH/X2Farkr6ZBIDDWeLNs2CqBbQsbWluZXJ2
@@ -47,14 +41,8 @@ minerva:
                 -----END PGP PRIVATE KEY BLOCK-----
 
             private-key-passphrase: password
-    auth:
-        filter:
-            header-key: Authorization
-        security-config:
-            root-username: root1
-            root-password: root1
     physical:
         key-value-persistence:
             persistence-type: file
         key-value-file-storage:
-            path: ./storage
+            path: /tmp/minerva

@@ -35,16 +35,17 @@ class Argon2(
 
     private final fun checkArgon2Salt(keyValuePersistence: KeyValuePersistence, bringYourOwnSalt: String?) {
         internalArgon2SaltPath = keyValuePersistence.internalStorageKey + "/argon2Salt"
+        if (bringYourOwnSalt != null) {
+            log.info("Using bring your own salt")
+            argon2Salt = Base64.getDecoder().decode(FileUtils.fileOrString(bringYourOwnSalt))
+            return
+        }
         keyValuePersistence.get(internalArgon2SaltPath!!, 0).ifPresentOrElse({ kv: KeyValue ->
             log.info("Argon2 salt already exists")
             argon2Salt = Base64.getDecoder().decode(kv.value)
         }, {
             try {
-                val saltString: String = if (bringYourOwnSalt != null) {
-                    FileUtils.fileOrString(bringYourOwnSalt)
-                } else {
-                    generateSalt16ByteBase64EncodedString()
-                }
+                val saltString: String = generateSalt16ByteBase64EncodedString()
                 val keyValue = KeyValue()
                 keyValue.key = internalArgon2SaltPath
                 keyValue.value = saltString
