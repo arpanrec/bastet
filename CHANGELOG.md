@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/arpanrec/minerva/compare/1.2.1...1.2.2) (2024-02-01)
+
+
+### Bug Fixes
+
+* Update release configuration and build process ([#15](https://github.com/arpanrec/minerva/issues/15)) ([9d7dc30](https://github.com/arpanrec/minerva/commit/9d7dc3037faf4ba14233e722c195945bd9649cd4))
+
 ## [1.2.1](https://github.com/arpanrec/minerva/compare/1.2.0...1.2.1) (2024-02-01)
 
 
