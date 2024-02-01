@@ -113,7 +113,7 @@ tasks {
         group = "build"
         delete(
             "logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle", "node_modules",
-            "package-lock.json", "package.json"
+            "package-lock.json", "package.json", "/tmp/minerva"
         )
     }
     withType<KotlinCompile> {
