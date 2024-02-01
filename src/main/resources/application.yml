@@ -1,4 +1,11 @@
 ---
+server:
+    servlet:
+        context-path: /
 spring:
     profiles:
         active: dev
+    application:
+        name: minerva
+    main:
+        lazy-initialization: false

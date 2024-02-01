@@ -2,6 +2,7 @@ package com.arpanrec.minerva.auth;
 
 import com.arpanrec.minerva.state.ApplicationStateManage;
 import com.arpanrec.minerva.utils.FileUtils;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +52,6 @@ public class SecurityConfig {
         this.applicationStateManage = applicationStateManage;
         this.rootUsername = FileUtils.fileOrString(rootUsername);
         this.rootPassword = FileUtils.fileOrString(rootPassword);
-        doRootUserSetup();
     }
 
     private RequestMatcher[] getPermitAllRequestMatchers() {
@@ -83,6 +83,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @PostConstruct
     private void doRootUserSetup() {
         if (applicationStateManage.isRootUserCreated() || applicationStateManage.getRootUserName() != null) {
             log.info("Root user already created");

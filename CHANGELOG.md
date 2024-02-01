@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/arpanrec/minerva/compare/1.2.0...1.2.1) (2024-02-01)
+
+
+### Bug Fixes
+
+* Test ([#13](https://github.com/arpanrec/minerva/issues/13)) ([51f0e4b](https://github.com/arpanrec/minerva/commit/51f0e4b0fc5a30d6f41ceb726c29fda3f62bf874))
+
 # [1.2.0](https://github.com/arpanrec/minerva/compare/1.1.0...1.2.0) (2024-01-31)
 
 
