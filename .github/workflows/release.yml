@@ -46,9 +46,6 @@ jobs:
               with:
                   gradle-version: 8.5
 
-            - name: Build with Gradle
-              run: gradle bootJar
-
             - name: Install node dependencies
               run: |+
                   npm i semantic-release@23.0.0 \
