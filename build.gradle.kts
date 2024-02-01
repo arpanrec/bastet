@@ -127,6 +127,7 @@ tasks {
         testLogging {
             events("passed", "skipped", "failed")
         }
+        systemProperty("spring.profiles.active", "test")
         reports {
             html.required = true
             junitXml.required = true

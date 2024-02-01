@@ -12,7 +12,7 @@ class KeyValuePersistence(@Value("\${minerva.physical.key-value-persistence.pers
                           @Autowired applicationContext: ApplicationContext,
                           @Autowired private val gnuPG: GnuPG) {
 
-    private var keyValueStorage: KeyValueStorage = when (persistenceType) {
+    private val keyValueStorage: KeyValueStorage = when (persistenceType) {
         KeyValuePersistenceType.FILE -> {
             applicationContext.getBean(KeyValueFileStorage::class.java)
         }

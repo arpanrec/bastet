@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class KeyValueTests(@Autowired private var keyValuePersistence: KeyValuePersistence) {
+class KeyValueTests(@Autowired private val keyValuePersistence: KeyValuePersistence) {
 
     private val log: Logger = LoggerFactory.getLogger(KeyValueTests::class.java)
 
