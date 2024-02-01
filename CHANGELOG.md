@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/arpanrec/minerva/compare/1.2.3...1.2.4) (2024-02-01)
+
+
+### Bug Fixes
+
+* Feature/cosmetic ([#16](https://github.com/arpanrec/minerva/issues/16)) ([7f611a8](https://github.com/arpanrec/minerva/commit/7f611a8df2717ff40d1193856c4707a9bcb02f51))
+
 ## [1.2.3](https://github.com/arpanrec/minerva/compare/1.2.2...1.2.3) (2024-02-01)
 
 
