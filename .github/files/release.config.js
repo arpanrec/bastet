@@ -41,9 +41,7 @@ module.exports = {
             "@semantic-release/exec",
             {
                 successCmd:
-                    "gradle cleanAll clean build bootJar -x test -Pversion=${nextRelease.version} && \
-                    git checkout -b release/${nextRelease.version} && \
-                    git push --set-upstream origin release/${nextRelease.version}",
+                    "gradle cleanAll clean build bootJar -x test -Pversion=${nextRelease.version}"
             },
         ],
         [
