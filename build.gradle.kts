@@ -2,6 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
+logging.captureStandardOutput(LogLevel.INFO)
+
 plugins {
     java
     id("org.springframework.boot") version "3.2.2"
@@ -141,10 +143,26 @@ fun getMainClassName(): String {
 }
 
 fun getVersions(): String {
-    val file = File("VERSION")
-    return if (file.exists()) {
-        file.readText()
-    } else {
-        "9.9.9-SNAPSHOT"
+
+    if (project.hasProperty("version")) {
+        val versionFromProject: Any? = project.property("version")
+        if (versionFromProject is String && versionFromProject.isNotBlank() && versionFromProject != "unspecified") {
+            return versionFromProject
+        }
     }
+
+    val versionFromEnv: String? = System.getenv("MINERVA_VERSION")
+    if (!versionFromEnv.isNullOrEmpty()) {
+        return versionFromEnv
+    }
+
+    val file = File("MINERVA_VERSION")
+    if (file.exists()) {
+        val versionFromFile: String = file.readText().trim()
+        if (versionFromFile.isNotEmpty()) {
+            return versionFromFile
+        }
+    }
+
+    return "9.9.9-SNAPSHOT"
 }
