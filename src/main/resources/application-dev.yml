@@ -7,7 +7,7 @@ spring:
         livereload:
             enabled: true
         restart:
-            enabled: on
+            enabled: true
 minerva:
     encryption:
         gnupg:
