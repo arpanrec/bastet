@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/arpanrec/minerva/compare/1.2.4...1.3.0) (2024-02-02)
+
+
+### Features
+
+* Add support for custom pepper in Argon2 hashing algorithm ([#18](https://github.com/arpanrec/minerva/issues/18)) ([7c1fbaf](https://github.com/arpanrec/minerva/commit/7c1fbaf42d417ebe4be0c9121a58f9354d914b4e))
+
 ## [1.2.4](https://github.com/arpanrec/minerva/compare/1.2.3...1.2.4) (2024-02-01)
 
 

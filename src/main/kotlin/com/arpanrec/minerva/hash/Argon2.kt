@@ -26,6 +26,8 @@ class Argon2(
 
     private var internalArgon2SaltPath: String? = null
 
+    private var characters: String = "abcdefghijklmnopqrstuvwxyz"
+
     private fun generateSalt16ByteBase64EncodedString(): String {
         val secureRandom = SecureRandom()
         val salt = ByteArray(16)
@@ -63,6 +65,14 @@ class Argon2(
     }
 
     fun hashString(inputString: String): String {
+        val random = SecureRandom()
+        val randomIndex = random.nextInt(characters.length)
+        val randomChar = characters[randomIndex]
+        return hashString(inputString, randomChar)
+    }
+
+    fun hashString(inputString: String, paper: Char): String {
+        val inputStringWithPepper = inputString + paper
         val iterations = 2
         val memLimit = 66536
         val hashLength = 32
@@ -74,7 +84,7 @@ class Argon2(
         val generate = Argon2BytesGenerator()
         generate.init(builder.build())
         val result = ByteArray(hashLength)
-        generate.generateBytes(inputString.toByteArray(Charsets.UTF_8), result, 0, result.size)
+        generate.generateBytes(inputStringWithPepper.toByteArray(Charsets.UTF_8), result, 0, result.size)
         return Base64.getEncoder().encodeToString(result)
     }
 
@@ -83,6 +93,12 @@ class Argon2(
     }
 
     override fun matches(rawPassword: CharSequence?, encodedPassword: String?): Boolean {
-        return hashString(rawPassword.toString()) == encodedPassword
+
+        for (c: Char in characters) {
+            if (hashString(rawPassword.toString(), c) == encodedPassword) {
+                return true
+            }
+        }
+        return false
     }
 }
