@@ -24,10 +24,14 @@ public class MinervaAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.debug("User authentication started for {}", authentication.getName());
-        String hashedProvidedPassword = encoder.encode(((MinervaAuthentication) authentication).getProvidedPassword());
-        log.trace("Hashed provided password: {}", hashedProvidedPassword);
+        log.trace("provided password: {}", ((MinervaAuthentication) authentication).getProvidedPassword());
         log.trace("User password: {}", authentication.getCredentials());
-        if (authentication.getCredentials().equals(hashedProvidedPassword)) {
+        if (
+            encoder.matches(
+                ((MinervaAuthentication) authentication).getProvidedPassword(),
+                (String) authentication.getCredentials()
+            )
+        ) {
             log.trace("User {} authenticated", authentication.getName());
             authentication.setAuthenticated(true);
         } else {
