@@ -10,8 +10,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import java.util.Optional
-import kotlin.collections.HashMap
+import java.util.*
 
 @Component
 class StateManage(
@@ -26,14 +25,14 @@ class StateManage(
 
     fun get(tfState: String): HttpEntity<Any> {
         val keyValueMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/$tfState")
-        return if (keyValueMaybe.isPresent) {
+        if (keyValueMaybe.isPresent) {
             val keyValue: KeyValue = keyValueMaybe.get()
             val result: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
                 keyValue.value, valueMapType
             )
-            ResponseEntity(result, null, HttpStatus.OK)
+            return ResponseEntity(result, HttpStatus.OK)
         } else {
-            ResponseEntity("", null, HttpStatus.OK)
+            return ResponseEntity("", HttpStatus.OK)
         }
     }
 
@@ -42,11 +41,27 @@ class StateManage(
     ): HttpEntity<Map<String, Any>> {
         if (tfStateLockID == null) {
             val keyValue = KeyValue(
-                key = "$tfStateKeyPath/$tfState", value = ObjectMapper().writeValueAsString(tfStateJson)
+                key = "$tfStateKeyPath/$tfState", value = objectMapper.writeValueAsString(tfStateJson)
             )
             keyValuePersistence.save(keyValue)
-            return ResponseEntity(tfStateJson, null, HttpStatus.OK)
+            return ResponseEntity(tfStateJson, HttpStatus.OK)
         }
         throw Exception("LockID is not null")
+    }
+
+    fun setLockID(tfState: String, tfStateLock: Map<String, Any>): HttpEntity<Map<String, Any>> {
+        val keyValueLockDataMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/${tfState}.lock")
+        if (keyValueLockDataMaybe.isPresent) {
+            val tfLockJson: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
+                keyValueLockDataMaybe.get().value, valueMapType
+            )
+            return ResponseEntity(tfLockJson, HttpStatus.CONFLICT)
+        } else {
+            val keyValue = KeyValue(
+                key = "$tfStateKeyPath/${tfState}.lock", value = objectMapper.writeValueAsString(tfStateLock)
+            )
+            keyValuePersistence.save(keyValue)
+            return ResponseEntity(tfStateLock, HttpStatus.OK)
+        }
     }
 }
