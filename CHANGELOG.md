@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/arpanrec/minerva/compare/1.3.0...1.3.1) (2024-02-03)
+
+
+### Bug Fixes
+
+* password match ([#20](https://github.com/arpanrec/minerva/issues/20)) ([8477145](https://github.com/arpanrec/minerva/commit/8477145bcf092176aa82b77c5611e284ddfbcbc9))
+
 # [1.3.0](https://github.com/arpanrec/minerva/compare/1.2.4...1.3.0) (2024-02-02)
 
 
