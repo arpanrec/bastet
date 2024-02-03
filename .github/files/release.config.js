@@ -40,8 +40,7 @@ module.exports = {
         [
             "@semantic-release/exec",
             {
-                successCmd:
-                    "gradle cleanAll clean build bootJar -x test -Pversion=${nextRelease.version}"
+                prepareCmd: "gradle cleanAll clean build bootJar -x test -Pversion=${nextRelease.version}"
             },
         ],
         [
