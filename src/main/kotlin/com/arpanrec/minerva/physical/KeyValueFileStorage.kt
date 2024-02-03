@@ -84,18 +84,18 @@ class KeyValueFileStorage(@Value("\${minerva.physical.key-value-file-storage.pat
         return true
     }
 
-
     override fun deleteAllVersions(keyValue: KeyValue): Boolean {
-        listVersions(Paths.get(storageRootPath, keyValue.key)).forEach { version: Int ->
-            delete(
-                get(keyValue.key!!, version).ifPresentOrElse(
-                    { delete(it, version) },
-                    { throw MinervaException("Key ${keyValue.key} with version $version does not exist") }),
-            )
+        val allVersions = listVersions(Paths.get(storageRootPath, keyValue.key))
+        if (allVersions.isEmpty()) {
+            throw MinervaException("Key ${keyValue.key} does not exist")
         }
-
+        allVersions.forEach { version: Int ->
+            val keyValueToDelete = get(keyValue.key!!, version)
+            if (keyValueToDelete.isPresent) {
+                delete(keyValueToDelete.get())
+            }
+        }
         return true
-
     }
 
     override fun getNextVersion(keyPath: Path): Int {
