@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component
 import java.util.Optional
 import kotlin.collections.HashMap
 
-
 @Component
 class StateManage(
     @Autowired private val keyValuePersistence: KeyValuePersistence
@@ -41,10 +40,13 @@ class StateManage(
     fun createOrUpdate(
         tfState: String, tfStateJson: Map<String, Any>, tfStateLockID: String?
     ): HttpEntity<Map<String, Any>> {
-        val keyValue = KeyValue(
-            key = "$tfStateKeyPath/$tfState", value = ObjectMapper().writeValueAsString(tfStateJson)
-        )
-        keyValuePersistence.save(keyValue)
-        return ResponseEntity(tfStateJson, null, HttpStatus.OK)
+        if (tfStateLockID == null) {
+            val keyValue = KeyValue(
+                key = "$tfStateKeyPath/$tfState", value = ObjectMapper().writeValueAsString(tfStateJson)
+            )
+            keyValuePersistence.save(keyValue)
+            return ResponseEntity(tfStateJson, null, HttpStatus.OK)
+        }
+        throw Exception("LockID is not null")
     }
 }
