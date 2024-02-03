@@ -2,7 +2,6 @@ package com.arpanrec.minerva.auth;
 
 import com.arpanrec.minerva.exceptions.MinervaException;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.Authentication;
@@ -20,11 +19,12 @@ public class MinervaAuthentication implements Authentication {
     private static final long serialVersionUID = -8620294545092862085L;
 
     private boolean authenticated;
+
     private UserDetails user;
 
     @Getter
     @Setter
-    private String providedPassword;
+    private CharSequence providedPassword;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getAuthorities();
