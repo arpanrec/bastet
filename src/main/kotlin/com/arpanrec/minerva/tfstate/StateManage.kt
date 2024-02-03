@@ -3,6 +3,7 @@ package com.arpanrec.minerva.tfstate
 import com.arpanrec.minerva.physical.KeyValue
 import com.arpanrec.minerva.physical.KeyValuePersistence
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.type.MapType
 import com.fasterxml.jackson.databind.type.TypeFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
@@ -19,16 +20,17 @@ class StateManage(
 ) {
     private val tfStateKeyPath = keyValuePersistence.internalStorageKey + "/tfstate"
 
+    private val objectMapper = ObjectMapper()
+    private val valueMapType: MapType = TypeFactory.defaultInstance().constructMapType(
+        HashMap::class.java, String::class.java, Object::class.java
+    )
+
     fun get(tfState: String): HttpEntity<Any> {
         val keyValueMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/$tfState")
         return if (keyValueMaybe.isPresent) {
             val keyValue: KeyValue = keyValueMaybe.get()
-            val result: Map<String, Any> = ObjectMapper().readValue<Map<String, String>>(
-                keyValue.value, TypeFactory.defaultInstance().constructMapType(
-                    HashMap::class.java,
-                    String::class.java,
-                    Object::class.java
-                )
+            val result: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
+                keyValue.value, valueMapType
             )
             ResponseEntity(result, null, HttpStatus.OK)
         } else {
@@ -37,12 +39,11 @@ class StateManage(
     }
 
     fun createOrUpdate(
-        tfState: String,
-        tfStateJson: Map<String, Any>,
-        tfStateLockID: String?
+        tfState: String, tfStateJson: Map<String, Any>, tfStateLockID: String?
     ): HttpEntity<Map<String, Any>> {
-        val keyValue =
-            KeyValue(key = "$tfStateKeyPath/$tfState", value = ObjectMapper().writeValueAsString(tfStateJson))
+        val keyValue = KeyValue(
+            key = "$tfStateKeyPath/$tfState", value = ObjectMapper().writeValueAsString(tfStateJson)
+        )
         keyValuePersistence.save(keyValue)
         return ResponseEntity(tfStateJson, null, HttpStatus.OK)
     }
