@@ -2,15 +2,22 @@ package com.arpanrec.minerva.pki
 
 import com.arpanrec.minerva.exceptions.MinervaException
 import com.arpanrec.minerva.utils.FileUtils
+import org.bouncycastle.asn1.ASN1Encodable
+import org.bouncycastle.asn1.DERSequence
 import org.bouncycastle.asn1.x500.X500Name
 import org.bouncycastle.asn1.x509.BasicConstraints
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage
 import org.bouncycastle.asn1.x509.Extension
+import org.bouncycastle.asn1.x509.GeneralName
+import org.bouncycastle.asn1.x509.KeyPurposeId
+import org.bouncycastle.asn1.x509.KeyUsage
 import org.bouncycastle.cert.X509v3CertificateBuilder
-import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openssl.PEMParser
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter
 import org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8DecryptorProviderBuilder
 import org.bouncycastle.operator.ContentSigner
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
@@ -24,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.ByteArrayInputStream
 import java.io.StringReader
+import java.io.StringWriter
 import java.math.BigInteger
 import java.security.KeyFactory
 import java.security.KeyPair
@@ -103,27 +111,66 @@ class OpenSSL(
         val keyPairGenerator: KeyPairGenerator = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME)
         // Issued By and Issued To same for root certificate
         val issuedCertSubject = X500Name("CN=issued-cert")
-        val issuedCertSerialNum = BigInteger(SecureRandom().nextLong().toString())
         val issuedCertKeyPair: KeyPair = keyPairGenerator.generateKeyPair()
         val p10Builder: PKCS10CertificationRequestBuilder =
             JcaPKCS10CertificationRequestBuilder(issuedCertSubject, issuedCertKeyPair.public)
         val csrBuilder: JcaContentSignerBuilder =
-            JcaContentSignerBuilder("RSA").setProvider(BouncyCastleProvider.PROVIDER_NAME)
+            JcaContentSignerBuilder("SHA256withRSA").setProvider(BouncyCastleProvider.PROVIDER_NAME)
         // Sign the new KeyPair with the root cert Private Key
         val csrContentSigner: ContentSigner = csrBuilder.build(this.rootCakeyPair.private)
         val csr: PKCS10CertificationRequest = p10Builder.build(csrContentSigner)
 
         val issuedCertBuilder = X509v3CertificateBuilder(
             X500Name(this.rootCax509Certificate.subjectX500Principal.name),
-            issuedCertSerialNum,
+            BigInteger(SecureRandom().nextLong().toString()),
             startDate,
             endDate,
             csr.subject,
             csr.subjectPublicKeyInfo
         )
         val issuedCertExtUtils = JcaX509ExtensionUtils()
-        // Add Extensions
-        // Use BasicConstraints to say that this Cert is not a CA
         issuedCertBuilder.addExtension(Extension.basicConstraints, true, BasicConstraints(false))
+        issuedCertBuilder.addExtension(
+            Extension.authorityKeyIdentifier,
+            false,
+            issuedCertExtUtils.createAuthorityKeyIdentifier(this.rootCax509Certificate)
+        )
+        issuedCertBuilder.addExtension(
+            Extension.subjectKeyIdentifier,
+            false,
+            issuedCertExtUtils.createSubjectKeyIdentifier(issuedCertKeyPair.public)
+        )
+
+        // Add intended key usage extension if needed
+        issuedCertBuilder.addExtension(Extension.keyUsage, false, KeyUsage(KeyUsage.digitalSignature or KeyUsage.keyEncipherment))
+
+        issuedCertBuilder.addExtension(
+            Extension.extendedKeyUsage,
+            false,
+            ExtendedKeyUsage(arrayOf(KeyPurposeId.id_kp_serverAuth, KeyPurposeId.id_kp_clientAuth))
+        )
+
+
+        // Add DNS name is cert is to used for SSL
+        issuedCertBuilder.addExtension(
+            Extension.subjectAlternativeName, false, DERSequence(
+                arrayOf<ASN1Encodable>(
+                    GeneralName(GeneralName.dNSName, "mydomain.local"),
+                    GeneralName(GeneralName.iPAddress, "127.0.0.1")
+                )
+            )
+        )
+
+        val issuedCertHolder = issuedCertBuilder.build(csrContentSigner)
+        val issuedCert: X509Certificate =
+            JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME)
+                .getCertificate(issuedCertHolder)
+
+        issuedCert.verify(rootCax509Certificate.publicKey, BouncyCastleProvider.PROVIDER_NAME)
+        val sw = StringWriter()
+        JcaPEMWriter(sw).use { pw ->
+            pw.writeObject(issuedCertKeyPair.public)
+        }
+        println(sw.toString())
     }
 }
