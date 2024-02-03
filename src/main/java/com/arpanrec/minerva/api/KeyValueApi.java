@@ -19,7 +19,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/keyvalue/**")
+@RequestMapping(path = "/api/v1/keyvalue/**", produces = "application/json", consumes = "application/json")
 public class KeyValueApi {
 
     private final KeyValuePersistence keyValuePersistence;
@@ -28,15 +28,15 @@ public class KeyValueApi {
         this.keyValuePersistence = keyValuePersistence;
     }
 
-    @GetMapping(path = "", produces = "application/json", consumes = "application/json")
+    @GetMapping
     public HttpEntity<KeyValue> get(HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
-        Optional<KeyValue> keyValue = keyValuePersistence.get(key, 0);
+        Optional<KeyValue> keyValue = keyValuePersistence.get(key);
         return keyValue.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping(path = "", consumes = "application/json", produces = "application/json")
+    @PostMapping
     public HttpEntity<KeyValue> save(@RequestBody KeyValue keyValue, HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
@@ -44,7 +44,7 @@ public class KeyValueApi {
         return new ResponseEntity<>(keyValuePersistence.save(keyValue), HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "", consumes = "application/json", produces = "application/json")
+    @PutMapping
     public HttpEntity<KeyValue> update(@RequestBody KeyValue keyValue, HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
