@@ -8,9 +8,11 @@ import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Component
 
 @Component
-class KeyValuePersistence(@Value("\${minerva.physical.key-value-persistence.persistence-type:FILE}") private val persistenceType: KeyValuePersistenceType,
-                          @Autowired applicationContext: ApplicationContext,
-                          @Autowired private val gnuPG: GnuPG) {
+class KeyValuePersistence(
+    @Value("\${minerva.physical.key-value-persistence.persistence-type:FILE}") private val persistenceType: KeyValuePersistenceType,
+    @Autowired applicationContext: ApplicationContext,
+    @Autowired private val gnuPG: GnuPG
+) {
 
     private val keyValueStorage: KeyValueStorage = when (persistenceType) {
         KeyValuePersistenceType.FILE -> {
@@ -21,11 +23,13 @@ class KeyValuePersistence(@Value("\${minerva.physical.key-value-persistence.pers
     var internalStorageKey: String = "internal"
 
     fun get(key: String): Optional<KeyValue> {
-        return get(key = key, version = 0)
+        val keyLower = key.lowercase()
+        return get(key = keyLower, version = 0)
     }
 
     fun get(key: String, version: Int = 0): Optional<KeyValue> {
-        val keyValue = keyValueStorage.get(key = key, version = version)
+        val keyLower = key.lowercase()
+        val keyValue = keyValueStorage.get(key = keyLower, version = version)
         keyValue.ifPresent { keyValuePresent: KeyValue ->
             keyValuePresent.value = keyValuePresent.value?.let { gnuPG.decrypt(it) }
         }
@@ -33,11 +37,13 @@ class KeyValuePersistence(@Value("\${minerva.physical.key-value-persistence.pers
     }
 
     fun save(keyValue: KeyValue): KeyValue {
+        keyValue.key = keyValue.key!!.lowercase()
         keyValue.value = keyValue.value!!.let { gnuPG.encrypt(it) }
         return keyValueStorage.save(keyValue)
     }
 
     fun update(keyValue: KeyValue): KeyValue {
+        keyValue.key = keyValue.key!!.lowercase()
         keyValue.value = keyValue.value!!.let { gnuPG.encrypt(it) }
         return keyValueStorage.update(keyValue)
     }
