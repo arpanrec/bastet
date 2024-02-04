@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/arpanrec/minerva/compare/1.3.1...1.4.0) (2024-02-03)
+
+
+### Features
+
+* Feature/kv ([#21](https://github.com/arpanrec/minerva/issues/21)) ([3a97322](https://github.com/arpanrec/minerva/commit/3a973227127418ca349727cdede56febd9969a3f))
+
 ## [1.3.1](https://github.com/arpanrec/minerva/compare/1.3.0...1.3.1) (2024-02-03)
 
 
