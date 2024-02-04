@@ -23,8 +23,7 @@ class KeyValuePersistence(
     var internalStorageKey: String = "internal"
 
     fun get(key: String): Optional<KeyValue> {
-        val keyLower = key.lowercase()
-        return get(key = keyLower, version = 0)
+        return get(key = key, version = 0)
     }
 
     fun get(key: String, version: Int): Optional<KeyValue> {
