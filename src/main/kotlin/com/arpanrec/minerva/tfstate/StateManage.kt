@@ -39,17 +39,45 @@ class StateManage(
     fun createOrUpdate(
         tfState: String, tfStateJson: Map<String, Any>, tfStateLockID: String?
     ): HttpEntity<Map<String, Any>> {
+        val optionalExistingStateData = keyValuePersistence.get(key = "$tfStateKeyPath/$tfState")
+        val keyValueStateData = KeyValue(
+            key = "$tfStateKeyPath/$tfState", value = objectMapper.writeValueAsString(tfStateJson)
+        )
         if (tfStateLockID == null) {
-            val keyValue = KeyValue(
-                key = "$tfStateKeyPath/$tfState", value = objectMapper.writeValueAsString(tfStateJson)
-            )
-            keyValuePersistence.save(keyValue)
+
+            if (optionalExistingStateData.isPresent) {
+                keyValuePersistence.update(keyValueStateData)
+            } else {
+                keyValuePersistence.save(keyValueStateData)
+            }
             return ResponseEntity(tfStateJson, HttpStatus.OK)
         }
-        throw Exception("LockID is not null")
+        val keyValueLockDataMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/${tfState}.lock")
+        if (keyValueLockDataMaybe.isPresent) {
+            val lockDataMap: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
+                keyValueLockDataMaybe.get().value, valueMapType
+            )
+            val existingLockID: String = lockDataMap["ID"] as String
+            if (existingLockID == tfStateLockID) {
+                if (optionalExistingStateData.isPresent) {
+                    keyValuePersistence.update(keyValueStateData)
+                } else {
+                    keyValuePersistence.save(keyValueStateData)
+                }
+                return ResponseEntity(tfStateJson, HttpStatus.OK)
+            } else {
+                return ResponseEntity(lockDataMap, HttpStatus.CONFLICT)
+            }
+        } else {
+            return ResponseEntity(
+                mapOf(
+                    "error" to "lock not found"
+                ), HttpStatus.CONFLICT
+            )
+        }
     }
 
-    fun setLockID(tfState: String, tfStateLock: Map<String, Any>): HttpEntity<Map<String, Any>> {
+    fun setLock(tfState: String, tfStateLock: Map<String, Any>): HttpEntity<Map<String, Any>> {
         val keyValueLockDataMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/${tfState}.lock")
         if (keyValueLockDataMaybe.isPresent) {
             val tfLockJson: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
@@ -62,6 +90,16 @@ class StateManage(
             )
             keyValuePersistence.save(keyValue)
             return ResponseEntity(tfStateLock, HttpStatus.OK)
+        }
+    }
+
+    fun deleteLock(tfState: String): HttpEntity<Any> {
+        val keyValueLockDataMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/${tfState}.lock")
+        if (keyValueLockDataMaybe.isPresent) {
+            keyValuePersistence.deleteAllVersions(keyValueLockDataMaybe.get())
+            return ResponseEntity("", HttpStatus.OK)
+        } else {
+            return ResponseEntity("", HttpStatus.OK)
         }
     }
 }

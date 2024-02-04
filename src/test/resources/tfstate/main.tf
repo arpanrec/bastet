@@ -1,6 +1,10 @@
 terraform {
   backend "http" {
     address        = "http://localhost:8081/api/v1/tfstate/remote"
+    lock_address   = "http://localhost:8081/api/v1/tfstate/remote/lock"
+    unlock_address = "http://localhost:8081/api/v1/tfstate/remote/lock"
+    lock_method    = "POST"
+    unlock_method  = "DELETE"
     retry_wait_max = 2
     retry_max      = 1
     retry_wait_min = 1
