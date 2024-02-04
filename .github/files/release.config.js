@@ -9,7 +9,7 @@ module.exports = {
             "@semantic-release/exec",
             {
                 prepareCmd:
-                    "gradle cleanAll clean build bootJar -x test -Pversion=${nextRelease.version}",
+                    "gradle cleanAll clean build bootJar -x test -Pversion=${nextRelease.version} > /dev/null",
             },
         ],
         [
