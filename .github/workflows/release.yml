@@ -55,7 +55,7 @@ jobs:
                     @semantic-release/exec@6.0.3 \
                     @semantic-release/git@10.0.1 \
                     @semantic-release/github@9.2.6 \
-                    conventional-changelog-angular@7.0.0 -D
+                    conventional-changelog-angular@6.0.0 -D
 
             - name: Release
               run: |+
