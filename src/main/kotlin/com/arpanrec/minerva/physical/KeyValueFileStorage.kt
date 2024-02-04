@@ -10,6 +10,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Optional
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.deleteRecursively
 
 @Lazy
 @Component
@@ -70,6 +72,7 @@ class KeyValueFileStorage(@Value("\${minerva.physical.key-value-file-storage.pat
         return delete(keyValue, 0)
     }
 
+    @OptIn(ExperimentalPathApi::class)
     override fun delete(keyValue: KeyValue, version: Int): Boolean {
         var workingVersion = version
         if (workingVersion == 0) {
@@ -80,7 +83,7 @@ class KeyValueFileStorage(@Value("\${minerva.physical.key-value-file-storage.pat
         }
         val keyPath: Path = Paths.get(storageRootPath, keyValue.key!!)
         val keyVersionPath = Paths.get(keyPath.toString(), workingVersion.toString())
-        Files.deleteIfExists(keyVersionPath)
+        keyVersionPath.deleteRecursively()
         return true
     }
 

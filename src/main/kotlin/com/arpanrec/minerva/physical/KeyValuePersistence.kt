@@ -46,4 +46,13 @@ class KeyValuePersistence(
         keyValue.value = keyValue.value!!.let { gnuPG.encrypt(it) }
         return keyValueStorage.update(keyValue)
     }
+
+    fun delete(keyValue: KeyValue): Boolean {
+        return keyValueStorage.delete(keyValue)
+    }
+
+    fun deleteAllVersions(keyValue: KeyValue): Boolean {
+        return keyValueStorage.deleteAllVersions(keyValue)
+    }
+
 }

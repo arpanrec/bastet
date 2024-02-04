@@ -115,7 +115,10 @@ tasks {
         group = "build"
         delete(
             "logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle", "node_modules",
-            "package-lock.json", "package.json", "/tmp/minerva"
+            "package-lock.json", "package.json", "/tmp/minerva",
+            "src/test/resources/tfstate/.terraform",
+            "src/test/resources/tfstate/errored.tfstate",
+            "src/test/resources/tfstate/.terraform.lock.hcl"
         )
     }
     withType<KotlinCompile> {
