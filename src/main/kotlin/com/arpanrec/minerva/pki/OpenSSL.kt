@@ -28,6 +28,7 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 import java.io.ByteArrayInputStream
 import java.io.StringReader
@@ -46,6 +47,7 @@ import java.security.spec.RSAPublicKeySpec
 import java.util.*
 
 
+@Lazy
 @Component
 class OpenSSL(
     @Value("\${minerva.pki.openssl.ca-private-key}") caPrivateKey: String,
@@ -142,7 +144,11 @@ class OpenSSL(
         )
 
         // Add intended key usage extension if needed
-        issuedCertBuilder.addExtension(Extension.keyUsage, false, KeyUsage(KeyUsage.digitalSignature or KeyUsage.keyEncipherment))
+        issuedCertBuilder.addExtension(
+            Extension.keyUsage,
+            false,
+            KeyUsage(KeyUsage.digitalSignature or KeyUsage.keyEncipherment)
+        )
 
         issuedCertBuilder.addExtension(
             Extension.extendedKeyUsage,
