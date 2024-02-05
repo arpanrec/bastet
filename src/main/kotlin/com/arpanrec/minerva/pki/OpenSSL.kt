@@ -5,7 +5,6 @@ import com.arpanrec.minerva.utils.FileUtils
 import org.bouncycastle.asn1.ASN1Encodable
 import org.bouncycastle.asn1.DERSequence
 import org.bouncycastle.asn1.x500.X500Name
-import org.bouncycastle.asn1.x509.BasicConstraints
 import org.bouncycastle.asn1.x509.ExtendedKeyUsage
 import org.bouncycastle.asn1.x509.Extension
 import org.bouncycastle.asn1.x509.GeneralName
@@ -104,16 +103,22 @@ class OpenSSL(
         return KeyPair(publicKey, privateKey)
     }
 
-    fun csrBuilder() {
+    fun csrBuilder(certificateProperties: CertificateProperties) {
+        val keyPairGenerator: KeyPairGenerator = KeyPairGenerator.getInstance(
+            "RSA", BouncyCastleProvider.PROVIDER_NAME
+        )
+        keyPairGenerator.initialize(certificateProperties.keySize)
+        val issuedCertKeyPair: KeyPair = keyPairGenerator.generateKeyPair()
+
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DATE, -1)
         val startDate: Date = calendar.time
-        calendar.add(Calendar.YEAR, 1)
+        calendar.add(Calendar.DATE, certificateProperties.validTillDay)
         val endDate: Date = calendar.time
-        val keyPairGenerator: KeyPairGenerator = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME)
+
         // Issued By and Issued To same for root certificate
-        val issuedCertSubject = X500Name("CN=issued-cert")
-        val issuedCertKeyPair: KeyPair = keyPairGenerator.generateKeyPair()
+        val issuedCertSubject = X500Name(certificateProperties.rfc2253name)
+
         val p10Builder: PKCS10CertificationRequestBuilder =
             JcaPKCS10CertificationRequestBuilder(issuedCertSubject, issuedCertKeyPair.public)
         val csrBuilder: JcaContentSignerBuilder =
@@ -130,13 +135,23 @@ class OpenSSL(
             csr.subject,
             csr.subjectPublicKeyInfo
         )
+
         val issuedCertExtUtils = JcaX509ExtensionUtils()
-        issuedCertBuilder.addExtension(Extension.basicConstraints, true, BasicConstraints(false))
-        issuedCertBuilder.addExtension(
-            Extension.authorityKeyIdentifier,
-            false,
-            issuedCertExtUtils.createAuthorityKeyIdentifier(this.rootCax509Certificate)
-        )
+
+        if (certificateProperties.setBasicConstraints) {
+            issuedCertBuilder.addExtension(
+                Extension.basicConstraints, certificateProperties.basicConstraints.isCritical,
+                certificateProperties.getBasicConstraints()
+            )
+        }
+
+        if (certificateProperties.setAuthorityKeyIdentifier) {
+            issuedCertBuilder.addExtension(
+                Extension.authorityKeyIdentifier,
+                certificateProperties.isAuthorityKeyIdentifierCritical,
+                issuedCertExtUtils.createAuthorityKeyIdentifier(this.rootCax509Certificate)
+            )
+        }
         issuedCertBuilder.addExtension(
             Extension.subjectKeyIdentifier,
             false,
