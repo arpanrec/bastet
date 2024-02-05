@@ -49,6 +49,21 @@
             "name": "minerva.hash.argon2.bring-your-own-salt",
             "type": "java.lang.String",
             "description": "Argon2 Salt String. Base64 encoded 16 bytes."
+        },
+        {
+            "name": "minerva.pki.openssl.ca-private-key",
+            "type": "java.lang.String",
+            "description": "The OpenSSL RSA PKCS8 PEM Private Key."
+        },
+        {
+            "name": "minerva.pki.openssl.ca-private-key-passphrase",
+            "type": "java.lang.String",
+            "description": "The OpenSSL RSA PKCS8 PEM Private Key Passphrase."
+        },
+        {
+            "name": "minerva.pki.openssl.ca-certificate",
+            "type": "java.lang.String",
+            "description": "The OpenSSL X509 RSA PKCS8 PEM Certificate."
         }
     ]
 }
