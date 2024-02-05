@@ -1,6 +1,6 @@
 package com.arpanrec.minerva.api;
 
-import com.arpanrec.minerva.physical.KeyValue;
+import com.arpanrec.minerva.physical.KVData;
 import com.arpanrec.minerva.physical.KeyValuePersistence;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -29,26 +30,27 @@ public class KeyValueApi {
     }
 
     @GetMapping
-    public HttpEntity<KeyValue> get(HttpServletRequest request) {
+    public HttpEntity<KVData> get(HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
-        Optional<KeyValue> keyValue = keyValuePersistence.get(key);
+        Optional<KVData> keyValue = keyValuePersistence.get(key);
         return keyValue.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public HttpEntity<?> save(@RequestBody KeyValue keyValue, HttpServletRequest request) {
+    public HttpEntity<?> save(@RequestBody KVData keyValue, HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
-        keyValue.setKey(key);
+        keyValuePersistence.save(key, keyValue);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping
-    public HttpEntity<?> update(@RequestBody KeyValue keyValue, HttpServletRequest request) {
+    public HttpEntity<?> update(@RequestBody KVData keyValue, HttpServletRequest request,
+                              @RequestParam(defaultValue = "0", name = "version") int version) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
-        keyValue.setKey(key);
+        this.keyValuePersistence.update(key, keyValue, version);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

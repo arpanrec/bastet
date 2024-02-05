@@ -1,6 +1,6 @@
 package com.arpanrec.minerva.hash
 
-import com.arpanrec.minerva.physical.KeyValue
+import com.arpanrec.minerva.physical.KVData
 import com.arpanrec.minerva.physical.KeyValuePersistence
 import com.arpanrec.minerva.utils.FileUtils
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator
@@ -42,15 +42,14 @@ class Argon2(
             argon2Salt = Base64.getDecoder().decode(FileUtils.fileOrString(bringYourOwnSalt))
             return
         }
-        keyValuePersistence.get(internalArgon2SaltPath!!, 0).ifPresentOrElse({ kv: KeyValue ->
+        keyValuePersistence.get(internalArgon2SaltPath!!, 0).ifPresentOrElse({ kv: KVData ->
             log.info("Argon2 salt already exists")
             argon2Salt = Base64.getDecoder().decode(kv.value)
         }, {
             try {
                 val saltString: String = generateSalt16ByteBase64EncodedString()
-                val keyValue = KeyValue(key = internalArgon2SaltPath)
-                keyValue.value = saltString
-                keyValuePersistence.save(keyValue)
+                val keyValue = KVData(saltString, mapOf("created" to System.currentTimeMillis().toString()))
+                keyValuePersistence.save(internalArgon2SaltPath!!, keyValue)
                 log.info("Argon2 salt created")
                 argon2Salt = Base64.getDecoder().decode(saltString)
             } catch (e: Exception) {

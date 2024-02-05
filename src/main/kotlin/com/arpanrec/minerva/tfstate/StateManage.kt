@@ -1,6 +1,6 @@
 package com.arpanrec.minerva.tfstate
 
-import com.arpanrec.minerva.physical.KeyValue
+import com.arpanrec.minerva.physical.KVData
 import com.arpanrec.minerva.physical.KeyValuePersistence
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.type.MapType
@@ -24,9 +24,9 @@ class StateManage(
     )
 
     fun get(tfState: String): HttpEntity<Any> {
-        val keyValueMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/$tfState")
+        val keyValueMaybe: Optional<KVData> = keyValuePersistence.get("$tfStateKeyPath/$tfState")
         if (keyValueMaybe.isPresent) {
-            val keyValue: KeyValue = keyValueMaybe.get()
+            val keyValue: KVData = keyValueMaybe.get()
             val result: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
                 keyValue.value, valueMapType
             )
@@ -40,19 +40,19 @@ class StateManage(
         tfState: String, tfStateJson: Map<String, Any>, tfStateLockID: String?
     ): HttpEntity<Map<String, Any>> {
         val optionalExistingStateData = keyValuePersistence.get(key = "$tfStateKeyPath/$tfState")
-        val keyValueStateData = KeyValue(
-            key = "$tfStateKeyPath/$tfState", value = objectMapper.writeValueAsString(tfStateJson)
+        val keyValueStateData = KVData(
+            objectMapper.writeValueAsString(tfStateJson), mapOf("created" to System.currentTimeMillis().toString())
         )
         if (tfStateLockID == null) {
 
             if (optionalExistingStateData.isPresent) {
-                keyValuePersistence.update(keyValueStateData)
+                keyValuePersistence.update("$tfStateKeyPath/$tfState", keyValueStateData)
             } else {
-                keyValuePersistence.save(keyValueStateData)
+                keyValuePersistence.save("$tfStateKeyPath/$tfState", keyValueStateData)
             }
             return ResponseEntity(HttpStatus.OK)
         }
-        val keyValueLockDataMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/${tfState}.lock")
+        val keyValueLockDataMaybe: Optional<KVData> = keyValuePersistence.get("$tfStateKeyPath/${tfState}.lock")
         if (keyValueLockDataMaybe.isPresent) {
             val lockDataMap: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
                 keyValueLockDataMaybe.get().value, valueMapType
@@ -60,9 +60,9 @@ class StateManage(
             val existingLockID: String = lockDataMap["ID"] as String
             if (existingLockID == tfStateLockID) {
                 if (optionalExistingStateData.isPresent) {
-                    keyValuePersistence.update(keyValueStateData)
+                    keyValuePersistence.update("$tfStateKeyPath/$tfState", keyValueStateData)
                 } else {
-                    keyValuePersistence.save(keyValueStateData)
+                    keyValuePersistence.save("$tfStateKeyPath/$tfState", keyValueStateData)
                 }
                 return ResponseEntity(HttpStatus.OK)
             } else {
@@ -78,26 +78,25 @@ class StateManage(
     }
 
     fun setLock(tfState: String, tfStateLock: Map<String, Any>): HttpEntity<Map<String, Any>> {
-        val keyValueLockDataMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/${tfState}.lock")
+        val keyValueLockDataMaybe: Optional<KVData> = keyValuePersistence.get("$tfStateKeyPath/${tfState}.lock")
         if (keyValueLockDataMaybe.isPresent) {
             val tfLockJson: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
                 keyValueLockDataMaybe.get().value, valueMapType
             )
             return ResponseEntity(tfLockJson, HttpStatus.CONFLICT)
         } else {
-            val keyValue = KeyValue(
-                key = "$tfStateKeyPath/${tfState}.lock", value = objectMapper.writeValueAsString(tfStateLock)
+            val keyValue = KVData(
+                objectMapper.writeValueAsString(tfStateLock), mapOf("created" to System.currentTimeMillis().toString())
             )
-            keyValuePersistence.save(keyValue)
+            keyValuePersistence.save("$tfStateKeyPath/${tfState}.lock", keyValue)
             return ResponseEntity(HttpStatus.OK)
         }
     }
 
     fun deleteLock(tfState: String): HttpEntity<Any> {
-        val keyValueLockDataMaybe: Optional<KeyValue> =
-            keyValuePersistence.get(key = "${tfStateKeyPath}/${tfState}.lock")
+        val keyValueLockDataMaybe: Optional<KVData> = keyValuePersistence.get("${tfStateKeyPath}/${tfState}.lock")
         if (keyValueLockDataMaybe.isPresent) {
-            keyValuePersistence.delete(keyValueLockDataMaybe.get())
+            keyValuePersistence.delete("${tfStateKeyPath}/${tfState}.lock")
             return ResponseEntity(HttpStatus.OK)
         } else {
             return ResponseEntity(HttpStatus.OK)

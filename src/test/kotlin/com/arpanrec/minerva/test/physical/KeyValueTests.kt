@@ -1,6 +1,6 @@
 package com.arpanrec.minerva.test.physical
 
-import com.arpanrec.minerva.physical.KeyValue
+import com.arpanrec.minerva.physical.KVData
 import com.arpanrec.minerva.physical.KeyValuePersistence
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
@@ -15,12 +15,12 @@ class KeyValueTests(@Autowired private val keyValuePersistence: KeyValuePersiste
 
     @Test
     fun testSave() {
-        val keyValueSave = KeyValue("testSave", "1")
-        keyValuePersistence.save(keyValueSave)
+        val keyValueSave = KVData("1", mapOf("created" to System.currentTimeMillis().toString()))
+        keyValuePersistence.save("testSave", KVData("1", mapOf("created" to System.currentTimeMillis().toString())))
         val keyValueGet = keyValuePersistence.get("testSave")
         if (keyValueGet.isPresent) {
             log.info("keyValueGet: {}", keyValueGet.get())
-            assert(keyValueGet.get().key == keyValueSave.key) { "keyValueSave.key is not equal to keyValueGet.key" }
+            assert(keyValueGet.get().value == keyValueSave.value) { "keyValueSave.value is not equal to keyValueGet.value" }
         } else {
             assert(false) { "keyValue2 is null" }
         }
@@ -28,15 +28,15 @@ class KeyValueTests(@Autowired private val keyValuePersistence: KeyValuePersiste
 
     @Test
     fun testSaveVersion() {
-        val keyValueSave = KeyValue("testSaveVersion", "1")
-        keyValuePersistence.save(keyValueSave)
-        val keyValueSaveNextVersion = KeyValue("testSaveVersion", "2")
-        keyValuePersistence.update(keyValueSaveNextVersion)
+        val keyValueSave = KVData("1", mapOf("created" to System.currentTimeMillis().toString()))
+        keyValuePersistence.save("testSaveVersion", keyValueSave)
+        val keyValueSaveNextVersion = KVData("2", mapOf("created" to System.currentTimeMillis().toString()))
+        keyValuePersistence.update("testSaveVersion", keyValueSaveNextVersion)
         val keyValueGet = keyValuePersistence.get("testSaveVersion")
         if (keyValueGet.isPresent) {
             log.info("keyValueGet: {}", keyValueGet.get())
-            assert(keyValueGet.get().key == keyValueSaveNextVersion.key) {
-                "keyValueGet.key is not equal to keyValueSaveNextVersion.key"
+            assert(keyValueGet.get().value == keyValueSaveNextVersion.value) {
+                "keyValueGet.value is not equal to keyValueSaveNextVersion.value"
             }
         } else {
             assert(false) { "keyValue2 is null" }
@@ -46,7 +46,7 @@ class KeyValueTests(@Autowired private val keyValuePersistence: KeyValuePersiste
 
         if (keyValueGetOldVersion.isPresent) {
             log.info("keyValueGetOldVersion: {}", keyValueGetOldVersion.get())
-            assert(keyValueGetOldVersion.get().key == keyValueSave.key) {
+            assert(keyValueGetOldVersion.get().value == keyValueSave.value) {
                 "keyValueGetOldVersion.key is not equal to keyValueSave.key"
             }
         } else {

@@ -26,59 +26,67 @@ class KeyValueFileStorage(@Value("\${minerva.physical.key-value-file-storage.pat
 
     private val valueFileName = "value.json"
 
-    override fun get(key: String, version: Int): Optional<KeyValue> {
+    private fun keyTransformer(key: String): String {
+        return key.lowercase()
+    }
+
+    override fun get(key: String, version: Int): Optional<KVData> {
+        val transformedKey = keyTransformer(key)
         var workingVersion = version
         if (workingVersion == 0) {
-            workingVersion = getLatestVersion(key)
+            workingVersion = getLatestVersion(transformedKey)
             if (workingVersion == 0) {
                 return Optional.empty()
             }
         }
 
-        val filePath: Path = Paths.get(storageRootPath, key, workingVersion.toString(), valueFileName)
+        val filePath: Path = Paths.get(storageRootPath, transformedKey, workingVersion.toString(), valueFileName)
         val json: String = Files.readString(filePath)
-        return Optional.of(Json.decodeFromString(KeyValue.serializer(), json))
+        return Optional.of(Json.decodeFromString(KVData.serializer(), json))
     }
 
-    override fun save(keyValue: KeyValue): Boolean {
-        if (getLatestVersion(keyValue.key!!) > 0) {
-            throw MinervaException("Key ${keyValue.key} already exists")
+    override fun save(key: String, kvData: KVData): Boolean {
+        if (getLatestVersion(key) > 0) {
+            throw MinervaException("Key $key already exists")
         }
-        return saveOrUpdate(keyValue)
+        return saveOrUpdate(key, kvData, 0)
     }
 
-    override fun update(keyValue: KeyValue): Boolean {
-        if (getLatestVersion(keyValue.key!!) == 0) {
-            throw MinervaException("Key ${keyValue.key} does not exist")
+    override fun update(key: String, kvData: KVData, version: Int): Boolean {
+        if (getLatestVersion(key) == 0) {
+            throw MinervaException("Key $key does not exist")
         }
-        return saveOrUpdate(keyValue)
+        return saveOrUpdate(key, kvData, version)
     }
 
-    private fun saveOrUpdate(keyValue: KeyValue): Boolean {
-        val keyPath: Path = Paths.get(storageRootPath, keyValue.key)
+    private fun saveOrUpdate(key: String, kvData: KVData, version: Int): Boolean {
+        val transformedKey = keyTransformer(key)
+        var workingVersion = version
+        val keyPath: Path = Paths.get(storageRootPath, transformedKey)
         Files.createDirectories(keyPath)
-        if (keyValue.version == 0) {
-            keyValue.version = getNextVersion(keyValue.key!!)
+        if (workingVersion == 0) {
+            workingVersion = getNextVersion(transformedKey)
         }
-        val keyVersionPath = Paths.get(keyPath.toString(), keyValue.version.toString())
+        val keyVersionPath = Paths.get(keyPath.toString(), workingVersion.toString())
         Files.createDirectories(keyVersionPath)
         val keyVersionFilePath = Paths.get(keyVersionPath.toString(), valueFileName)
-        val json = Json.encodeToString(keyValue)
+        val json = Json.encodeToString(kvData)
         Files.writeString(keyVersionFilePath, json)
         return true
     }
 
     @OptIn(ExperimentalPathApi::class)
-    override fun delete(keyValue: KeyValue): Boolean {
-        var workingVersion = keyValue.version
+    override fun delete(key: String, version: Int): Boolean {
+        val transformedKey = keyTransformer(key)
+        var workingVersion = version
         if (workingVersion == 0) {
-            workingVersion = getLatestVersion(keyValue.key!!)
+            workingVersion = getLatestVersion(transformedKey)
             if (workingVersion == 0) {
-                throw MinervaException("Key ${keyValue.key} with version ${keyValue.version} does not exist")
+                throw MinervaException("Key $key with does not exist")
             }
         }
 
-        val keyPath: Path = Paths.get(storageRootPath, keyValue.key!!)
+        val keyPath: Path = Paths.get(storageRootPath, transformedKey)
         val keyVersionPath = Paths.get(keyPath.toString(), workingVersion.toString())
         keyVersionPath.deleteRecursively()
         return true
@@ -95,7 +103,8 @@ class KeyValueFileStorage(@Value("\${minerva.physical.key-value-file-storage.pat
     }
 
     override fun listVersions(key: String): List<Int> {
-        val keyPath: Path = Paths.get(storageRootPath, key)
+        val transformedKey = keyTransformer(key)
+        val keyPath: Path = Paths.get(storageRootPath, transformedKey)
         val versionsList: List<Int>
         if (!Files.exists(keyPath)) {
             log.debug("No versions found for key: {}, in Path {}", key, keyPath)
@@ -110,7 +119,8 @@ class KeyValueFileStorage(@Value("\${minerva.physical.key-value-file-storage.pat
     }
 
     override fun listKeys(key: String): List<String> {
-        val keyPath: Path = Paths.get(storageRootPath, key)
+        val transformedKey = keyTransformer(key)
+        val keyPath: Path = Paths.get(storageRootPath, transformedKey)
         return Files.walk(keyPath, 1).filter { Files.isDirectory(it) && !it.equals(keyPath) }.map {
             it.toString().replaceFirst("${keyPath.toAbsolutePath()}/", "")
         }.toList()
