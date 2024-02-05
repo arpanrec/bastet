@@ -37,19 +37,18 @@ public class KeyValueApi {
     }
 
     @PostMapping
-    public HttpEntity<KeyValue> save(@RequestBody KeyValue keyValue, HttpServletRequest request) {
+    public HttpEntity<?> save(@RequestBody KeyValue keyValue, HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
         keyValue.setKey(key);
-        return new ResponseEntity<>(keyValuePersistence.save(keyValue), HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping
-    public HttpEntity<KeyValue> update(@RequestBody KeyValue keyValue, HttpServletRequest request) {
+    public HttpEntity<?> update(@RequestBody KeyValue keyValue, HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
         keyValue.setKey(key);
-        return new ResponseEntity<>(keyValuePersistence.update(keyValue), HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
 }

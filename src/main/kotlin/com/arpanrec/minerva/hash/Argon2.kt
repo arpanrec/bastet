@@ -48,8 +48,7 @@ class Argon2(
         }, {
             try {
                 val saltString: String = generateSalt16ByteBase64EncodedString()
-                val keyValue = KeyValue()
-                keyValue.key = internalArgon2SaltPath
+                val keyValue = KeyValue(key = internalArgon2SaltPath)
                 keyValue.value = saltString
                 keyValuePersistence.save(keyValue)
                 log.info("Argon2 salt created")
