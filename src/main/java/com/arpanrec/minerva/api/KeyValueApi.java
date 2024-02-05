@@ -51,5 +51,4 @@ public class KeyValueApi {
         keyValue.setKey(key);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
 }
