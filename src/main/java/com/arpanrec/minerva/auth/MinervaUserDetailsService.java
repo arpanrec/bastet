@@ -2,7 +2,7 @@ package com.arpanrec.minerva.auth;
 
 import com.arpanrec.minerva.exceptions.MinervaException;
 import com.arpanrec.minerva.hash.Argon2;
-import com.arpanrec.minerva.physical.KeyValue;
+import com.arpanrec.minerva.physical.KVData;
 import com.arpanrec.minerva.physical.KeyValuePersistence;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 @Getter
@@ -47,7 +48,7 @@ public class MinervaUserDetailsService implements UserDetailsService {
 
     public MinervaUserDetails loadMinervaUserDetailsByUsername(String username) {
         log.debug("Loading user by username: {}", username);
-        Optional<KeyValue> userData = keyValuePersistence.get(internalUsersKeyPath + "/" + username);
+        Optional<KVData> userData = keyValuePersistence.get(internalUsersKeyPath + "/" + username);
         if (userData.isEmpty()) {
             throw new MinervaException("User not found with username: " + username);
         } else {
@@ -62,7 +63,7 @@ public class MinervaUserDetailsService implements UserDetailsService {
         }
     }
 
-    private KeyValue minervaUserDetailsToKeyValue(MinervaUserDetails minervaUserDetails) {
+    private KVData minervaUserDetailsToKeyValue(MinervaUserDetails minervaUserDetails) {
         String hashedPassword = encoder.encode(minervaUserDetails.getPassword());
         minervaUserDetails = new MinervaUserDetails(
             minervaUserDetails.getUsername(),
@@ -70,10 +71,10 @@ public class MinervaUserDetailsService implements UserDetailsService {
             minervaUserDetails.getRoles());
         log.debug("User password hashed: {}", minervaUserDetails);
         try {
-            KeyValue userData = new KeyValue();
-            userData.setKey(internalUsersKeyPath + "/" + minervaUserDetails.getUsername());
-            userData.setValue(objectMapper.writeValueAsString(minervaUserDetails));
-            return userData;
+            return new KVData(
+                objectMapper.writeValueAsString(minervaUserDetails),
+                new HashMap<>()
+            );
         } catch (Exception e) {
             throw new MinervaException("Error while saving user", e);
         }
@@ -81,13 +82,13 @@ public class MinervaUserDetailsService implements UserDetailsService {
 
     public void saveMinervaUserDetails(MinervaUserDetails minervaUserDetails) {
         log.debug("Saving user: {}", minervaUserDetails.toString());
-        KeyValue userData = minervaUserDetailsToKeyValue(minervaUserDetails);
-        keyValuePersistence.save(userData);
+        KVData userData = minervaUserDetailsToKeyValue(minervaUserDetails);
+        keyValuePersistence.save(internalUsersKeyPath + "/" + minervaUserDetails.getUsername(), userData);
     }
 
     public void updateMinervaUserDetails(MinervaUserDetails minervaUserDetails) {
         log.debug("Updating user: {}", minervaUserDetails.toString());
-        KeyValue userData = minervaUserDetailsToKeyValue(minervaUserDetails);
-        keyValuePersistence.update(userData);
+        KVData userData = minervaUserDetailsToKeyValue(minervaUserDetails);
+        keyValuePersistence.update(internalUsersKeyPath + "/" + minervaUserDetails.getUsername(), userData);
     }
 }
