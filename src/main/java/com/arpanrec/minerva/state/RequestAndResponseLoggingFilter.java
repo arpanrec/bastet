@@ -26,16 +26,13 @@ import java.util.stream.Stream;
 @ManagedResource
 public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
 
-    private final static Logger log =
-            LoggerFactory.getLogger(RequestAndResponseLoggingFilter.class);
+    private final static Logger log = LoggerFactory.getLogger(RequestAndResponseLoggingFilter.class);
 
     private static final List<MediaType> VISIBLE_TYPES = Arrays.asList(MediaType.valueOf("text/*"),
-            MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON,
-            MediaType.APPLICATION_XML, MediaType.valueOf("application/*+json"),
-            MediaType.valueOf("application/*+xml"), MediaType.MULTIPART_FORM_DATA);
+        MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
+        MediaType.valueOf("application/*+json"), MediaType.valueOf("application/*+xml"), MediaType.MULTIPART_FORM_DATA);
 
-    private static final List<String> SENSITIVE_HEADERS =
-            Arrays.asList("authorization", "proxy-authorization");
+    private static final List<String> SENSITIVE_HEADERS = Arrays.asList("authorization", "proxy-authorization");
 
     private boolean enabled = true;
 
@@ -50,9 +47,8 @@ public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
     }
 
 
-    protected void doFilterWrapped(ContentCachingRequestWrapper request,
-            ContentCachingResponseWrapper response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterWrapped(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response,
+                                   FilterChain filterChain) throws ServletException, IOException {
 
         StringBuilder msg = new StringBuilder();
 
@@ -75,8 +71,8 @@ public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
         }
     }
 
-    protected void afterRequest(ContentCachingRequestWrapper request,
-            ContentCachingResponseWrapper response, StringBuilder msg) {
+    protected void afterRequest(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response,
+                                StringBuilder msg) {
         if (enabled && log.isInfoEnabled()) {
             logRequestBody(request, request.getRemoteAddr() + "|>", msg);
             msg.append("\n-- RESPONSE --\n");
@@ -84,75 +80,59 @@ public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
         }
     }
 
-    private static void logRequestHeader(ContentCachingRequestWrapper request, String prefix,
-            StringBuilder msg) {
+    private static void logRequestHeader(ContentCachingRequestWrapper request, String prefix, StringBuilder msg) {
         String queryString = request.getQueryString();
         if (queryString == null) {
-            msg.append(
-                    String.format("%s %s %s", prefix, request.getMethod(), request.getRequestURI()))
-                    .append("\n");
+            msg.append(String.format("%s %s %s", prefix, request.getMethod(), request.getRequestURI())).append("\n");
         } else {
-            msg.append(String.format("%s %s %s?%s", prefix, request.getMethod(),
-                    request.getRequestURI(), queryString)).append("\n");
+            msg.append(String.format("%s %s %s?%s", prefix, request.getMethod(), request.getRequestURI(),
+                queryString)).append("\n");
         }
-        Collections.list(request.getHeaderNames()).forEach(headerName -> Collections
-                .list(request.getHeaders(headerName)).forEach(headerValue -> {
-                    if (isSensitiveHeader(headerName)) {
-                        msg.append(String.format("%s %s: %s", prefix, headerName, "*******"))
-                                .append("\n");
-                    } else {
-                        msg.append(String.format("%s %s: %s", prefix, headerName, headerValue))
-                                .append("\n");
-                    }
-                }));
+        Collections.list(request.getHeaderNames()).forEach(headerName -> Collections.list(request.getHeaders(headerName)).forEach(headerValue -> {
+            if (isSensitiveHeader(headerName)) {
+                msg.append(String.format("%s %s: %s", prefix, headerName, "*******")).append("\n");
+            } else {
+                msg.append(String.format("%s %s: %s", prefix, headerName, headerValue)).append("\n");
+            }
+        }));
         msg.append(prefix).append("\n");
     }
 
-    private static void logRequestBody(ContentCachingRequestWrapper request, String prefix,
-            StringBuilder msg) {
+    private static void logRequestBody(ContentCachingRequestWrapper request, String prefix, StringBuilder msg) {
         byte[] content = request.getContentAsByteArray();
         if (content.length > 0) {
-            logContent(content, request.getContentType(), request.getCharacterEncoding(), prefix,
-                    msg);
+            logContent(content, request.getContentType(), request.getCharacterEncoding(), prefix, msg);
         }
     }
 
-    private static void logResponse(ContentCachingResponseWrapper response, String prefix,
-            StringBuilder msg) {
+    private static void logResponse(ContentCachingResponseWrapper response, String prefix, StringBuilder msg) {
         int status = response.getStatus();
-        msg.append(String.format("%s %s %s", prefix, status,
-                HttpStatus.valueOf(status).getReasonPhrase())).append("\n");
-        response.getHeaderNames()
-                .forEach(headerName -> response.getHeaders(headerName).forEach(headerValue -> {
-                    if (isSensitiveHeader(headerName)) {
-                        msg.append(String.format("%s %s: %s", prefix, headerName, "*******"))
-                                .append("\n");
-                    } else {
-                        msg.append(String.format("%s %s: %s", prefix, headerName, headerValue))
-                                .append("\n");
-                    }
-                }));
+        msg.append(String.format("%s %s %s", prefix, status, HttpStatus.valueOf(status).getReasonPhrase())).append(
+            "\n");
+        response.getHeaderNames().forEach(headerName -> response.getHeaders(headerName).forEach(headerValue -> {
+            if (isSensitiveHeader(headerName)) {
+                msg.append(String.format("%s %s: %s", prefix, headerName, "*******")).append("\n");
+            } else {
+                msg.append(String.format("%s %s: %s", prefix, headerName, headerValue)).append("\n");
+            }
+        }));
         msg.append(prefix).append("\n");
         byte[] content = response.getContentAsByteArray();
         if (content.length > 0) {
-            logContent(content, response.getContentType(), response.getCharacterEncoding(), prefix,
-                    msg);
+            logContent(content, response.getContentType(), response.getCharacterEncoding(), prefix, msg);
         }
     }
 
-    private static void logContent(byte[] content, String contentType, String contentEncoding,
-            String prefix, StringBuilder msg) {
+    private static void logContent(byte[] content, String contentType, String contentEncoding, String prefix,
+                                   StringBuilder msg) {
         MediaType mediaType = MediaType.valueOf(contentType);
-        boolean visible =
-                VISIBLE_TYPES.stream().anyMatch(visibleType -> visibleType.includes(mediaType));
+        boolean visible = VISIBLE_TYPES.stream().anyMatch(visibleType -> visibleType.includes(mediaType));
         if (visible) {
             try {
                 String contentString = new String(content, contentEncoding);
-                Stream.of(contentString.split("\r\n|\r|\n"))
-                        .forEach(line -> msg.append(prefix).append(" ").append(line).append("\n"));
+                Stream.of(contentString.split("\r\n|\r|\n")).forEach(line -> msg.append(prefix).append(" ").append(line).append("\n"));
             } catch (UnsupportedEncodingException e) {
-                msg.append(String.format("%s [%d bytes content]", prefix, content.length))
-                        .append("\n");
+                msg.append(String.format("%s [%d bytes content]", prefix, content.length)).append("\n");
             }
         } else {
             msg.append(String.format("%s [%d bytes content]", prefix, content.length)).append("\n");
@@ -180,9 +160,8 @@ public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NotNull HttpServletRequest request,
-            @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
+                                    @NotNull FilterChain filterChain) throws ServletException, IOException {
         if (isAsyncDispatch(request)) {
             filterChain.doFilter(request, response);
         } else {
