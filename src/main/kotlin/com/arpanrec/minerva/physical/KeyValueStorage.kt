@@ -4,17 +4,26 @@ import java.util.Optional
 
 interface KeyValueStorage {
 
-    fun save(keyValue: KeyValue): Boolean
-
-    fun update(keyValue: KeyValue): Boolean
-
-    fun get(key: String): Optional<KeyValue> {
+    fun get(key: String): Optional<KVData> {
         return get(key, 0)
     }
 
-    fun get(key: String, version: Int): Optional<KeyValue>
+    fun get(key: String, version: Int): Optional<KVData>
 
-    fun delete(keyValue: KeyValue): Boolean
+    fun save(key: String, kvData: KVData): Boolean
+
+    fun update(key: String, kvData: KVData): Boolean {
+        return update(key, kvData, 0)
+    }
+
+    fun update(key: String, kvData: KVData, version: Int): Boolean
+
+
+    fun delete(key: String): Boolean {
+        return delete(key, 0)
+    }
+
+    fun delete(key: String, version: Int): Boolean
 
     fun getNextVersion(key: String): Int
 
