@@ -10,7 +10,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.Optional
 
 @Component
 class StateManage(
@@ -32,7 +32,7 @@ class StateManage(
             )
             return ResponseEntity(result, HttpStatus.OK)
         } else {
-            return ResponseEntity("", HttpStatus.OK)
+            return ResponseEntity(HttpStatus.OK)
         }
     }
 
@@ -50,7 +50,7 @@ class StateManage(
             } else {
                 keyValuePersistence.save(keyValueStateData)
             }
-            return ResponseEntity(tfStateJson, HttpStatus.OK)
+            return ResponseEntity(HttpStatus.OK)
         }
         val keyValueLockDataMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/${tfState}.lock")
         if (keyValueLockDataMaybe.isPresent) {
@@ -64,7 +64,7 @@ class StateManage(
                 } else {
                     keyValuePersistence.save(keyValueStateData)
                 }
-                return ResponseEntity(tfStateJson, HttpStatus.OK)
+                return ResponseEntity(HttpStatus.OK)
             } else {
                 return ResponseEntity(lockDataMap, HttpStatus.CONFLICT)
             }
@@ -89,17 +89,18 @@ class StateManage(
                 key = "$tfStateKeyPath/${tfState}.lock", value = objectMapper.writeValueAsString(tfStateLock)
             )
             keyValuePersistence.save(keyValue)
-            return ResponseEntity(tfStateLock, HttpStatus.OK)
+            return ResponseEntity(HttpStatus.OK)
         }
     }
 
     fun deleteLock(tfState: String): HttpEntity<Any> {
-        val keyValueLockDataMaybe: Optional<KeyValue> = keyValuePersistence.get(key = "$tfStateKeyPath/${tfState}.lock")
+        val keyValueLockDataMaybe: Optional<KeyValue> =
+            keyValuePersistence.get(key = "${tfStateKeyPath}/${tfState}.lock")
         if (keyValueLockDataMaybe.isPresent) {
-            keyValuePersistence.deleteAllVersions(keyValueLockDataMaybe.get())
-            return ResponseEntity("", HttpStatus.OK)
+            keyValuePersistence.delete(keyValueLockDataMaybe.get())
+            return ResponseEntity(HttpStatus.OK)
         } else {
-            return ResponseEntity("", HttpStatus.OK)
+            return ResponseEntity(HttpStatus.OK)
         }
     }
 }

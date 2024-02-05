@@ -8,6 +8,4 @@ data class KeyValue(
     var value: String? = null,
     var metadata: Map<String, String> = mapOf(),
     var version: Int = 0,
-    var isBinary: Boolean = false,
-    var keyValueBinary: KeyValueBinary? = null
 )

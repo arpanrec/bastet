@@ -35,13 +35,13 @@ class KeyValuePersistence(
         return keyValue
     }
 
-    fun save(keyValue: KeyValue): KeyValue {
+    fun save(keyValue: KeyValue): Boolean {
         keyValue.key = keyValue.key!!.lowercase()
         keyValue.value = keyValue.value!!.let { gnuPG.encrypt(it) }
         return keyValueStorage.save(keyValue)
     }
 
-    fun update(keyValue: KeyValue): KeyValue {
+    fun update(keyValue: KeyValue): Boolean {
         keyValue.key = keyValue.key!!.lowercase()
         keyValue.value = keyValue.value!!.let { gnuPG.encrypt(it) }
         return keyValueStorage.update(keyValue)
@@ -50,9 +50,4 @@ class KeyValuePersistence(
     fun delete(keyValue: KeyValue): Boolean {
         return keyValueStorage.delete(keyValue)
     }
-
-    fun deleteAllVersions(keyValue: KeyValue): Boolean {
-        return keyValueStorage.deleteAllVersions(keyValue)
-    }
-
 }
