@@ -3,9 +3,22 @@ server:
     servlet:
         context-path: /
 spring:
+    devtools:
+        livereload:
+            enabled: false
+        restart:
+            enabled: false
     profiles:
         active: dev
     application:
         name: minerva
     main:
         lazy-initialization: false
+    datasource:
+        url: jdbc:sqlite:mydatabase.db
+        driver-class-name: org.sqlite.JDBC
+    jpa:
+        show-sql: true
+        # database-platform: org.hibernate.community.dialect.SQLiteDialect
+        hibernate:
+            ddl-auto: update
