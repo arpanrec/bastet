@@ -28,6 +28,7 @@ public class RootUser implements CommandLineRunner {
         Set<UserPrivilege> rootPrivileges = Set.of(new UserPrivilege(PrivilegeTypes.SUDO));
         Set<UserRole> rootRoles = Set.of(new UserRole(RoleTypes.ADMIN, rootPrivileges));
         User rootUser = new User(rootUsername, rootPassword, rootRoles);
-        userService.save(rootUser);
+        rootUser.setId(1L);
+        userService.saveOrUpdate(rootUser);
     }
 }

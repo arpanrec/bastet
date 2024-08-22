@@ -51,8 +51,8 @@ minerva:
         filter:
             header-key: Authorization
         security-config:
-            root-username: root1
-            root-password: root1
+            root-username: root
+            root-password: root
     physical:
         key-value-persistence:
             persistence-type: file
