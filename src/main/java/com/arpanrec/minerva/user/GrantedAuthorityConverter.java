@@ -23,6 +23,10 @@ public class GrantedAuthorityConverter implements AttributeConverter<Set<UserRol
 
             rolesString.append(role.getAuthority());
             Set<UserPrivilege> privileges = role.getPrivileges();
+            if (privileges == null || privileges.isEmpty()) {
+                rolesString.append(ROLES_DELIMITER);
+                continue;
+            }
             for (UserPrivilege privilege : privileges) {
                 rolesString.append(PRIVILEGES_DELIMITER).append(privilege.getAuthority());
             }

@@ -1,5 +1,6 @@
 package com.arpanrec.minerva.auth;
 
+import com.arpanrec.minerva.user.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,18 +22,18 @@ import java.util.Base64;
 
 @Slf4j
 @Component
-public class MinervaOncePerRequestFilter extends OncePerRequestFilter {
+public class AuthenticationFilter extends OncePerRequestFilter {
 
     private final String headerKey;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
 
-    public MinervaOncePerRequestFilter(@Autowired MinervaAuthenticationManager minervaAuthenticationManager,
-                                       @Autowired MinervaUserDetailsService minervaUserDetailsService,
-                                       @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey) {
+    public AuthenticationFilter(@Autowired AuthenticationManagerImpl authenticationManagerImpl,
+                                @Autowired UserServiceImpl userDetailsService,
+                                @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey) {
         this.headerKey = headerKey;
-        this.authenticationManager = minervaAuthenticationManager;
-        this.userDetailsService = minervaUserDetailsService;
+        this.authenticationManager = authenticationManagerImpl;
+        this.userDetailsService = userDetailsService;
     }
 
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -52,7 +53,7 @@ public class MinervaOncePerRequestFilter extends OncePerRequestFilter {
         UserDetails user = userDetailsService.loadUserByUsername(username);
 
         Authentication authentication =
-            MinervaAuthentication.builder().providedPassword(providedPassword).user(user).authenticated(false)
+            AuthenticationImpl.builder().providedPassword(providedPassword).user(user).authenticated(false)
                 .build();
 
         Authentication authenticated = authenticationManager.authenticate(authentication);

@@ -1,5 +1,6 @@
 package com.arpanrec.minerva.auth;
 
+import com.arpanrec.minerva.user.PrivilegeTypes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,10 +29,10 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
 
 
-    public SecurityConfig(@Autowired MinervaOncePerRequestFilter minervaOncePerRequestFilter,
-                          @Autowired MinervaAuthenticationProvider minervaAuthenticationProvider) {
-        this.authenticationOncePerRequestFilter = minervaOncePerRequestFilter;
-        this.authenticationProvider = minervaAuthenticationProvider;
+    public SecurityConfig(@Autowired AuthenticationFilter authenticationFilter,
+                          @Autowired AuthenticationProviderImpl authenticationProviderImpl) {
+        this.authenticationOncePerRequestFilter = authenticationFilter;
+        this.authenticationProvider = authenticationProviderImpl;
     }
 
     private RequestMatcher[] getPermitAllRequestMatchers() {
@@ -55,7 +56,7 @@ public class SecurityConfig {
             .requestMatchers(getPermitAllRequestMatchers()).permitAll()
 
             .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/internal/**"))
-            .hasAuthority(MinervaUserDetails.Privilege.Type.SUDO.name())
+            .hasAuthority(PrivilegeTypes.SUDO.name())
 
             .anyRequest().authenticated()
         );

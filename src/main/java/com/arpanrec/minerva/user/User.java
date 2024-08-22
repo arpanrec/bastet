@@ -11,6 +11,7 @@ import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -22,7 +23,7 @@ import java.util.Set;
 @Entity(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails {
+public class User implements UserDetails, CredentialsContainer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,5 +75,10 @@ public class User implements UserDetails {
     @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
+    }
+
+    @Override
+    public void eraseCredentials() {
+        throw new UnsupportedOperationException("eraseCredentials() is not supported in User entity");
     }
 }

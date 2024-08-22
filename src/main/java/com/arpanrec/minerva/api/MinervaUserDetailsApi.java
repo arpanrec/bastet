@@ -1,7 +1,7 @@
 package com.arpanrec.minerva.api;
 
-import com.arpanrec.minerva.auth.MinervaUserDetails;
-import com.arpanrec.minerva.auth.MinervaUserDetailsService;
+import com.arpanrec.minerva.user.User;
+import com.arpanrec.minerva.user.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -18,27 +18,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/users")
 public class MinervaUserDetailsApi {
 
-    private final MinervaUserDetailsService minervaUserDetailsService;
+    private final UserServiceImpl userDetailsService;
 
-    public MinervaUserDetailsApi(@Autowired MinervaUserDetailsService minervaUserDetailsService) {
-        this.minervaUserDetailsService = minervaUserDetailsService;
+    public MinervaUserDetailsApi(@Autowired UserServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
     @GetMapping(path = "/{username}", produces = "application/json", consumes = "application/json")
-    public HttpEntity<MinervaUserDetails> load(@PathVariable String username) {
-        return new ResponseEntity<>(minervaUserDetailsService.loadMinervaUserDetailsByUsername(username),
-            HttpStatus.OK);
+    public HttpEntity<?> load(@PathVariable String username) {
+        return new ResponseEntity<>(userDetailsService.loadUserByUsername(username), HttpStatus.OK);
     }
 
     @PostMapping(path = "", produces = "application/json", consumes = "application/json")
-    public HttpEntity<?> save(@RequestBody MinervaUserDetails user) {
-        minervaUserDetailsService.saveMinervaUserDetails(user);
+    public HttpEntity<?> save(@RequestBody User user) {
+        userDetailsService.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(path = "", produces = "application/json", consumes = "application/json")
-    public HttpEntity<?> update(@RequestBody MinervaUserDetails user) {
-        minervaUserDetailsService.updateMinervaUserDetails(user);
+    public HttpEntity<?> update(@RequestBody User user) {
+        userDetailsService.saveOrUpdate(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

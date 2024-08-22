@@ -9,16 +9,16 @@ import java.util.Set;
 
 @Component
 public class RootUser implements CommandLineRunner {
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
     private final String rootUsername;
 
     private final String rootPassword;
 
-    public RootUser(@Autowired UserService userService,
+    public RootUser(@Autowired UserServiceImpl userServiceImpl,
                     @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
                     @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) {
-        this.userService = userService;
+        this.userServiceImpl = userServiceImpl;
         this.rootUsername = rootUsername;
         this.rootPassword = rootPassword;
     }
@@ -29,6 +29,6 @@ public class RootUser implements CommandLineRunner {
         Set<UserRole> rootRoles = Set.of(new UserRole(RoleTypes.ADMIN, rootPrivileges));
         User rootUser = new User(rootUsername, rootPassword, rootRoles);
         rootUser.setId(1L);
-        userService.saveOrUpdate(rootUser);
+        userServiceImpl.saveOrUpdate(rootUser);
     }
 }

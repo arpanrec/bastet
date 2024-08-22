@@ -22,6 +22,8 @@ class Argon2(
 
     private val log: Logger = LoggerFactory.getLogger(Argon2::class.java)
 
+    private val encoderPrefix = "argon2:"
+
     private var argon2Salt: ByteArray? = null
 
     private var internalArgon2SaltPath: String? = null
@@ -86,12 +88,19 @@ class Argon2(
         return Base64.getEncoder().encodeToString(result)
     }
 
-    override fun encode(rawPassword: CharSequence?): String {
-        return hashString(rawPassword.toString())
+    override fun encode(rawPasswordChar: CharSequence?): String {
+        val rawPassword: String = rawPasswordChar.toString()
+        if (rawPassword.startsWith(encoderPrefix)) {
+            return rawPassword
+        }
+        return encoderPrefix + hashString(rawPassword)
     }
 
-    override fun matches(rawPassword: CharSequence?, encodedPassword: String?): Boolean {
-
+    override fun matches(rawPassword: CharSequence, encodedPasswordWithPrefix: String): Boolean {
+        if (!encodedPasswordWithPrefix.startsWith(encoderPrefix)) {
+            return false
+        }
+        val encodedPassword = encodedPasswordWithPrefix.substring(encoderPrefix.length)
         for (c: Char in characters) {
             if (hashString(rawPassword.toString(), c) == encodedPassword) {
                 return true
