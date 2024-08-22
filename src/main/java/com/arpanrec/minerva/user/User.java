@@ -9,20 +9,22 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.security.SecureRandom;
 import java.util.Collection;
-import java.util.Random;
 import java.util.Set;
 
 @Data
 @Entity(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User implements UserDetails, CredentialsContainer {
 
     @Id
@@ -32,6 +34,7 @@ public class User implements UserDetails, CredentialsContainer {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -57,17 +60,19 @@ public class User implements UserDetails, CredentialsContainer {
         this.roles = roles;
     }
 
-    @SuppressWarnings("unused")
-    public User(String username, String password) {
-        this.username = username;
+    public void setPassword(String password) {
+        if (password == null) {
+            byte[] values = new byte[124];
+            SecureRandom secureRandom = new SecureRandom();
+            secureRandom.nextBytes(values);
+            password = new String(values);
+            this.password = password;
+            return;
+        }
+        if (password.length() < 8) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long");
+        }
         this.password = password;
-    }
-
-    @SuppressWarnings("unused")
-    public User(String username) {
-        this.username = username;
-        Random random = new Random();
-        this.password = String.valueOf(random.nextInt(1000000));
     }
 
     @JsonIgnore

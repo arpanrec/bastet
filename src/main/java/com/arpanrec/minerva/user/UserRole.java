@@ -25,4 +25,23 @@ public class UserRole implements GrantedAuthority {
         String authorityString = name.name();
         return authorityString.startsWith("ROLE_") ? authorityString : "ROLE_" + authorityString;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof UserRole other))
+            return false;
+        return name.equals(other.name);
+    }
+
+    @Override
+    public final int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return name.name();
+    }
 }

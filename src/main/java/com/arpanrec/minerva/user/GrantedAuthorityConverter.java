@@ -21,14 +21,14 @@ public class GrantedAuthorityConverter implements AttributeConverter<Set<UserRol
         StringBuilder rolesString = new StringBuilder();
         for (UserRole role : attribute) {
 
-            rolesString.append(role.getAuthority());
+            rolesString.append(role.getName());
             Set<UserPrivilege> privileges = role.getPrivileges();
             if (privileges == null || privileges.isEmpty()) {
                 rolesString.append(ROLES_DELIMITER);
                 continue;
             }
             for (UserPrivilege privilege : privileges) {
-                rolesString.append(PRIVILEGES_DELIMITER).append(privilege.getAuthority());
+                rolesString.append(PRIVILEGES_DELIMITER).append(privilege.getName());
             }
 
             rolesString.append(ROLES_DELIMITER);
@@ -54,8 +54,7 @@ public class GrantedAuthorityConverter implements AttributeConverter<Set<UserRol
 
             String[] roleAndPrivileges = roleString.split(PRIVILEGES_DELIMITER);
             UserRole role = new UserRole();
-            String roleName = roleAndPrivileges[0].replaceFirst("ROLE_", "");
-            role.setName(RoleTypes.valueOf(roleName));
+            role.setName(RoleTypes.valueOf(roleAndPrivileges[0]));
             Set<UserPrivilege> privileges = new HashSet<>();
 
             for (int i = 1; i < roleAndPrivileges.length; i++) {

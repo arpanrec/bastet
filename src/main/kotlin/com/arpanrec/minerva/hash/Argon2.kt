@@ -32,7 +32,7 @@ class Argon2(
 
     private fun generateSalt16ByteBase64EncodedString(): String {
         val secureRandom = SecureRandom()
-        val salt = ByteArray(16)
+        val salt = ByteArray(32)
         secureRandom.nextBytes(salt)
         return Base64.getEncoder().encodeToString(salt)
     }
