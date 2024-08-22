@@ -42,7 +42,7 @@ class KeyValueFileStorage(@Value("\${minerva.physical.key-value-file-storage.pat
 
         val filePath: Path = Paths.get(storageRootPath, transformedKey, workingVersion.toString(), valueFileName)
         val json: String = Files.readString(filePath)
-        return Optional.of(Json.decodeFromString(KVData.serializer(), json))
+        return Optional.of(Json.decodeFromString(json))
     }
 
     override fun save(key: String, kvData: KVData): Boolean {

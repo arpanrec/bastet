@@ -8,14 +8,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
+import kotlinx.serialization.Serializable;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Set;
@@ -24,8 +25,13 @@ import java.util.Set;
 @Entity(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Serializable
 public class User implements UserDetails, CredentialsContainer {
+
+    @Serial
+    @Transient
+    @JsonIgnore
+    private static final long serialVersionUID = 35235235235235L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

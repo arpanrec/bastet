@@ -37,7 +37,12 @@
             "name": "minerva.physical.key-value-persistence.persistence-type",
             "type": "com.arpanrec.minerva.physical.KeyValuePersistenceType",
             "description": "The persistence type for the key-value store. Valid values are 'file'.",
-            "defaultValue": "file"
+            "defaultValue": "file",
+            "hints": {
+                "valueProvider": {
+                    "name": "com.arpanrec.minerva.physical.KeyValuePersistenceType"
+                }
+            }
         },
         {
             "name": "minerva.physical.key-value-file-storage.path",

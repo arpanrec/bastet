@@ -18,7 +18,6 @@ interface KeyValueStorage {
 
     fun update(key: String, kvData: KVData, version: Int): Boolean
 
-
     fun delete(key: String): Boolean {
         return delete(key, 0)
     }

@@ -18,6 +18,8 @@ class KeyValuePersistence(
         KeyValuePersistenceType.FILE -> {
             applicationContext.getBean(KeyValueFileStorage::class.java)
         }
+
+        KeyValuePersistenceType.SQLITE -> applicationContext.getBean(KVDataService::class.java)
     }
 
     var internalStorageKey: String = "internal"
@@ -27,7 +29,14 @@ class KeyValuePersistence(
     }
 
     override fun get(key: String, version: Int): Optional<KVData> {
-        val keyValue = keyValueStorage.get(key, version)
+        var workingVersion = version
+        if (workingVersion == 0) {
+            workingVersion = getLatestVersion(key)
+            if (workingVersion == 0) {
+                return Optional.empty()
+            }
+        }
+        val keyValue = keyValueStorage.get(key, workingVersion)
         if (keyValue.isPresent) {
             val kvData = keyValue.get()
             val decryptedValue = gnuPG.decrypt(kvData.value)
@@ -37,15 +46,18 @@ class KeyValuePersistence(
     }
 
     override fun save(key: String, kvData: KVData): Boolean {
+        kvData.key = key
         val encryptedKVData = KVData(gnuPG.encrypt(kvData.value), kvData.metadata)
         return keyValueStorage.save(key, encryptedKVData)
     }
 
     override fun update(key: String, kvData: KVData): Boolean {
+        kvData.key = key
         return update(key, kvData, 0)
     }
 
     override fun update(key: String, kvData: KVData, version: Int): Boolean {
+        kvData.key = key
         val encryptedKVData = KVData(gnuPG.encrypt(kvData.value), kvData.metadata)
         return keyValueStorage.update(key, encryptedKVData, version)
     }
