@@ -6,13 +6,13 @@ logging.captureStandardOutput(LogLevel.INFO)
 
 plugins {
     java
-    id("org.springframework.boot") version "3.2.2"
+    id("org.springframework.boot") version "3.3.3"
     id("io.spring.dependency-management") version "1.1.6"
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.spring") version "1.9.24"
-    kotlin("plugin.jpa") version "1.9.24"
+    kotlin("jvm") version "1.9.25"
+    kotlin("plugin.spring") version "1.9.25"
+    kotlin("plugin.jpa") version "1.9.25"
     id("org.hibernate.orm") version "6.5.2.Final"
-    kotlin("plugin.serialization") version "1.9.24"
+    kotlin("plugin.serialization") version "1.9.25"
     idea
     // id("org.graalvm.buildtools.native") version "0.10.2"
 }
