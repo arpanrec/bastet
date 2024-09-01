@@ -34,23 +34,6 @@
             "description": "The passphrase to use for GPG Private Key."
         },
         {
-            "name": "minerva.physical.key-value-persistence.persistence-type",
-            "type": "com.arpanrec.minerva.physical.KeyValuePersistenceType",
-            "description": "The persistence type for the key-value store. Valid values are 'file'.",
-            "defaultValue": "file",
-            "hints": {
-                "valueProvider": {
-                    "name": "com.arpanrec.minerva.physical.KeyValuePersistenceType"
-                }
-            }
-        },
-        {
-            "name": "minerva.physical.key-value-file-storage.path",
-            "type": "java.lang.String",
-            "description": "The path to the file to use for the key-value store.",
-            "defaultValue": "./storage"
-        },
-        {
             "name": "minerva.hash.argon2.bring-your-own-salt",
             "type": "java.lang.String",
             "description": "Argon2 Salt String. Base64 encoded 16 bytes."

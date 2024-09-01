@@ -9,8 +9,6 @@ import java.util.Optional
 class KeyValuePersistence(
     @Autowired private val gnuPG: GnuPG
 ) {
-
-
     var internalStorageKey: String = "internal"
 
     override fun get(key: String): Optional<KVData> {
