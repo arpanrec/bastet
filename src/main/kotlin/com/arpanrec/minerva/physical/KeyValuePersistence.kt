@@ -2,25 +2,14 @@ package com.arpanrec.minerva.physical
 
 import com.arpanrec.minerva.encryption.GnuPG
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Component
 import java.util.Optional
 
 @Component
 class KeyValuePersistence(
-    @Value("\${minerva.physical.key-value-persistence.persistence-type:FILE}") private val persistenceType: KeyValuePersistenceType,
-    @Autowired applicationContext: ApplicationContext,
     @Autowired private val gnuPG: GnuPG
-) : KeyValueStorage {
+) {
 
-    private val keyValueStorage: KeyValueStorage = when (persistenceType) {
-        KeyValuePersistenceType.FILE -> {
-            applicationContext.getBean(KeyValueFileStorage::class.java)
-        }
-
-        KeyValuePersistenceType.SQLITE -> applicationContext.getBean(KVDataService::class.java)
-    }
 
     var internalStorageKey: String = "internal"
 
