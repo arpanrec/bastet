@@ -41,8 +41,3 @@ minerva:
                 -----END PGP PRIVATE KEY BLOCK-----
 
             private-key-passphrase: password
-    physical:
-        key-value-persistence:
-            persistence-type: file
-        key-value-file-storage:
-            path: /tmp/minerva
