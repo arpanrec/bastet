@@ -1,7 +1,8 @@
 package com.arpanrec.minerva.hash
 
 import com.arpanrec.minerva.physical.KVData
-import com.arpanrec.minerva.physical.KeyValuePersistence
+import com.arpanrec.minerva.physical.KVDataService
+import com.arpanrec.minerva.physical.NameSpace
 import com.arpanrec.minerva.utils.FileUtils
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator
 import org.bouncycastle.crypto.params.Argon2Parameters
@@ -16,8 +17,8 @@ import java.util.Base64
 
 @Component
 class Argon2(
-    @Autowired keyValuePersistence: KeyValuePersistence,
-    @Value("\${minerva.hash.argon2.bring-your-own-salt:#{null}}") bringYourOwnSalt: String?
+    @Value("\${minerva.hash.argon2.bring-your-own-salt:#{null}}") bringYourOwnSalt: String?,
+    @Autowired private val kVDataService: KVDataService
 ) : PasswordEncoder {
 
     private val log: Logger = LoggerFactory.getLogger(Argon2::class.java)
@@ -26,7 +27,7 @@ class Argon2(
 
     private var argon2Salt: ByteArray? = null
 
-    private var internalArgon2SaltPath: String? = null
+    private var internalArgon2SaltPath: String = NameSpace.ARGON2_SALT_KEY
 
     private var characters: String = "abcdefghijklmnopqrstuvwxyz"
 
@@ -37,21 +38,25 @@ class Argon2(
         return Base64.getEncoder().encodeToString(salt)
     }
 
-    private final fun checkArgon2Salt(keyValuePersistence: KeyValuePersistence, bringYourOwnSalt: String?) {
-        internalArgon2SaltPath = keyValuePersistence.internalStorageKey + "/argon2Salt"
+    private final fun checkArgon2Salt(bringYourOwnSalt: String?) {
         if (bringYourOwnSalt != null) {
             log.info("Using bring your own salt")
             argon2Salt = Base64.getDecoder().decode(FileUtils.fileOrString(bringYourOwnSalt))
             return
         }
-        keyValuePersistence.get(internalArgon2SaltPath!!, 0).ifPresentOrElse({ kv: KVData ->
+        kVDataService.get(internalArgon2SaltPath).ifPresentOrElse({ kv: KVData ->
             log.info("Argon2 salt already exists")
             argon2Salt = Base64.getDecoder().decode(kv.value)
         }, {
             try {
                 val saltString: String = generateSalt16ByteBase64EncodedString()
-                val keyValue = KVData(saltString, mapOf("created" to System.currentTimeMillis().toString()))
-                keyValuePersistence.save(internalArgon2SaltPath!!, keyValue)
+                val keyValue = KVData(
+                    internalArgon2SaltPath, saltString, mapOf(
+                        "created" to System.currentTimeMillis
+                            ().toString()
+                    )
+                )
+                kVDataService.saveOrUpdate(keyValue)
                 log.info("Argon2 salt created")
                 argon2Salt = Base64.getDecoder().decode(saltString)
             } catch (e: Exception) {
@@ -61,7 +66,7 @@ class Argon2(
     }
 
     init {
-        checkArgon2Salt(keyValuePersistence, bringYourOwnSalt)
+        checkArgon2Salt(bringYourOwnSalt)
     }
 
     fun hashString(inputString: String): String {

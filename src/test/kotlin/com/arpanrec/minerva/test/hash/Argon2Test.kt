@@ -14,7 +14,7 @@ class Argon2Test(@Autowired private val argon2: Argon2) {
 
     private val password: String = "password"
 
-    private val oldEncodedPassword: String = "w1NkfH5pC/tyKNLHc6Aw/9F2vMlQ8KUivOLfJaU9lnk="
+    private val oldEncodedPassword: String = "argon2:w1NkfH5pC/tyKNLHc6Aw/9F2vMlQ8KUivOLfJaU9lnk="
 
     @Test
     fun testOldEncodedPassword() {

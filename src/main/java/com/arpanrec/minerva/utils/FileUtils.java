@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 @Slf4j
 public class FileUtils {
 
-    public static String fileOrString(String pathOrString) {
+    public static String fileOrString(String pathOrString) throws MinervaException {
         Path path = Paths.get(pathOrString);
        if (Files.exists(path) && path.toFile().isFile()) {
             log.debug("Loading key from file.");
