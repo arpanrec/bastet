@@ -215,27 +215,33 @@ class GnuPG(
             message = pgpFact.nextObject()
         }
 
-        if (message is PGPLiteralData) {
-            val unc: InputStream = message.inputStream
-            try {
-                ByteArrayOutputStream().use { out ->
-                    var ch: Int
-                    while ((unc.read().also { ch = it }) >= 0) {
-                        out.write(ch)
+        when (message) {
+            is PGPLiteralData -> {
+                val unc: InputStream = message.inputStream
+                try {
+                    ByteArrayOutputStream().use { out ->
+                        var ch: Int
+                        while ((unc.read().also { ch = it }) >= 0) {
+                            out.write(ch)
+                        }
+                        val decryptedData = out.toString()
+                        log.trace("Decrypting data: {}, Decrypted data: {}", encryptedArmoredData, decryptedData)
+                        return decryptedData
                     }
-                    val decryptedData = out.toString()
-                    log.trace("Decrypting data: {}, Decrypted data: {}", encryptedArmoredData, decryptedData)
-                    return decryptedData
+                } catch (e: Exception) {
+                    throw PGPException("Failed to decrypt message", e)
                 }
-            } catch (e: Exception) {
-                throw PGPException("Failed to decrypt message", e)
             }
-        } else if (message is PGPOnePassSignatureList) {
-            throw MinervaException(
-                "Encrypted message contains a signed message - not literal data."
-            )
-        } else {
-            throw MinervaException("Message is not a simple encrypted file - type unknown.")
+
+            is PGPOnePassSignatureList -> {
+                throw MinervaException(
+                    "Encrypted message contains a signed message - not literal data."
+                )
+            }
+
+            else -> {
+                throw MinervaException("Message is not a simple encrypted file - type unknown.")
+            }
         }
     }
 }
