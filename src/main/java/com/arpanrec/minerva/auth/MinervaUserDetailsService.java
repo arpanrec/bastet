@@ -23,7 +23,7 @@ import java.util.Optional;
 @Service
 public class MinervaUserDetailsService implements UserDetailsService {
 
-    private final KVDataService keyValuePersistence;
+    private final KVDataService kvDataService;
 
     private final String internalUsersKeyPath = NameSpace.USERS;
 
@@ -31,9 +31,9 @@ public class MinervaUserDetailsService implements UserDetailsService {
 
     private final ObjectMapper objectMapper;
 
-    public MinervaUserDetailsService(@Autowired KVDataService keyValuePersistence, @Autowired Argon2 argon2) {
+    public MinervaUserDetailsService(@Autowired KVDataService kvDataService, @Autowired Argon2 argon2) {
         this.encoder = argon2;
-        this.keyValuePersistence = keyValuePersistence;
+        this.kvDataService = kvDataService;
         objectMapper = new ObjectMapper();
     }
 
@@ -48,7 +48,7 @@ public class MinervaUserDetailsService implements UserDetailsService {
 
     public MinervaUserDetails loadMinervaUserDetailsByUsername(String username) throws MinervaException {
         log.debug("Loading user by username: {}", username);
-        Optional<KVData> userData = keyValuePersistence.get(internalUsersKeyPath + "/" + username);
+        Optional<KVData> userData = kvDataService.get(internalUsersKeyPath + "/" + username);
         if (userData.isEmpty()) {
             throw new MinervaException("User not found with username: " + username);
         } else {
@@ -84,12 +84,12 @@ public class MinervaUserDetailsService implements UserDetailsService {
     public void saveMinervaUserDetails(MinervaUserDetails minervaUserDetails) throws MinervaException {
         log.debug("Saving user: {}", minervaUserDetails.toString());
         KVData userData = minervaUserDetailsToKeyValue(minervaUserDetails);
-        keyValuePersistence.saveOrUpdate(userData);
+        kvDataService.saveOrUpdate(userData);
     }
 
     public void updateMinervaUserDetails(MinervaUserDetails minervaUserDetails) throws MinervaException {
         log.debug("Updating user: {}", minervaUserDetails.toString());
         KVData userData = minervaUserDetailsToKeyValue(minervaUserDetails);
-        keyValuePersistence.saveOrUpdate(userData);
+        kvDataService.saveOrUpdate(userData);
     }
 }

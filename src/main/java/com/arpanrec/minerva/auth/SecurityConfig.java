@@ -90,7 +90,7 @@ public class SecurityConfig {
         List<MinervaUserDetails.Role> rootRoles =
             List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges));
         MinervaUserDetails rootUser = new MinervaUserDetails(rootUsername, rootPassword, rootRoles);
-        minervaUserDetailsService.getKeyValuePersistence()
+        minervaUserDetailsService.getKvDataService()
             .get(minervaUserDetailsService.getInternalUsersKeyPath() + "/" + rootUsername)
             .ifPresentOrElse((kv) -> log.info("Root user already exists, {}", kv.getValue()), () -> {
                 try {
