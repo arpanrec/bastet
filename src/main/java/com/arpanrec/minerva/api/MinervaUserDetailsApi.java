@@ -19,26 +19,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/users")
 public class MinervaUserDetailsApi {
 
-    private final MinervaUserDetailsService userDetailsService;
+    private final MinervaUserDetailsService minervaUserDetailsService;
 
-    public MinervaUserDetailsApi(@Autowired MinervaUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public MinervaUserDetailsApi(@Autowired MinervaUserDetailsService minervaUserDetailsService) {
+        this.minervaUserDetailsService = minervaUserDetailsService;
     }
 
     @GetMapping(path = "/{username}", produces = "application/json", consumes = "application/json")
     public HttpEntity<?> load(@PathVariable String username) {
-        return new ResponseEntity<>(userDetailsService.loadUserByUsername(username), HttpStatus.OK);
+        return new ResponseEntity<>(minervaUserDetailsService.loadUserByUsername(username), HttpStatus.OK);
     }
 
     @PostMapping(path = "", produces = "application/json", consumes = "application/json")
     public HttpEntity<?> save(@RequestBody MinervaUserDetails user) throws MinervaException {
-        userDetailsService.saveMinervaUserDetails(user);
+        minervaUserDetailsService.saveMinervaUserDetails(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(path = "", produces = "application/json", consumes = "application/json")
     public HttpEntity<?> update(@RequestBody MinervaUserDetails user) throws MinervaException {
-        userDetailsService.updateMinervaUserDetails(user);
+        minervaUserDetailsService.updateMinervaUserDetails(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

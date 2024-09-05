@@ -3,6 +3,7 @@ package com.arpanrec.minerva.state;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @ManagedResource
+@WebFilter("/*")
 public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
 
     private final static Logger log = LoggerFactory.getLogger(RequestAndResponseLoggingFilter.class);
