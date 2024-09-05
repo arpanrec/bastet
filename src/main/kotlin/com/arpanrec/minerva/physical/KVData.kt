@@ -4,8 +4,6 @@ import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
-import jakarta.persistence.Table
-import jakarta.persistence.UniqueConstraint
 import kotlinx.serialization.Serializable
 import lombok.AllArgsConstructor
 import lombok.Data
