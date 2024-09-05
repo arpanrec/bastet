@@ -22,29 +22,29 @@ import java.util.Optional;
 @RequestMapping(path = "/api/v1/keyvalue/**", produces = "application/json", consumes = "application/json")
 public class KeyValueApi {
 
-    private final KVDataService keyValuePersistence;
+    private final KVDataService kvDataService;
 
-    public KeyValueApi(@Autowired KVDataService keyValuePersistence) {
-        this.keyValuePersistence = keyValuePersistence;
+    public KeyValueApi(@Autowired KVDataService kvDataService) {
+        this.kvDataService = kvDataService;
     }
 
     @GetMapping
     public HttpEntity<KVData> get(HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
-        Optional<KVData> keyValue = keyValuePersistence.get(key);
+        Optional<KVData> keyValue = kvDataService.get(key);
         return keyValue.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public HttpEntity<?> save(@RequestBody KVData keyValue) {
-        keyValuePersistence.saveOrUpdate(keyValue);
+        kvDataService.saveOrUpdate(keyValue);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping
     public HttpEntity<?> update(@RequestBody KVData keyValue) {
-        this.keyValuePersistence.saveOrUpdate(keyValue);
+        this.kvDataService.saveOrUpdate(keyValue);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
