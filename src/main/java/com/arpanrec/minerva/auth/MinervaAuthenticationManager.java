@@ -8,12 +8,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthenticationManagerImpl implements AuthenticationManager {
+public class MinervaAuthenticationManager implements AuthenticationManager {
 
     private final AuthenticationProvider authenticationProvider;
 
-    public AuthenticationManagerImpl(@Autowired AuthenticationProviderImpl authenticationProviderImpl) {
-        this.authenticationProvider = authenticationProviderImpl;
+    public MinervaAuthenticationManager(@Autowired MinervaAuthenticationProvider minervaAuthenticationProvider) {
+        this.authenticationProvider = minervaAuthenticationProvider;
     }
 
     @Override

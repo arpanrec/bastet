@@ -1,8 +1,11 @@
 package com.arpanrec.minerva.auth;
 
-import com.arpanrec.minerva.user.PrivilegeTypes;
+import com.arpanrec.minerva.exceptions.MinervaException;
+import com.arpanrec.minerva.utils.FileUtils;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -11,28 +14,41 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.util.List;
 
 @Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final String rootUsername;
+
+    private final String rootPassword;
 
     private final OncePerRequestFilter authenticationOncePerRequestFilter;
 
     private final AuthenticationProvider authenticationProvider;
 
+    private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(@Autowired AuthenticationFilter authenticationFilter,
-                          @Autowired AuthenticationProviderImpl authenticationProviderImpl) {
-        this.authenticationOncePerRequestFilter = authenticationFilter;
-        this.authenticationProvider = authenticationProviderImpl;
+
+    public SecurityConfig(@Autowired MinervaOncePerRequestFilter minervaOncePerRequestFilter,
+                          @Autowired MinervaAuthenticationProvider minervaAuthenticationProvider,
+                          @Autowired MinervaUserDetailsService minervaUserDetailsService,
+                          @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
+                          @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) throws MinervaException {
+        this.authenticationOncePerRequestFilter = minervaOncePerRequestFilter;
+        this.authenticationProvider = minervaAuthenticationProvider;
+        this.userDetailsService = minervaUserDetailsService;
+        this.rootUsername = FileUtils.fileOrString(rootUsername);
+        this.rootPassword = FileUtils.fileOrString(rootPassword);
     }
 
     private RequestMatcher[] getPermitAllRequestMatchers() {
@@ -56,11 +72,33 @@ public class SecurityConfig {
             .requestMatchers(getPermitAllRequestMatchers()).permitAll()
 
             .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/internal/**"))
-            .hasAuthority(PrivilegeTypes.SUDO.name())
+            .hasAuthority(MinervaUserDetails.Privilege.Type.SUDO.name())
 
             .anyRequest().authenticated()
         );
 
         return http.build();
+    }
+
+    @PostConstruct
+    private void doRootUserSetup() {
+
+        MinervaUserDetailsService minervaUserDetailsService = (MinervaUserDetailsService) userDetailsService;
+
+        List<MinervaUserDetails.Privilege> rootPrivileges =
+            List.of(new MinervaUserDetails.Privilege(MinervaUserDetails.Privilege.Type.SUDO));
+        List<MinervaUserDetails.Role> rootRoles =
+            List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges));
+        MinervaUserDetails rootUser = new MinervaUserDetails(rootUsername, rootPassword, rootRoles);
+        minervaUserDetailsService.getKeyValuePersistence()
+            .get(minervaUserDetailsService.getInternalUsersKeyPath() + "/" + rootUsername)
+            .ifPresentOrElse((kv) -> log.info("Root user already exists, {}", kv.getValue()), () -> {
+                try {
+                    minervaUserDetailsService.saveMinervaUserDetails(rootUser);
+                    log.info("Root user created, {}", rootUser);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error while creating root user", e);
+                }
+            });
     }
 }

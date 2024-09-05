@@ -13,22 +13,22 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class AuthenticationProviderImpl implements AuthenticationProvider {
+public class MinervaAuthenticationProvider implements AuthenticationProvider {
 
     private final PasswordEncoder encoder;
 
-    public AuthenticationProviderImpl(@Autowired Argon2 argon2) {
+    public MinervaAuthenticationProvider(@Autowired Argon2 argon2) {
         this.encoder = argon2;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.debug("User authentication started for {}", authentication.getName());
-        log.trace("provided password: {}", ((AuthenticationImpl) authentication).getProvidedPassword());
+        log.trace("provided password: {}", ((MinervaAuthentication) authentication).getProvidedPassword());
         log.trace("User password: {}", authentication.getCredentials());
         if (
             encoder.matches(
-                ((AuthenticationImpl) authentication).getProvidedPassword(),
+                ((MinervaAuthentication) authentication).getProvidedPassword(),
                 (String) authentication.getCredentials()
             )
         ) {

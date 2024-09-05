@@ -1,7 +1,8 @@
 package com.arpanrec.minerva.api;
 
-import com.arpanrec.minerva.user.User;
-import com.arpanrec.minerva.user.UserServiceImpl;
+import com.arpanrec.minerva.auth.MinervaUserDetails;
+import com.arpanrec.minerva.auth.MinervaUserDetailsService;
+import com.arpanrec.minerva.exceptions.MinervaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -18,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/users")
 public class MinervaUserDetailsApi {
 
-    private final UserServiceImpl userDetailsService;
+    private final MinervaUserDetailsService userDetailsService;
 
-    public MinervaUserDetailsApi(@Autowired UserServiceImpl userDetailsService) {
+    public MinervaUserDetailsApi(@Autowired MinervaUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -30,14 +31,14 @@ public class MinervaUserDetailsApi {
     }
 
     @PostMapping(path = "", produces = "application/json", consumes = "application/json")
-    public HttpEntity<?> save(@RequestBody User user) {
-        userDetailsService.save(user);
+    public HttpEntity<?> save(@RequestBody MinervaUserDetails user) throws MinervaException {
+        userDetailsService.saveMinervaUserDetails(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(path = "", produces = "application/json", consumes = "application/json")
-    public HttpEntity<?> update(@RequestBody User user) {
-        userDetailsService.saveOrUpdate(user);
+    public HttpEntity<?> update(@RequestBody MinervaUserDetails user) throws MinervaException {
+        userDetailsService.updateMinervaUserDetails(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
