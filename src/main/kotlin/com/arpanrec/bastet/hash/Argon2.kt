@@ -1,7 +1,8 @@
 package com.arpanrec.bastet.hash
 
 import com.arpanrec.bastet.physical.KVData
-import com.arpanrec.bastet.physical.jpa.KVDataServiceImpl
+import com.arpanrec.bastet.physical.KVDataService
+import com.arpanrec.bastet.physical.KVDataServiceImpl
 import com.arpanrec.bastet.physical.NameSpace
 import com.arpanrec.bastet.utils.FileUtils
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator
@@ -16,10 +17,18 @@ import java.security.SecureRandom
 import java.util.Base64
 
 @Component
-class Argon2(
-    @Value("\${bastet.hash.argon2.bring-your-own-salt:#{null}}") bringYourOwnSalt: String?,
-    @Autowired private val kVDataService: KVDataServiceImpl
-) : PasswordEncoder {
+class Argon2() : PasswordEncoder {
+
+    private lateinit var bringYourOwnSalt: String
+    private lateinit var kVDataService: KVDataService
+
+    constructor(
+        @Value("\${bastet.hash.argon2.bring-your-own-salt:#{null}}") bringYourOwnSalt: String,
+        @Autowired kVDataService: KVDataServiceImpl
+    ) : this() {
+        this.bringYourOwnSalt = bringYourOwnSalt
+        this.kVDataService = kVDataService
+    }
 
     private val log: Logger = LoggerFactory.getLogger(Argon2::class.java)
 
@@ -27,7 +36,7 @@ class Argon2(
 
     private var argon2Salt: ByteArray? = null
 
-    private var internalArgon2SaltPath: String = NameSpace.ARGON2_SALT_KEY
+    private var internalArgon2SaltPath: String = NameSpace.INTERNAL_ARGON2 + "/salt"
 
     private var characters: String = "abcdefghijklmnopqrstuvwxyz"
 

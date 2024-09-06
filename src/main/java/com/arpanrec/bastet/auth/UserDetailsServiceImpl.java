@@ -3,7 +3,8 @@ package com.arpanrec.bastet.auth;
 import com.arpanrec.bastet.exceptions.CaughtException;
 import com.arpanrec.bastet.hash.Argon2;
 import com.arpanrec.bastet.physical.KVData;
-import com.arpanrec.bastet.physical.jpa.KVDataServiceImpl;
+import com.arpanrec.bastet.physical.KVDataServiceImpl;
+import com.arpanrec.bastet.physical.KVDataService;
 import com.arpanrec.bastet.physical.NameSpace;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -22,9 +23,9 @@ import java.util.Optional;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final KVDataServiceImpl kvDataServiceImpl;
+    private final KVDataService kvDataService;
 
-    private final String internalUsersKeyPath = NameSpace.USERS;
+    private final String internalUsersKeyPath = NameSpace.INTERNAL_USERS;
 
     private final PasswordEncoder encoder;
 
@@ -32,7 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetailsServiceImpl(@Autowired KVDataServiceImpl kvDataServiceImpl, @Autowired Argon2 argon2) {
         this.encoder = argon2;
-        this.kvDataServiceImpl = kvDataServiceImpl;
+        this.kvDataService = kvDataServiceImpl;
         objectMapper = new ObjectMapper();
     }
 
@@ -47,7 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserDetailsByUsername(String username) throws CaughtException {
         log.debug("Loading user by username: {}", username);
-        Optional<KVData> userData = kvDataServiceImpl.get(internalUsersKeyPath + "/" + username);
+        Optional<KVData> userData = kvDataService.get(internalUsersKeyPath + "/" + username);
         if (userData.isEmpty()) {
             throw new CaughtException("User not found with username: " + username);
         } else {
@@ -71,7 +72,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         log.debug("User password hashed: {}", userDetails);
         try {
             return new KVData(
-                NameSpace.USERS + "/" + userDetails.getUsername(),
+                NameSpace.INTERNAL_USERS + "/" + userDetails.getUsername(),
                 objectMapper.writeValueAsString(userDetails),
                 new HashMap<>()
             );
@@ -83,12 +84,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public void saveUserDetails(UserDetails userDetails) throws CaughtException {
         log.debug("Saving user: {}", userDetails.toString());
         KVData userData = userDetailsToKeyValue(userDetails);
-        kvDataServiceImpl.saveOrUpdate(userData);
+        kvDataService.saveOrUpdate(userData);
     }
 
     public void updateUserDetails(UserDetails userDetails) throws CaughtException {
         log.debug("Updating user: {}", userDetails.toString());
         KVData userData = userDetailsToKeyValue(userDetails);
-        kvDataServiceImpl.saveOrUpdate(userData);
+        kvDataService.saveOrUpdate(userData);
     }
 }

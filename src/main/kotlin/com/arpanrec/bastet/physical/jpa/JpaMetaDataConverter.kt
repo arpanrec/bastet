@@ -6,7 +6,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Converter
-class MetaDataConverter : AttributeConverter<Map<String, String>, String> {
+internal class JpaMetaDataConverter : AttributeConverter<Map<String, String>, String> {
     override fun convertToDatabaseColumn(attribute: Map<String, String>): String {
         val json = Json.encodeToString(attribute)
         return json

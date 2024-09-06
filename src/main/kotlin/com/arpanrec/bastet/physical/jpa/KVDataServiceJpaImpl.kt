@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service
 import java.util.Optional
 
 @Service
-class KVDataServiceImpl(
-    @Autowired private val kvDataRepository: KVDataRepository
+internal class KVDataServiceJpaImpl(
+    @Autowired private val kvDataRepository: KVDataJpaRepositoryImpl
 ) : KVDataService {
     override fun get(key: String): Optional<KVData> {
         val allKeys = kvDataRepository.findAllByKey(key)
@@ -20,15 +20,23 @@ class KVDataServiceImpl(
             throw CaughtException("Multiple keys found")
         }
 
-        return Optional.of(allKeys[0])
+        return Optional.of(convertToKVData(allKeys[0]))
     }
 
     override fun saveOrUpdate(kvData: KVData): Boolean {
-        kvDataRepository.save(kvData)
+        kvDataRepository.save(convertToKVDataDTO(kvData))
         return true
     }
 
     override fun delete(kvData: KVData) {
-        return kvDataRepository.delete(kvData)
+        return kvDataRepository.delete(convertToKVDataDTO(kvData))
+    }
+
+    private fun convertToKVData(kvDataDTO: KVDataDTO): KVData {
+        return KVData(kvDataDTO.key, kvDataDTO.value, kvDataDTO.metadata)
+    }
+
+    private fun convertToKVDataDTO(kvData: KVData): KVDataDTO {
+        return KVDataDTO(kvData.key, kvData.value, kvData.metadata)
     }
 }

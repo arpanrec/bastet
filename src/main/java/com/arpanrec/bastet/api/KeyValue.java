@@ -1,7 +1,8 @@
 package com.arpanrec.bastet.api;
 
 import com.arpanrec.bastet.physical.KVData;
-import com.arpanrec.bastet.physical.jpa.KVDataServiceImpl;
+import com.arpanrec.bastet.physical.KVDataServiceImpl;
+import com.arpanrec.bastet.physical.KVDataService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -22,29 +23,29 @@ import java.util.Optional;
 @RequestMapping(path = "/api/v1/keyvalue/**", produces = "application/json", consumes = "application/json")
 public class KeyValue {
 
-    private final KVDataServiceImpl kvDataServiceImpl;
+    private final KVDataService kvDataService;
 
     public KeyValue(@Autowired KVDataServiceImpl kvDataServiceImpl) {
-        this.kvDataServiceImpl = kvDataServiceImpl;
+        this.kvDataService = kvDataServiceImpl;
     }
 
     @GetMapping
     public HttpEntity<KVData> get(HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
-        Optional<KVData> keyValue = kvDataServiceImpl.get(key);
+        Optional<KVData> keyValue = kvDataService.get(key);
         return keyValue.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public HttpEntity<?> save(@RequestBody KVData keyValue) {
-        kvDataServiceImpl.saveOrUpdate(keyValue);
+        kvDataService.saveOrUpdate(keyValue);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping
     public HttpEntity<?> update(@RequestBody KVData keyValue) {
-        this.kvDataServiceImpl.saveOrUpdate(keyValue);
+        this.kvDataService.saveOrUpdate(keyValue);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

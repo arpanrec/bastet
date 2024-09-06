@@ -18,7 +18,6 @@ import java.util.Map;
 @RequestMapping(path = "/api/v1/tfstate/{tfState}", produces = "application/json")
 public class TFState {
 
-
     private final StateManage stateManage;
 
     public TFState(@Autowired StateManage stateManage) {
