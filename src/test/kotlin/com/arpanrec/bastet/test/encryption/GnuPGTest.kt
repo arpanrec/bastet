@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationContext
 @SpringBootTest
 class GnuPGTest(
     @Autowired private val gnuPG: GnuPG,
-    @Autowired private val ctx: ApplicationContext
 ) {
 
     private val log = LoggerFactory.getLogger(GnuPGTest::class.java)
