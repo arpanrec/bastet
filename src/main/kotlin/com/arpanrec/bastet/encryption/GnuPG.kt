@@ -44,7 +44,7 @@ class GnuPG {
     private lateinit var pgpPrivateKey: PGPPrivateKey
     private lateinit var encryptedDataGenerator: PGPEncryptedDataGenerator
 
-    fun setPgpPrivateKeyFromArmoredString(armoredPrivateKey: String, privateKeyPassphrase: String) {
+    fun setPgpPrivateKeyFromArmoredString(armoredPrivateKey: String, privateKeyPassphrase: String?) {
         log.info("Loading GPG armored private key.")
         this.pgpPrivateKey = this.loadGpgPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
         this.setEncryptedDataGeneratorFromArmoredString(armoredPrivateKey)

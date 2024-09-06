@@ -4,10 +4,22 @@ import com.arpanrec.bastet.encryption.GnuPG
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.ApplicationContext
 
 @SpringBootTest
-class GnuPGTest(@Autowired private val gnuPG: GnuPG) {
+class GnuPGTest(
+    @Autowired private val gnuPG: GnuPG,
+    @Autowired private val ctx: ApplicationContext
+) {
+//    var armoredPrivateKey: String =
+//        ctx.environment.getProperty("minerva.encryption.gnupg.armored-private-key").toString()
+//
+//    // @Value("\${minerva.encryption.gnupg.private-key-passphrase}")
+//    var privateKeyPassphrase: String =
+//        ctx.environment.getProperty("minerva.encryption.gnupg.private-key-passphrase").toString()
+
     private val log = LoggerFactory.getLogger(GnuPGTest::class.java)
     private val message = "Hello, World!"
     private val armoredBcEncryptedMessage = """-----BEGIN PGP MESSAGE-----
@@ -32,7 +44,7 @@ GVD/xf7huNGhmdOr8OLf1X7jmzpUdEZLblbZ0fFR9V68E59oU6TT87nt4NVc
 -----END PGP MESSAGE-----
 
 """
-    private val armoredGPGPrivateKey = """-----BEGIN PGP PRIVATE KEY BLOCK-----
+    private val armoredPrivateKey = """-----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lIYEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
 umnaeIz+BwMCdNs9UHB91Gn/sq1FqE2sz9/ZguQjtGCOsmqjAUr5WJqGB2NE9RR4
@@ -51,11 +63,12 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
 -----END PGP PRIVATE KEY BLOCK-----
 
 """
-    private val gpgPrivateKeyPassword = "password"
+    private val privateKeyPassphrase = "password"
+
 
     @Test
     fun testEncrypt() {
-        gnuPG.setPgpPrivateKeyFromArmoredString(armoredGPGPrivateKey, gpgPrivateKeyPassword)
+        gnuPG.setPgpPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
         val encryptedMessage = gnuPG.encrypt(message)
         log.info("Encrypted message: {}", encryptedMessage)
     }
