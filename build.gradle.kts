@@ -165,12 +165,12 @@ fun getVersions(): String {
         }
     }
 
-    val versionFromEnv: String? = System.getenv("MINERVA_VERSION")
+    val versionFromEnv: String? = System.getenv("BASTET_VERSION")
     if (!versionFromEnv.isNullOrEmpty()) {
         return versionFromEnv
     }
 
-    val file = File("MINERVA_VERSION")
+    val file = File("BASTET_VERSION")
     if (file.exists()) {
         val versionFromFile: String = file.readText().trim()
         if (versionFromFile.isNotEmpty()) {

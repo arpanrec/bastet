@@ -39,13 +39,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            return loadMinervaUserDetailsByUsername(username);
+            return loadUserDetailsByUsername(username);
         } catch (Exception e) {
             throw new UsernameNotFoundException("User not found", e);
         }
     }
 
-    public UserDetails loadMinervaUserDetailsByUsername(String username) throws CaughtException {
+    public UserDetails loadUserDetailsByUsername(String username) throws CaughtException {
         log.debug("Loading user by username: {}", username);
         Optional<KVData> userData = kvDataServiceImpl.get(internalUsersKeyPath + "/" + username);
         if (userData.isEmpty()) {
@@ -80,13 +80,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
-    public void saveMinervaUserDetails(UserDetails userDetails) throws CaughtException {
+    public void saveUserDetails(UserDetails userDetails) throws CaughtException {
         log.debug("Saving user: {}", userDetails.toString());
         KVData userData = userDetailsToKeyValue(userDetails);
         kvDataServiceImpl.saveOrUpdate(userData);
     }
 
-    public void updateMinervaUserDetails(UserDetails userDetails) throws CaughtException {
+    public void updateUserDetails(UserDetails userDetails) throws CaughtException {
         log.debug("Updating user: {}", userDetails.toString());
         KVData userData = userDetailsToKeyValue(userDetails);
         kvDataServiceImpl.saveOrUpdate(userData);

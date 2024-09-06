@@ -31,13 +31,13 @@ public class UserDetails {
 
     @PostMapping(path = "", produces = "application/json", consumes = "application/json")
     public HttpEntity<?> save(@RequestBody com.arpanrec.bastet.auth.UserDetails user) throws CaughtException {
-        userDetailsServiceImpl.saveMinervaUserDetails(user);
+        userDetailsServiceImpl.saveUserDetails(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(path = "", produces = "application/json", consumes = "application/json")
     public HttpEntity<?> update(@RequestBody com.arpanrec.bastet.auth.UserDetails user) throws CaughtException {
-        userDetailsServiceImpl.updateMinervaUserDetails(user);
+        userDetailsServiceImpl.updateUserDetails(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

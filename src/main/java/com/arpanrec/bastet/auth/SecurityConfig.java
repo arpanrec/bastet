@@ -94,7 +94,7 @@ public class SecurityConfig {
             .get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername)
             .ifPresentOrElse((kv) -> log.info("Root user already exists, {}", kv.getValue()), () -> {
                 try {
-                    userDetailsServiceImpl.saveMinervaUserDetails(rootUser);
+                    userDetailsServiceImpl.saveUserDetails(rootUser);
                     log.info("Root user created, {}", rootUser);
                 } catch (Exception e) {
                     throw new RuntimeException("Error while creating root user", e);
