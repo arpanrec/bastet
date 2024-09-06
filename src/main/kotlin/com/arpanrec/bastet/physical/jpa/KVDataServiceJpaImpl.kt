@@ -23,6 +23,11 @@ internal class KVDataServiceJpaImpl(
         return Optional.of(convertToKVData(allKeys[0]))
     }
 
+    override fun has(key: String): Boolean {
+        val kv = this.get(key)
+        return kv.isPresent
+    }
+
     override fun saveOrUpdate(kvData: KVData): Boolean {
         kvDataRepository.save(convertToKVDataDTO(kvData))
         return true

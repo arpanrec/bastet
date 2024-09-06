@@ -1,7 +1,7 @@
 package com.arpanrec.bastet.encryption
 
 import com.arpanrec.bastet.physical.NameSpace
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.security.Key
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -9,16 +9,23 @@ import javax.crypto.KeyGenerator
 import javax.crypto.spec.IvParameterSpec
 import java.util.Base64
 
-class AES256CBC(
-    @Autowired private val gnuPG: GnuPG
-) {
-    private val internalKeyPath: String = NameSpace.INTERNAL_AES256CBC + "/key"
-    private val internalIVPath: String = NameSpace.INTERNAL_AES256CBC + "/iv"
+@Component
+class AES256CBC {
+
+    companion object {
+        const val INTERNAL_KEY_PATH: String = NameSpace.INTERNAL_AES256CBC + "/key"
+        const val INTERNAL_IV_PATH: String = NameSpace.INTERNAL_AES256CBC + "/iv"
+    }
+
     private lateinit var secretKey: Key
     private lateinit var iv: IvParameterSpec
 
-    init {
+    fun setSecretKey(secretKey: Key) {
+        this.secretKey = secretKey
+    }
 
+    fun setIV(iv: IvParameterSpec) {
+        this.iv = iv
     }
 
     private fun generateAESKey(): Key {

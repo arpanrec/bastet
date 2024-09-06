@@ -80,25 +80,25 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @PostConstruct
-    private void doRootUserSetup() {
-
-        UserDetailsServiceImpl userDetailsServiceImpl = (UserDetailsServiceImpl) this.userDetailsService;
-
-        List<UserDetails.Privilege> rootPrivileges =
-            List.of(new UserDetails.Privilege(UserDetails.Privilege.Type.SUDO));
-        List<UserDetails.Role> rootRoles =
-            List.of(new UserDetails.Role(UserDetails.Role.Type.ADMIN, rootPrivileges));
-        UserDetails rootUser = new UserDetails(rootUsername, rootPassword, rootRoles);
-        userDetailsServiceImpl.getKvDataServiceImpl()
-            .get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername)
-            .ifPresentOrElse((kv) -> log.info("Root user already exists, {}", kv.getValue()), () -> {
-                try {
-                    userDetailsServiceImpl.saveUserDetails(rootUser);
-                    log.info("Root user created, {}", rootUser);
-                } catch (Exception e) {
-                    throw new RuntimeException("Error while creating root user", e);
-                }
-            });
-    }
+//    @PostConstruct
+//    private void doRootUserSetup() {
+//
+//        UserDetailsServiceImpl userDetailsServiceImpl = (UserDetailsServiceImpl) this.userDetailsService;
+//
+//        List<UserDetails.Privilege> rootPrivileges =
+//            List.of(new UserDetails.Privilege(UserDetails.Privilege.Type.SUDO));
+//        List<UserDetails.Role> rootRoles =
+//            List.of(new UserDetails.Role(UserDetails.Role.Type.ADMIN, rootPrivileges));
+//        UserDetails rootUser = new UserDetails(rootUsername, rootPassword, rootRoles);
+//        userDetailsServiceImpl.getKvDataServiceImpl()
+//            .get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername)
+//            .ifPresentOrElse((kv) -> log.info("Root user already exists, {}", kv.getValue()), () -> {
+//                try {
+//                    userDetailsServiceImpl.saveUserDetails(rootUser);
+//                    log.info("Root user created, {}", rootUser);
+//                } catch (Exception e) {
+//                    throw new RuntimeException("Error while creating root user", e);
+//                }
+//            });
+//    }
 }

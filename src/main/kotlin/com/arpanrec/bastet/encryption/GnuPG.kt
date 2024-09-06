@@ -8,7 +8,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
-import java.security.Security
 import java.util.Date
 import org.bouncycastle.bcpg.ArmoredInputStream
 import org.bouncycastle.bcpg.ArmoredOutputStream
@@ -36,29 +35,26 @@ import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder
 import org.bouncycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class GnuPG(
-    @Value("\${bastet.encryption.gnupg.armored-public-key}") armoredPublicKey: String,
-    @Value("\${bastet.encryption.gnupg.armored-private-key}") armoredPrivateKey: String,
-    @Value("\${bastet.encryption.gnupg.private-key-passphrase}") privateKeyPassphrase: String?
-) {
+class GnuPG {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private lateinit var pgpPrivateKey: PGPPrivateKey
     private lateinit var encryptedDataGenerator: PGPEncryptedDataGenerator
 
-    init {
-        log.info("Adding BouncyCastle provider.")
-        Security.addProvider(BouncyCastleProvider())
+    fun setPgpPrivateKeyFromArmoredString(armoredPrivateKey: String, privateKeyPassphrase: String) {
+        log.info("Loading GPG armored private key.")
+        this.pgpPrivateKey = this.loadGpgPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
+        this.setEncryptedDataGeneratorFromArmoredString(armoredPrivateKey)
+    }
+
+    private fun setEncryptedDataGeneratorFromArmoredString(armoredPublicKey: String) {
         log.info("Loading GPG armored public key.")
         val gpgPublicKey = this.loadGpgPublicKeyFromArmoredString(armoredPublicKey)
         log.info("Creating encrypted data generator.")
         this.encryptedDataGenerator = this.createEncryptedDataGenerator(gpgPublicKey)
-        log.info("Loading GPG armored private key.")
-        this.pgpPrivateKey = this.loadGpgPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
     }
 
     private fun loadGpgPublicKeyFromArmoredString(armoredPublicKey: String): PGPPublicKey {
@@ -147,19 +143,16 @@ class GnuPG(
             val keyIter = keyRing.secretKeys
             while (keyIter.hasNext()) {
                 val key = keyIter.next()
-
                 if (key.isSigningKey) continue
                 val privateKey = key.extractPrivateKey(
                     JcePBESecretKeyDecryptorBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME)
                         .build(privateKeyPassphraseString.toCharArray())
                 )
-
                 if (privateKey != null) {
                     pgpPrivateKey = privateKey
                     break
                 }
             }
-
             if (pgpPrivateKey != null) {
                 break
             }
