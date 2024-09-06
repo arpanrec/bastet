@@ -4,7 +4,6 @@ import com.arpanrec.bastet.encryption.GnuPG
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 
@@ -13,12 +12,6 @@ class GnuPGTest(
     @Autowired private val gnuPG: GnuPG,
     @Autowired private val ctx: ApplicationContext
 ) {
-//    var armoredPrivateKey: String =
-//        ctx.environment.getProperty("minerva.encryption.gnupg.armored-private-key").toString()
-//
-//    // @Value("\${minerva.encryption.gnupg.private-key-passphrase}")
-//    var privateKeyPassphrase: String =
-//        ctx.environment.getProperty("minerva.encryption.gnupg.private-key-passphrase").toString()
 
     private val log = LoggerFactory.getLogger(GnuPGTest::class.java)
     private val message = "Hello, World!"
@@ -75,6 +68,7 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
 
     @Test
     fun testDecrypt() {
+        gnuPG.setPgpPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
         val decryptedMessage = gnuPG.decrypt(armoredBcEncryptedMessage)
         log.info("Decrypted message: {}", decryptedMessage)
         assert(decryptedMessage == message)

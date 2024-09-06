@@ -36,13 +36,19 @@ import org.bouncycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.security.Security
 
 @Component
 class GnuPG {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private lateinit var pgpPrivateKey: PGPPrivateKey
-    private lateinit var encryptedDataGenerator: PGPEncryptedDataGenerator
+    init {
+        log.info("Adding BouncyCastle provider.")
+        Security.addProvider(BouncyCastleProvider())
+    }
+
+    private var pgpPrivateKey: PGPPrivateKey? = null
+    private var encryptedDataGenerator: PGPEncryptedDataGenerator? = null
 
     fun setPgpPrivateKeyFromArmoredString(armoredPrivateKey: String, privateKeyPassphrase: String?) {
         log.info("Loading GPG armored private key.")
@@ -110,7 +116,7 @@ class GnuPG {
 
         val encryptedOut = ByteArrayOutputStream()
         val out: OutputStream = ArmoredOutputStream(encryptedOut)
-        val encryptedOutStream = encryptedDataGenerator.open(
+        val encryptedOutStream = encryptedDataGenerator!!.open(
             out, clearTextDataByteOutputStream.toByteArray().size.toLong()
         )
         encryptedOutStream.write(clearTextDataByteOutputStream.toByteArray())
