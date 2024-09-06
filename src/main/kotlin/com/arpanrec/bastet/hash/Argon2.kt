@@ -3,17 +3,13 @@ package com.arpanrec.bastet.hash
 import com.arpanrec.bastet.physical.NameSpace
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator
 import org.bouncycastle.crypto.params.Argon2Parameters
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.security.SecureRandom
 import java.util.Base64
 
 @Component
-class Argon2() : PasswordEncoder {
-
-    private val log: Logger = LoggerFactory.getLogger(Argon2::class.java)
+class Argon2 : PasswordEncoder {
 
     private val encoderPrefix = "argon2:"
 
@@ -25,12 +21,12 @@ class Argon2() : PasswordEncoder {
 
     private var characters: String = "abcdefghijklmnopqrstuvwxyz"
 
-    private fun generateSalt16ByteBase64EncodedString(): String {
-        val secureRandom = SecureRandom()
-        val salt = ByteArray(32)
-        secureRandom.nextBytes(salt)
-        return Base64.getEncoder().encodeToString(salt)
-    }
+//    private fun generateSalt16ByteBase64EncodedString(): String {
+//        val secureRandom = SecureRandom()
+//        val salt = ByteArray(32)
+//        secureRandom.nextBytes(salt)
+//        return Base64.getEncoder().encodeToString(salt)
+//    }
 
 //    private final fun checkArgon2Salt() {
 //        kVDataService.get(internalArgon2SaltPath).ifPresentOrElse({ kv: KVData ->
