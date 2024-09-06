@@ -11,11 +11,11 @@ public class LoggingConfiguration {
 //    public RequestAndResponseLoggingFilter requestResponseLoggingFilter() {
 //        return new RequestAndResponseLoggingFilter();
 //    }
-    @Bean
-    public FilterRegistrationBean<RequestAndResponseLoggingFilter> loggingFilter() {
-        FilterRegistrationBean<RequestAndResponseLoggingFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new RequestAndResponseLoggingFilter());
-        registrationBean.addUrlPatterns("/*");
-        return registrationBean;
-    }
+//    @Bean
+//    public FilterRegistrationBean<RequestAndResponseLoggingFilter> loggingFilter() {
+//        FilterRegistrationBean<RequestAndResponseLoggingFilter> registrationBean = new FilterRegistrationBean<>();
+//        registrationBean.setFilter(new RequestAndResponseLoggingFilter());
+//        registrationBean.addUrlPatterns("/*");
+//        return registrationBean;
+//    }
 }
