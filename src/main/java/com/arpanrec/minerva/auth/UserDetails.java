@@ -18,15 +18,15 @@ import java.util.List;
 
 @Setter
 @Getter
-public class MinervaUserDetails extends User {
+public class UserDetails extends User {
 
     @Serial
     private static final long serialVersionUID = 2915242437438173088L;
 
     List<Role> roles;
 
-    public MinervaUserDetails(@JsonProperty("username") String username, @JsonProperty("password") String password,
-                              @JsonProperty("roles") List<Role> roles) {
+    public UserDetails(@JsonProperty("username") String username, @JsonProperty("password") String password,
+                       @JsonProperty("roles") List<Role> roles) {
         super(username, password, roles);
         this.roles = roles;
     }

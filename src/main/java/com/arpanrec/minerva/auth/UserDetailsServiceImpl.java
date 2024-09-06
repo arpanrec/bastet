@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +20,7 @@ import java.util.Optional;
 @Getter
 @Slf4j
 @Service
-public class MinervaUserDetailsService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final KVDataService kvDataService;
 
@@ -31,7 +30,7 @@ public class MinervaUserDetailsService implements UserDetailsService {
 
     private final ObjectMapper objectMapper;
 
-    public MinervaUserDetailsService(@Autowired KVDataService kvDataService, @Autowired Argon2 argon2) {
+    public UserDetailsServiceImpl(@Autowired KVDataService kvDataService, @Autowired Argon2 argon2) {
         this.encoder = argon2;
         this.kvDataService = kvDataService;
         objectMapper = new ObjectMapper();
@@ -46,34 +45,34 @@ public class MinervaUserDetailsService implements UserDetailsService {
         }
     }
 
-    public MinervaUserDetails loadMinervaUserDetailsByUsername(String username) throws MinervaException {
+    public UserDetails loadMinervaUserDetailsByUsername(String username) throws MinervaException {
         log.debug("Loading user by username: {}", username);
         Optional<KVData> userData = kvDataService.get(internalUsersKeyPath + "/" + username);
         if (userData.isEmpty()) {
             throw new MinervaException("User not found with username: " + username);
         } else {
             try {
-                MinervaUserDetails minervaUserDetails = objectMapper.readValue(userData.get().getValue(),
-                    MinervaUserDetails.class);
-                log.trace("User loaded: {}", minervaUserDetails);
-                return minervaUserDetails;
+                UserDetails userDetails = objectMapper.readValue(userData.get().getValue(),
+                    UserDetails.class);
+                log.trace("User loaded: {}", userDetails);
+                return userDetails;
             } catch (Exception e) {
                 throw new MinervaException("Error while loading user", e);
             }
         }
     }
 
-    private KVData minervaUserDetailsToKeyValue(MinervaUserDetails minervaUserDetails) throws MinervaException {
-        String hashedPassword = encoder.encode(minervaUserDetails.getPassword());
-        minervaUserDetails = new MinervaUserDetails(
-            minervaUserDetails.getUsername(),
+    private KVData minervaUserDetailsToKeyValue(UserDetails userDetails) throws MinervaException {
+        String hashedPassword = encoder.encode(userDetails.getPassword());
+        userDetails = new UserDetails(
+            userDetails.getUsername(),
             hashedPassword,
-            minervaUserDetails.getRoles());
-        log.debug("User password hashed: {}", minervaUserDetails);
+            userDetails.getRoles());
+        log.debug("User password hashed: {}", userDetails);
         try {
             return new KVData(
-                NameSpace.USERS + "/" + minervaUserDetails.getUsername(),
-                objectMapper.writeValueAsString(minervaUserDetails),
+                NameSpace.USERS + "/" + userDetails.getUsername(),
+                objectMapper.writeValueAsString(userDetails),
                 new HashMap<>()
             );
         } catch (Exception e) {
@@ -81,15 +80,15 @@ public class MinervaUserDetailsService implements UserDetailsService {
         }
     }
 
-    public void saveMinervaUserDetails(MinervaUserDetails minervaUserDetails) throws MinervaException {
-        log.debug("Saving user: {}", minervaUserDetails.toString());
-        KVData userData = minervaUserDetailsToKeyValue(minervaUserDetails);
+    public void saveMinervaUserDetails(UserDetails userDetails) throws MinervaException {
+        log.debug("Saving user: {}", userDetails.toString());
+        KVData userData = minervaUserDetailsToKeyValue(userDetails);
         kvDataService.saveOrUpdate(userData);
     }
 
-    public void updateMinervaUserDetails(MinervaUserDetails minervaUserDetails) throws MinervaException {
-        log.debug("Updating user: {}", minervaUserDetails.toString());
-        KVData userData = minervaUserDetailsToKeyValue(minervaUserDetails);
+    public void updateMinervaUserDetails(UserDetails userDetails) throws MinervaException {
+        log.debug("Updating user: {}", userDetails.toString());
+        KVData userData = minervaUserDetailsToKeyValue(userDetails);
         kvDataService.saveOrUpdate(userData);
     }
 }

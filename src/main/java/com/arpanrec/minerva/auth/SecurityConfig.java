@@ -39,14 +39,14 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
 
 
-    public SecurityConfig(@Autowired MinervaOncePerRequestFilter minervaOncePerRequestFilter,
-                          @Autowired MinervaAuthenticationProvider minervaAuthenticationProvider,
-                          @Autowired MinervaUserDetailsService minervaUserDetailsService,
+    public SecurityConfig(@Autowired AuthenticationFilter authenticationFilter,
+                          @Autowired AuthenticationProviderImpl authenticationProviderImpl,
+                          @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
                           @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
                           @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) throws MinervaException {
-        this.authenticationOncePerRequestFilter = minervaOncePerRequestFilter;
-        this.authenticationProvider = minervaAuthenticationProvider;
-        this.userDetailsService = minervaUserDetailsService;
+        this.authenticationOncePerRequestFilter = authenticationFilter;
+        this.authenticationProvider = authenticationProviderImpl;
+        this.userDetailsService = userDetailsServiceImpl;
         this.rootUsername = FileUtils.fileOrString(rootUsername);
         this.rootPassword = FileUtils.fileOrString(rootPassword);
     }
@@ -72,7 +72,7 @@ public class SecurityConfig {
             .requestMatchers(getPermitAllRequestMatchers()).permitAll()
 
             .requestMatchers(new AntPathRequestMatcher("/api/v1/keyvaule/internal/**"))
-            .hasAuthority(MinervaUserDetails.Privilege.Type.SUDO.name())
+            .hasAuthority(UserDetails.Privilege.Type.SUDO.name())
 
             .anyRequest().authenticated()
         );
@@ -83,18 +83,18 @@ public class SecurityConfig {
     @PostConstruct
     private void doRootUserSetup() {
 
-        MinervaUserDetailsService minervaUserDetailsService = (MinervaUserDetailsService) userDetailsService;
+        UserDetailsServiceImpl userDetailsServiceImpl = (UserDetailsServiceImpl) this.userDetailsService;
 
-        List<MinervaUserDetails.Privilege> rootPrivileges =
-            List.of(new MinervaUserDetails.Privilege(MinervaUserDetails.Privilege.Type.SUDO));
-        List<MinervaUserDetails.Role> rootRoles =
-            List.of(new MinervaUserDetails.Role(MinervaUserDetails.Role.Type.ADMIN, rootPrivileges));
-        MinervaUserDetails rootUser = new MinervaUserDetails(rootUsername, rootPassword, rootRoles);
-        minervaUserDetailsService.getKvDataService()
-            .get(minervaUserDetailsService.getInternalUsersKeyPath() + "/" + rootUsername)
+        List<UserDetails.Privilege> rootPrivileges =
+            List.of(new UserDetails.Privilege(UserDetails.Privilege.Type.SUDO));
+        List<UserDetails.Role> rootRoles =
+            List.of(new UserDetails.Role(UserDetails.Role.Type.ADMIN, rootPrivileges));
+        UserDetails rootUser = new UserDetails(rootUsername, rootPassword, rootRoles);
+        userDetailsServiceImpl.getKvDataService()
+            .get(userDetailsServiceImpl.getInternalUsersKeyPath() + "/" + rootUsername)
             .ifPresentOrElse((kv) -> log.info("Root user already exists, {}", kv.getValue()), () -> {
                 try {
-                    minervaUserDetailsService.saveMinervaUserDetails(rootUser);
+                    userDetailsServiceImpl.saveMinervaUserDetails(rootUser);
                     log.info("Root user created, {}", rootUser);
                 } catch (Exception e) {
                     throw new RuntimeException("Error while creating root user", e);

@@ -13,7 +13,7 @@ import java.io.Serial;
 import java.util.Collection;
 
 @Builder
-public class MinervaAuthentication implements Authentication {
+public class AuthenticationImpl implements Authentication {
 
     @Serial
     private static final long serialVersionUID = -8620294545092862085L;
