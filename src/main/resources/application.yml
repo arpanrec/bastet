@@ -28,3 +28,10 @@ spring:
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
+bastet:
+    auth:
+        filter:
+            header-key: Authorization
+        security-config:
+            root-username: root
+            root-password: root

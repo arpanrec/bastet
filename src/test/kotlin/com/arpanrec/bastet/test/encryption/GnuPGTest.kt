@@ -1,6 +1,7 @@
 package com.arpanrec.bastet.test.encryption
 
 import com.arpanrec.bastet.encryption.GnuPG
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,7 +36,7 @@ GVD/xf7huNGhmdOr8OLf1X7jmzpUdEZLblbZ0fFR9V68E59oU6TT87nt4NVc
 -----END PGP MESSAGE-----
 
 """
-    private val armoredPrivateKey = """-----BEGIN PGP PRIVATE KEY BLOCK-----
+    private final val armoredPrivateKey = """-----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lIYEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
 umnaeIz+BwMCdNs9UHB91Gn/sq1FqE2sz9/ZguQjtGCOsmqjAUr5WJqGB2NE9RR4
@@ -54,22 +55,24 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
 -----END PGP PRIVATE KEY BLOCK-----
 
 """
-    private val privateKeyPassphrase = "password"
+    private final val privateKeyPassphrase = "password"
 
+    @BeforeEach
+    fun loadPrivateKey() {
+        gnuPG.setPgpPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
+    }
 
     @Test
     fun testEncrypt() {
-        gnuPG.setPgpPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
         val encryptedMessage = gnuPG.encrypt(message)
-        log.info("Encrypted message: {}", encryptedMessage)
+        log.info("Able to encrypt message: {}", encryptedMessage)
     }
 
     @Test
     fun testDecrypt() {
-        gnuPG.setPgpPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
         val decryptedMessage = gnuPG.decrypt(armoredBcEncryptedMessage)
-        log.info("Decrypted message: {}", decryptedMessage)
-        assert(decryptedMessage == message)
+        log.info("Able to decrypt message: {}", decryptedMessage)
+        assert(decryptedMessage == message) { "Decrypted message is not same as original message" }
     }
 
     @Test
@@ -84,7 +87,7 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
     @Test
     fun testCliEncryptedMessage() {
         val decryptedMessage = gnuPG.decrypt(armoredCliEncryptedMessage)
-        log.info("Decrypted message: {}", decryptedMessage)
+        log.info("Decrypted CLI message: {}", decryptedMessage)
         assert(decryptedMessage == message)
     }
 }

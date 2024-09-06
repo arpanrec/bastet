@@ -12,6 +12,7 @@ import java.util.Date
 import org.bouncycastle.bcpg.ArmoredInputStream
 import org.bouncycastle.bcpg.ArmoredOutputStream
 import org.bouncycastle.bcpg.CompressionAlgorithmTags
+import org.bouncycastle.bcpg.PublicKeyPacket
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openpgp.PGPCompressedData
 import org.bouncycastle.openpgp.PGPCompressedDataGenerator
@@ -26,9 +27,9 @@ import org.bouncycastle.openpgp.PGPOnePassSignatureList
 import org.bouncycastle.openpgp.PGPPrivateKey
 import org.bouncycastle.openpgp.PGPPublicKey
 import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData
-import org.bouncycastle.openpgp.PGPPublicKeyRingCollection
 import org.bouncycastle.openpgp.PGPSecretKeyRingCollection
 import org.bouncycastle.openpgp.PGPUtil
+import org.bouncycastle.openpgp.operator.bc.BcKeyFingerprintCalculator
 import org.bouncycastle.openpgp.operator.bc.BcPublicKeyKeyEncryptionMethodGenerator
 import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder
@@ -36,6 +37,7 @@ import org.bouncycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.security.NoSuchProviderException
 import java.security.Security
 
 @Component
@@ -51,42 +53,33 @@ class GnuPG {
     private var encryptedDataGenerator: PGPEncryptedDataGenerator? = null
 
     fun setPgpPrivateKeyFromArmoredString(armoredPrivateKey: String, privateKeyPassphrase: String?) {
+        if (pgpPrivateKey != null) {
+            log.info("Private key already loaded.")
+            return
+        }
+        if (encryptedDataGenerator != null) {
+            log.info("Encrypted data generator already created.")
+            return
+        }
         log.info("Loading GPG armored private key.")
         this.pgpPrivateKey = this.loadGpgPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
-        this.setEncryptedDataGeneratorFromArmoredString(armoredPrivateKey)
+        this.setEncryptedDataGeneratorFromArmoredString(pgpPrivateKey!!)
     }
 
-    private fun setEncryptedDataGeneratorFromArmoredString(armoredPublicKey: String) {
+    private fun setEncryptedDataGeneratorFromArmoredString(pgpPrivateKey: PGPPrivateKey) {
         log.info("Loading GPG armored public key.")
-        val gpgPublicKey = this.loadGpgPublicKeyFromArmoredString(armoredPublicKey)
+        val gpgPublicKey = this.loadGpgPublicKeyFromArmoredString(pgpPrivateKey)
         log.info("Creating encrypted data generator.")
         this.encryptedDataGenerator = this.createEncryptedDataGenerator(gpgPublicKey)
     }
 
-    private fun loadGpgPublicKeyFromArmoredString(armoredPublicKey: String): PGPPublicKey {
-        val armoredPublicKeyString: String = FileUtils.fileOrString(armoredPublicKey)
-
-        val publicKeyStream: InputStream =
-            ByteArrayInputStream(armoredPublicKeyString.toByteArray(StandardCharsets.US_ASCII))
-        val pgpPubRingCollection = PGPPublicKeyRingCollection(
-            PGPUtil.getDecoderStream(publicKeyStream), JcaKeyFingerprintCalculator()
-        )
-        var pgpPublicKey: PGPPublicKey? = null
-        val keyRingIter = pgpPubRingCollection.keyRings
-        while (keyRingIter.hasNext() && pgpPublicKey == null) {
-            val keyRing = keyRingIter.next()
-            val keyIter = keyRing.publicKeys
-            while (keyIter.hasNext()) {
-                val key = keyIter.next()
-                if (key.isEncryptionKey) {
-                    pgpPublicKey = key
-                    break
-                }
-            }
+    private fun loadGpgPublicKeyFromArmoredString(pgpPrivateKey: PGPPrivateKey): PGPPublicKey {
+        val publicKeyPacket: PublicKeyPacket? = pgpPrivateKey.publicKeyPacket
+        return try {
+            PGPPublicKey(publicKeyPacket, BcKeyFingerprintCalculator())
+        } catch (e: NoSuchProviderException) {
+            throw RuntimeException("Error converting PublicKeyPacket to PGPPublicKey", e)
         }
-        requireNotNull(pgpPublicKey) { "Can't find encryption key in key ring." }
-        log.info("Public key loaded.")
-        return pgpPublicKey
     }
 
     private fun createEncryptedDataGenerator(gpgPublicKey: PGPPublicKey): PGPEncryptedDataGenerator {
