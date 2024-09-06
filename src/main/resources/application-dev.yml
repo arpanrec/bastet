@@ -8,7 +8,7 @@ spring:
             enabled: true
         restart:
             enabled: true
-minerva:
+bastet:
     encryption:
         gnupg:
             armored-public-key: |+

@@ -1,9 +1,9 @@
-package com.arpanrec.minerva.hash
+package com.arpanrec.bastet.hash
 
-import com.arpanrec.minerva.physical.KVData
-import com.arpanrec.minerva.physical.jpa.KVDataServiceImpl
-import com.arpanrec.minerva.physical.NameSpace
-import com.arpanrec.minerva.utils.FileUtils
+import com.arpanrec.bastet.physical.KVData
+import com.arpanrec.bastet.physical.jpa.KVDataServiceImpl
+import com.arpanrec.bastet.physical.NameSpace
+import com.arpanrec.bastet.utils.FileUtils
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator
 import org.bouncycastle.crypto.params.Argon2Parameters
 import org.slf4j.Logger
@@ -17,7 +17,7 @@ import java.util.Base64
 
 @Component
 class Argon2(
-    @Value("\${minerva.hash.argon2.bring-your-own-salt:#{null}}") bringYourOwnSalt: String?,
+    @Value("\${bastet.hash.argon2.bring-your-own-salt:#{null}}") bringYourOwnSalt: String?,
     @Autowired private val kVDataService: KVDataServiceImpl
 ) : PasswordEncoder {
 

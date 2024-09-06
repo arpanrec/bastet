@@ -126,7 +126,7 @@ tasks {
         group = "build"
         delete(
             "logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle", "node_modules",
-            "package-lock.json", "package.json", "/tmp/minerva",
+            "package-lock.json", "package.json", "/tmp/bastet",
             "src/test/resources/tfstate/.terraform",
             "src/test/resources/tfstate/errored.tfstate",
             "src/test/resources/tfstate/.terraform.lock.hcl"
@@ -152,7 +152,7 @@ tasks {
 }
 
 fun getMainClassName(): String {
-    val mainClass = "com.arpanrec.minerva.Application"
+    val mainClass = "com.arpanrec.bastet.Application"
     return mainClass
 }
 

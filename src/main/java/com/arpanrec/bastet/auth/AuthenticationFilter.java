@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva.auth;
+package com.arpanrec.bastet.auth;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,7 +29,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     public AuthenticationFilter(@Autowired AuthenticationManagerImpl authenticationManagerImpl,
                                 @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
-                                @Value("${minerva.auth.filter.header-key:Authorization}") String headerKey) {
+                                @Value("${bastet.auth.filter.header-key:Authorization}") String headerKey) {
         this.headerKey = headerKey;
         this.authenticationManager = authenticationManagerImpl;
         this.userDetailsService = userDetailsServiceImpl;

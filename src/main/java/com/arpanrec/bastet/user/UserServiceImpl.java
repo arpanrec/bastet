@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva.user;
+package com.arpanrec.bastet.user;
 
 import com.arpanrec.bastet.hash.Argon2;
 import org.springframework.beans.factory.annotation.Autowired;

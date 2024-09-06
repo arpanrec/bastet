@@ -1,4 +1,4 @@
-package com.arpanrec.minerva.test.hash
+package com.arpanrec.bastet.test.hash
 
 import com.arpanrec.bastet.hash.Argon2
 import org.junit.jupiter.api.Test

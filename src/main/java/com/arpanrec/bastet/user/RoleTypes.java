@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva.user;
+package com.arpanrec.bastet.user;
 
 public enum RoleTypes {
     ADMIN, USER;

@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva.auth;
+package com.arpanrec.bastet.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,4 +1,4 @@
-package com.arpanrec.minerva.physical
+package com.arpanrec.bastet.physical
 
 import java.util.Optional
 

@@ -1,6 +1,5 @@
 package com.arpanrec.bastet.api;
 
-import com.arpanrec.bastet.auth.UserDetails;
 import com.arpanrec.bastet.auth.UserDetailsServiceImpl;
 import com.arpanrec.bastet.exceptions.CaughtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/users")
-public class MinervaUserDetailsApi {
+public class UserDetails {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public MinervaUserDetailsApi(@Autowired UserDetailsServiceImpl userDetailsServiceImpl) {
+    public UserDetails(@Autowired UserDetailsServiceImpl userDetailsServiceImpl) {
         this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
@@ -31,13 +30,13 @@ public class MinervaUserDetailsApi {
     }
 
     @PostMapping(path = "", produces = "application/json", consumes = "application/json")
-    public HttpEntity<?> save(@RequestBody UserDetails user) throws CaughtException {
+    public HttpEntity<?> save(@RequestBody com.arpanrec.bastet.auth.UserDetails user) throws CaughtException {
         userDetailsServiceImpl.saveMinervaUserDetails(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(path = "", produces = "application/json", consumes = "application/json")
-    public HttpEntity<?> update(@RequestBody UserDetails user) throws CaughtException {
+    public HttpEntity<?> update(@RequestBody com.arpanrec.bastet.auth.UserDetails user) throws CaughtException {
         userDetailsServiceImpl.updateMinervaUserDetails(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

@@ -1,4 +1,4 @@
-package com.arpanrec.minerva.test.physical
+package com.arpanrec.bastet.test.physical
 
 import com.arpanrec.bastet.physical.KVData
 import com.arpanrec.bastet.physical.jpa.KVDataServiceImpl

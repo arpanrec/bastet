@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva.auth;
+package com.arpanrec.bastet.auth;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

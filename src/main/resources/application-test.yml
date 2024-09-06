@@ -1,5 +1,5 @@
 ---
-minerva:
+bastet:
     hash:
         argon2:
             bring-your-own-salt: vQlm0mVHOcpEiEYI3GEYxw==

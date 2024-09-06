@@ -1,6 +1,6 @@
-package com.arpanrec.minerva.physical
+package com.arpanrec.bastet.physical
 
-import com.arpanrec.minerva.physical.jpa.MetaDataConverter
+import com.arpanrec.bastet.physical.jpa.MetaDataConverter
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity

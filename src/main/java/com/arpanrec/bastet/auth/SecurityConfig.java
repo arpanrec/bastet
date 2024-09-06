@@ -1,7 +1,7 @@
-package com.arpanrec.bastet.minerva.auth;
+package com.arpanrec.bastet.auth;
 
-import com.arpanrec.bastet.minerva.exceptions.MinervaException;
-import com.arpanrec.bastet.minerva.utils.FileUtils;
+import com.arpanrec.bastet.exceptions.CaughtException;
+import com.arpanrec.bastet.utils.FileUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +42,8 @@ public class SecurityConfig {
     public SecurityConfig(@Autowired AuthenticationFilter authenticationFilter,
                           @Autowired AuthenticationProviderImpl authenticationProviderImpl,
                           @Autowired UserDetailsServiceImpl userDetailsServiceImpl,
-                          @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
-                          @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) throws MinervaException {
+                          @Value("${bastet.auth.security-config.root-username:root}") String rootUsername,
+                          @Value("${bastet.auth.security-config.root-password:root}") String rootPassword) throws CaughtException {
         this.authenticationOncePerRequestFilter = authenticationFilter;
         this.authenticationProvider = authenticationProviderImpl;
         this.userDetailsService = userDetailsServiceImpl;

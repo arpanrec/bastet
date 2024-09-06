@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva;
+package com.arpanrec.bastet;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

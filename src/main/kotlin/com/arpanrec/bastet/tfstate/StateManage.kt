@@ -1,8 +1,8 @@
-package com.arpanrec.minerva.tfstate
+package com.arpanrec.bastet.tfstate
 
-import com.arpanrec.minerva.physical.KVData
-import com.arpanrec.minerva.physical.jpa.KVDataServiceImpl
-import com.arpanrec.minerva.physical.NameSpace
+import com.arpanrec.bastet.physical.KVData
+import com.arpanrec.bastet.physical.jpa.KVDataServiceImpl
+import com.arpanrec.bastet.physical.NameSpace
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.type.MapType
 import com.fasterxml.jackson.databind.type.TypeFactory

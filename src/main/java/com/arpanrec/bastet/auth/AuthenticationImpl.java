@@ -1,6 +1,6 @@
-package com.arpanrec.bastet.minerva.auth;
+package com.arpanrec.bastet.auth;
 
-import com.arpanrec.bastet.minerva.exceptions.MinervaException;
+import com.arpanrec.bastet.exceptions.CaughtException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +35,7 @@ public class AuthenticationImpl implements Authentication {
     }
 
     public Object getDetails() {
-        return new MinervaException("Not implemented");
+        return new CaughtException("Not implemented");
     }
 
     public Object getPrincipal() {

@@ -1,7 +1,7 @@
-package com.arpanrec.minerva.encryption
+package com.arpanrec.bastet.encryption
 
-import com.arpanrec.minerva.exceptions.MinervaException
-import com.arpanrec.minerva.utils.FileUtils
+import com.arpanrec.bastet.exceptions.CaughtException
+import com.arpanrec.bastet.utils.FileUtils
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -41,9 +41,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class GnuPG(
-    @Value("\${minerva.encryption.gnupg.armored-public-key}") armoredPublicKey: String,
-    @Value("\${minerva.encryption.gnupg.armored-private-key}") armoredPrivateKey: String,
-    @Value("\${minerva.encryption.gnupg.private-key-passphrase}") privateKeyPassphrase: String?
+    @Value("\${bastet.encryption.gnupg.armored-public-key}") armoredPublicKey: String,
+    @Value("\${bastet.encryption.gnupg.armored-private-key}") armoredPrivateKey: String,
+    @Value("\${bastet.encryption.gnupg.private-key-passphrase}") privateKeyPassphrase: String?
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -234,13 +234,13 @@ class GnuPG(
             }
 
             is PGPOnePassSignatureList -> {
-                throw MinervaException(
+                throw CaughtException(
                     "Encrypted message contains a signed message - not literal data."
                 )
             }
 
             else -> {
-                throw MinervaException("Message is not a simple encrypted file - type unknown.")
+                throw CaughtException("Message is not a simple encrypted file - type unknown.")
             }
         }
     }

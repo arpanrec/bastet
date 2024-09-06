@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva.state;
+package com.arpanrec.bastet.state;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

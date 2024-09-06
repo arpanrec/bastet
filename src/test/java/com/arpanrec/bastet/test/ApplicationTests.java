@@ -1,4 +1,4 @@
-package com.arpanrec.minerva.test;
+package com.arpanrec.bastet.test;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

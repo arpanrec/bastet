@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva.user;
+package com.arpanrec.bastet.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +16,8 @@ public class RootUser implements CommandLineRunner {
     private final String rootPassword;
 
     public RootUser(@Autowired UserServiceImpl userServiceImpl,
-                    @Value("${minerva.auth.security-config.root-username:root}") String rootUsername,
-                    @Value("${minerva.auth.security-config.root-password:root}") String rootPassword) {
+                    @Value("${bastet.auth.security-config.root-username:root}") String rootUsername,
+                    @Value("${bastet.auth.security-config.root-password:root}") String rootPassword) {
         this.userServiceImpl = userServiceImpl;
         this.rootUsername = rootUsername;
         this.rootPassword = rootPassword;

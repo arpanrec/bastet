@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva.user;
+package com.arpanrec.bastet.user;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

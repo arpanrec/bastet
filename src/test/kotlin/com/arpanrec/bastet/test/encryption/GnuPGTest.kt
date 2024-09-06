@@ -1,4 +1,4 @@
-package com.arpanrec.minerva.test.encryption
+package com.arpanrec.bastet.test.encryption
 
 import com.arpanrec.bastet.encryption.GnuPG
 import org.junit.jupiter.api.Test

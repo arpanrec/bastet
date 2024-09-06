@@ -1,4 +1,4 @@
-package com.arpanrec.minerva.physical.jpa
+package com.arpanrec.bastet.physical.jpa
 
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter

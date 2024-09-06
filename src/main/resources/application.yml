@@ -11,7 +11,7 @@ spring:
     profiles:
         active: dev
     application:
-        name: minerva
+        name: bastet
     main:
         lazy-initialization: false
     datasource:

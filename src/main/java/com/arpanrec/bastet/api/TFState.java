@@ -16,12 +16,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/v1/tfstate/{tfState}", produces = "application/json")
-public class TFStateApi {
+public class TFState {
 
 
     private final StateManage stateManage;
 
-    public TFStateApi(@Autowired StateManage stateManage) {
+    public TFState(@Autowired StateManage stateManage) {
         this.stateManage = stateManage;
     }
 

@@ -1,8 +1,8 @@
-package com.arpanrec.minerva.physical.jpa
+package com.arpanrec.bastet.physical.jpa
 
-import com.arpanrec.minerva.exceptions.MinervaException
-import com.arpanrec.minerva.physical.KVData
-import com.arpanrec.minerva.physical.KVDataService
+import com.arpanrec.bastet.exceptions.CaughtException
+import com.arpanrec.bastet.physical.KVData
+import com.arpanrec.bastet.physical.KVDataService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.Optional
@@ -17,7 +17,7 @@ class KVDataServiceImpl(
             return Optional.empty()
         }
         if (allKeys.size > 1) {
-            throw MinervaException("Multiple keys found")
+            throw CaughtException("Multiple keys found")
         }
 
         return Optional.of(allKeys[0])

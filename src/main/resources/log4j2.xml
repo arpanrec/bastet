@@ -2,7 +2,7 @@
 <Configuration status="info" monitorInterval="0">
     <Properties>
         <Property name="logsource_application_groupid">com.arpanrec</Property>
-        <Property name="logsource_application_artifactid">minerva</Property>
+        <Property name="logsource_application_artifactid">bastet</Property>
         <Property name="logsource_application_name">${logsource_application_artifactid}</Property>
         <Property name="logsource_application_rootloggername">
             ${logsource_application_groupid}.${logsource_application_artifactid}

@@ -1,6 +1,6 @@
-package com.arpanrec.bastet.minerva.auth;
+package com.arpanrec.bastet.auth;
 
-import com.arpanrec.bastet.minerva.exceptions.MinervaException;
+import com.arpanrec.bastet.exceptions.CaughtException;
 import com.arpanrec.bastet.hash.Argon2;
 import com.arpanrec.bastet.physical.KVData;
 import com.arpanrec.bastet.physical.jpa.KVDataServiceImpl;
@@ -45,11 +45,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
-    public UserDetails loadMinervaUserDetailsByUsername(String username) throws MinervaException {
+    public UserDetails loadMinervaUserDetailsByUsername(String username) throws CaughtException {
         log.debug("Loading user by username: {}", username);
         Optional<KVData> userData = kvDataServiceImpl.get(internalUsersKeyPath + "/" + username);
         if (userData.isEmpty()) {
-            throw new MinervaException("User not found with username: " + username);
+            throw new CaughtException("User not found with username: " + username);
         } else {
             try {
                 UserDetails userDetails = objectMapper.readValue(userData.get().getValue(),
@@ -57,12 +57,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 log.trace("User loaded: {}", userDetails);
                 return userDetails;
             } catch (Exception e) {
-                throw new MinervaException("Error while loading user", e);
+                throw new CaughtException("Error while loading user", e);
             }
         }
     }
 
-    private KVData minervaUserDetailsToKeyValue(UserDetails userDetails) throws MinervaException {
+    private KVData userDetailsToKeyValue(UserDetails userDetails) throws CaughtException {
         String hashedPassword = encoder.encode(userDetails.getPassword());
         userDetails = new UserDetails(
             userDetails.getUsername(),
@@ -76,19 +76,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 new HashMap<>()
             );
         } catch (Exception e) {
-            throw new MinervaException("Error while saving user", e);
+            throw new CaughtException("Error while saving user", e);
         }
     }
 
-    public void saveMinervaUserDetails(UserDetails userDetails) throws MinervaException {
+    public void saveMinervaUserDetails(UserDetails userDetails) throws CaughtException {
         log.debug("Saving user: {}", userDetails.toString());
-        KVData userData = minervaUserDetailsToKeyValue(userDetails);
+        KVData userData = userDetailsToKeyValue(userDetails);
         kvDataServiceImpl.saveOrUpdate(userData);
     }
 
-    public void updateMinervaUserDetails(UserDetails userDetails) throws MinervaException {
+    public void updateMinervaUserDetails(UserDetails userDetails) throws CaughtException {
         log.debug("Updating user: {}", userDetails.toString());
-        KVData userData = minervaUserDetailsToKeyValue(userDetails);
+        KVData userData = userDetailsToKeyValue(userDetails);
         kvDataServiceImpl.saveOrUpdate(userData);
     }
 }

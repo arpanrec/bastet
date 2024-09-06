@@ -1,6 +1,6 @@
-package com.arpanrec.minerva.physical.jpa
+package com.arpanrec.bastet.physical.jpa
 
-import com.arpanrec.minerva.physical.KVData
+import com.arpanrec.bastet.physical.KVData
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

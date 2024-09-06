@@ -1,4 +1,4 @@
-package com.arpanrec.bastet.minerva.auth;
+package com.arpanrec.bastet.auth;
 
 import com.arpanrec.bastet.hash.Argon2;
 import lombok.extern.slf4j.Slf4j;

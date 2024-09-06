@@ -20,11 +20,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/v1/keyvalue/**", produces = "application/json", consumes = "application/json")
-public class KeyValueApi {
+public class KeyValue {
 
     private final KVDataServiceImpl kvDataServiceImpl;
 
-    public KeyValueApi(@Autowired KVDataServiceImpl kvDataServiceImpl) {
+    public KeyValue(@Autowired KVDataServiceImpl kvDataServiceImpl) {
         this.kvDataServiceImpl = kvDataServiceImpl;
     }
 
