@@ -3,7 +3,6 @@ package com.arpanrec.bastet.test.hash
 import com.arpanrec.bastet.hash.Argon2
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
