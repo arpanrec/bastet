@@ -1,1 +1,1 @@
-rootProject.name = "minerva"
+rootProject.name = "bastet"

@@ -6,22 +6,24 @@ logging.captureStandardOutput(LogLevel.INFO)
 
 plugins {
     java
-    id("org.springframework.boot") version "3.2.2"
-    id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.9.22"
-    kotlin("plugin.spring") version "1.9.22"
-    kotlin("plugin.jpa") version "1.9.22"
-    kotlin("plugin.serialization") version "1.9.22"
+    id("org.springframework.boot") version "3.3.3"
+    id("io.spring.dependency-management") version "1.1.6"
+    kotlin("jvm") version "1.9.25"
+    kotlin("plugin.spring") version "1.9.25"
+    kotlin("plugin.jpa") version "1.9.25"
+    id("org.hibernate.orm") version "6.5.2.Final"
+    kotlin("plugin.serialization") version "1.9.25"
     idea
+    // id("org.graalvm.buildtools.native") version "0.10.2"
 }
 
 group = "com.arpanrec"
 version = getVersions()
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -73,9 +75,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains:annotations")
 
-    implementation("org.bouncycastle:bcpg-jdk18on:1.77")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.77")
-    implementation("org.bouncycastle:bcpkix-jdk18on:1.77")
+    implementation("org.bouncycastle:bcpg-jdk18on:1.78.1")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.xerial:sqlite-jdbc")
+    implementation("org.hibernate.orm:hibernate-community-dialects")
+    runtimeOnly("org.postgresql:postgresql")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -92,12 +99,16 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-    compileOnly("org.springframework.boot:spring-boot-devtools")
+
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.junit.platform:junit-platform-launcher")
+    testImplementation("com.h2database:h2")
 }
 
 
@@ -115,7 +126,7 @@ tasks {
         group = "build"
         delete(
             "logs", "bin", "build", "storage", "gradlew.bat", "gradle", "gradlew", ".gradle", "node_modules",
-            "package-lock.json", "package.json", "/tmp/minerva",
+            "package-lock.json", "package.json", "/tmp/bastet",
             "src/test/resources/tfstate/.terraform",
             "src/test/resources/tfstate/errored.tfstate",
             "src/test/resources/tfstate/.terraform.lock.hcl"
@@ -124,7 +135,7 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs += "-Xjsr305=strict"
-            jvmTarget = "17"
+            jvmTarget = "21"
         }
     }
     withType<Test> {
@@ -141,7 +152,7 @@ tasks {
 }
 
 fun getMainClassName(): String {
-    val mainClass = "com.arpanrec.minerva.Application"
+    val mainClass = "com.arpanrec.bastet.Application"
     return mainClass
 }
 
@@ -154,12 +165,12 @@ fun getVersions(): String {
         }
     }
 
-    val versionFromEnv: String? = System.getenv("MINERVA_VERSION")
+    val versionFromEnv: String? = System.getenv("BASTET_VERSION")
     if (!versionFromEnv.isNullOrEmpty()) {
         return versionFromEnv
     }
 
-    val file = File("MINERVA_VERSION")
+    val file = File("BASTET_VERSION")
     if (file.exists()) {
         val versionFromFile: String = file.readText().trim()
         if (versionFromFile.isNotEmpty()) {
@@ -168,4 +179,10 @@ fun getVersions(): String {
     }
 
     return "9.9.9-SNAPSHOT"
+}
+
+hibernate {
+    enhancement {
+        enableAssociationManagement = true
+    }
 }

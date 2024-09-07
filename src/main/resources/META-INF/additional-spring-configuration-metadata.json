@@ -1,54 +1,22 @@
 {
     "properties": [
         {
-            "name": "minerva.auth.filter.header-key",
+            "name": "bastet.auth.filter.header-key",
             "type": "java.lang.String",
             "description": "Header used to pass the authentication token to the service.",
             "defaultValue": "Authorization"
         },
         {
-            "name": "minerva.auth.security-config.root-username",
+            "name": "bastet.auth.security-config.root-username",
             "type": "java.lang.String",
             "description": "The username for the root user.",
             "defaultValue": "root"
         },
         {
-            "name": "minerva.auth.security-config.root-password",
+            "name": "bastet.auth.security-config.root-password",
             "type": "java.lang.String",
             "description": "The password for the root user.",
             "defaultValue": "root"
-        },
-        {
-            "name": "minerva.encryption.gnupg.armored-private-key",
-            "type": "java.lang.String",
-            "description": "The GPG Private Key to use for decryption."
-        },
-        {
-            "name": "minerva.encryption.gnupg.armored-public-key",
-            "type": "java.lang.String",
-            "description": "The GPG Public Key to use for encryption."
-        },
-        {
-            "name": "minerva.encryption.gnupg.private-key-passphrase",
-            "type": "java.lang.String",
-            "description": "The passphrase to use for GPG Private Key."
-        },
-        {
-            "name": "minerva.physical.key-value-persistence.persistence-type",
-            "type": "com.arpanrec.minerva.physical.KeyValuePersistenceType",
-            "description": "The persistence type for the key-value store. Valid values are 'file'.",
-            "defaultValue": "file"
-        },
-        {
-            "name": "minerva.physical.key-value-file-storage.path",
-            "type": "java.lang.String",
-            "description": "The path to the file to use for the key-value store.",
-            "defaultValue": "./storage"
-        },
-        {
-            "name": "minerva.hash.argon2.bring-your-own-salt",
-            "type": "java.lang.String",
-            "description": "Argon2 Salt String. Base64 encoded 16 bytes."
         }
     ]
 }
