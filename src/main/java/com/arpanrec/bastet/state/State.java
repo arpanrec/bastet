@@ -28,4 +28,16 @@ public class State {
         this.kvDataService = kvDataServiceImpl;
     }
 
+    public boolean isGnuPGAvailable() {
+        var hasPrivateKeyPassphrase = kvDataService.has(GnuPG.INTERNAL_GNUPG_PRIVATE_KEY_PASSPHRASE_PATH);
+        var hasPrivateKey = kvDataService.has(GnuPG.INTERNAL_GNUPG_PRIVATE_KEY_PATH);
+        return hasPrivateKeyPassphrase && hasPrivateKey;
+    }
+
+    public boolean isAES256Available() {
+        var hasKey = kvDataService.has(AES256CBC.INTERNAL_KEY_PATH);
+        var hasIV = kvDataService.has(AES256CBC.INTERNAL_IV_PATH);
+        return hasKey && hasIV;
+    }
+
 }

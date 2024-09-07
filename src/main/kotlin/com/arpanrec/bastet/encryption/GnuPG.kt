@@ -1,6 +1,7 @@
 package com.arpanrec.bastet.encryption
 
 import com.arpanrec.bastet.exceptions.CaughtException
+import com.arpanrec.bastet.physical.NameSpace
 import com.arpanrec.bastet.utils.FileUtils
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -49,21 +50,19 @@ class GnuPG {
         Security.addProvider(BouncyCastleProvider())
     }
 
-    private var pgpPrivateKey: PGPPrivateKey? = null
-    private var encryptedDataGenerator: PGPEncryptedDataGenerator? = null
+    companion object {
+        const val INTERNAL_GNUPG_PRIVATE_KEY_PATH = "${NameSpace.INTERNAL_GNUPG}/private_key"
+        const val INTERNAL_GNUPG_PRIVATE_KEY_PASSPHRASE_PATH =
+            "${NameSpace.INTERNAL_GNUPG}/private_key_passphrase"
+    }
 
-    fun setPgpPrivateKeyFromArmoredString(armoredPrivateKey: String, privateKeyPassphrase: String?) {
-        if (pgpPrivateKey != null) {
-            log.info("Private key already loaded.")
-            return
-        }
-        if (encryptedDataGenerator != null) {
-            log.info("Encrypted data generator already created.")
-            return
-        }
+    private lateinit var pgpPrivateKey: PGPPrivateKey
+    private lateinit var encryptedDataGenerator: PGPEncryptedDataGenerator
+
+    fun setPgpPrivateKeyFromArmoredString(armoredPrivateKey: String, privateKeyPassphrase: String) {
         log.info("Loading GPG armored private key.")
         this.pgpPrivateKey = this.loadGpgPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
-        this.setEncryptedDataGeneratorFromArmoredString(pgpPrivateKey!!)
+        this.setEncryptedDataGeneratorFromArmoredString(pgpPrivateKey)
     }
 
     private fun setEncryptedDataGeneratorFromArmoredString(pgpPrivateKey: PGPPrivateKey) {
@@ -109,7 +108,7 @@ class GnuPG {
 
         val encryptedOut = ByteArrayOutputStream()
         val out: OutputStream = ArmoredOutputStream(encryptedOut)
-        val encryptedOutStream = encryptedDataGenerator!!.open(
+        val encryptedOutStream = encryptedDataGenerator.open(
             out, clearTextDataByteOutputStream.toByteArray().size.toLong()
         )
         encryptedOutStream.write(clearTextDataByteOutputStream.toByteArray())
