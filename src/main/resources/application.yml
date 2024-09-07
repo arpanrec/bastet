@@ -13,7 +13,7 @@ spring:
     application:
         name: bastet
     main:
-        lazy-initialization: false
+        lazy-initialization: true
     datasource:
         url: jdbc:postgresql://localhost:5432/postgres
         username: postgres

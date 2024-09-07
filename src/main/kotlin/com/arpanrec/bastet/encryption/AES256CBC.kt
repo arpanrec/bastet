@@ -1,7 +1,6 @@
 package com.arpanrec.bastet.encryption
 
 import com.arpanrec.bastet.exceptions.CaughtException
-import com.arpanrec.bastet.physical.NameSpace
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.security.Key
