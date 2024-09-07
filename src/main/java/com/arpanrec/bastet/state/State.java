@@ -40,4 +40,7 @@ public class State {
         return hasKey && hasIV;
     }
 
+    public boolean isArgon2Available() {
+        return kvDataService.has(Argon2.INTERNAL_ARGON2_SALT_PATH);
+    }
 }

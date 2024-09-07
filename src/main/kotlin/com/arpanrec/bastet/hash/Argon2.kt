@@ -20,10 +20,10 @@ class Argon2 : PasswordEncoder {
     }
 
     companion object {
-        const val INTERNAL_ARGON2_SALT_PATH: String = NameSpace.INTERNAL_ARGON2 + "/salt"
+        const val INTERNAL_ARGON2_SALT_PATH = NameSpace.INTERNAL_ARGON2 + "/salt"
     }
 
-    private var characters: String = "abcdefghijklmnopqrstuvwxyz"
+    private var characters = "abcdefghijklmnopqrstuvwxyz"
 
 //    private fun generateSalt16ByteBase64EncodedString(): String {
 //        val secureRandom = SecureRandom()
