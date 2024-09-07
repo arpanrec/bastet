@@ -7,15 +7,11 @@ import org.springframework.stereotype.Service
 import java.util.Optional
 
 @Service
-class KVDataServiceImpl(
-) : KVDataService {
+class KVDataServiceImpl() : KVDataService {
     private lateinit var kvDataService: KVDataService
     private lateinit var gnuPG: GnuPG
 
-    private constructor(
-        @Autowired kvDataServiceJpaImpl: KVDataServiceJpaImpl,
-        @Autowired gnuPG: GnuPG
-    ) : this() {
+    private constructor(@Autowired kvDataServiceJpaImpl: KVDataServiceJpaImpl, @Autowired gnuPG: GnuPG) : this() {
         this.kvDataService = kvDataServiceJpaImpl; this.gnuPG = gnuPG
     }
 
