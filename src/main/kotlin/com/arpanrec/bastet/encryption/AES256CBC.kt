@@ -1,6 +1,8 @@
 package com.arpanrec.bastet.encryption
 
+import com.arpanrec.bastet.exceptions.CaughtException
 import com.arpanrec.bastet.physical.NameSpace
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.security.Key
 import java.security.SecureRandom
@@ -8,33 +10,39 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.spec.IvParameterSpec
 import java.util.Base64
+import javax.crypto.spec.SecretKeySpec
 
 @Component
 class AES256CBC {
 
-    companion object {
-        const val INTERNAL_KEY_PATH: String = NameSpace.INTERNAL_AES256CBC + "/key"
-        const val INTERNAL_IV_PATH: String = NameSpace.INTERNAL_AES256CBC + "/iv"
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    private var secretKey: Key? = null
+    private var iv: IvParameterSpec? = null
+
+    fun setSecretKeyAndIv(secretKeyBase64: String, ivBase64: String) {
+        if (this.secretKey != null) {
+            throw CaughtException("Secret key already exists")
+        }
+        log.info("Setting secret key")
+        val decodedKey: ByteArray = Base64.getDecoder().decode(secretKeyBase64)
+        this.secretKey = SecretKeySpec(decodedKey, 0, decodedKey.size, "AES")
+
+        if (this.iv != null) {
+            throw CaughtException("IV already exists")
+        }
+        log.info("Setting IV")
+        val decodedIV: ByteArray = Base64.getDecoder().decode(ivBase64)
+        this.iv = IvParameterSpec(decodedIV)
     }
 
-    private lateinit var secretKey: Key
-    private lateinit var iv: IvParameterSpec
-
-    fun setSecretKey(secretKey: Key) {
-        this.secretKey = secretKey
-    }
-
-    fun setIV(iv: IvParameterSpec) {
-        this.iv = iv
-    }
-
-    private fun generateAESKey(): Key {
+    fun generateAESKey(): Key {
         val keyGen = KeyGenerator.getInstance("AES")
         keyGen.init(256) // 256-bit key
         return keyGen.generateKey()
     }
 
-    private fun generateIV(): IvParameterSpec {
+    fun generateIV(): IvParameterSpec {
         val iv = ByteArray(16) // AES block size is 16 bytes
         SecureRandom().nextBytes(iv)
         return IvParameterSpec(iv)

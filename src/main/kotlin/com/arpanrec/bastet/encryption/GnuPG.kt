@@ -56,16 +56,16 @@ class GnuPG {
             "${NameSpace.INTERNAL_GNUPG}/private_key_passphrase"
     }
 
-    private lateinit var pgpPrivateKey: PGPPrivateKey
-    private lateinit var encryptedDataGenerator: PGPEncryptedDataGenerator
+    private var pgpPrivateKey: PGPPrivateKey? = null
+    private var encryptedDataGenerator: PGPEncryptedDataGenerator? = null
 
     fun setPgpPrivateKeyFromArmoredString(armoredPrivateKey: String, privateKeyPassphrase: String) {
-        if (this::pgpPrivateKey == null) {
+        log.info("Loading GPG armored private key.")
+        if (this.pgpPrivateKey != null) {
             throw CaughtException("Private key already loaded.")
         }
-        log.info("Loading GPG armored private key.")
         this.pgpPrivateKey = this.loadGpgPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
-        this.setEncryptedDataGeneratorFromArmoredString(pgpPrivateKey)
+        this.setEncryptedDataGeneratorFromArmoredString(pgpPrivateKey!!)
     }
 
     private fun setEncryptedDataGeneratorFromArmoredString(pgpPrivateKey: PGPPrivateKey) {
@@ -111,7 +111,7 @@ class GnuPG {
 
         val encryptedOut = ByteArrayOutputStream()
         val out: OutputStream = ArmoredOutputStream(encryptedOut)
-        val encryptedOutStream = encryptedDataGenerator.open(
+        val encryptedOutStream = encryptedDataGenerator!!.open(
             out, clearTextDataByteOutputStream.toByteArray().size.toLong()
         )
         encryptedOutStream.write(clearTextDataByteOutputStream.toByteArray())

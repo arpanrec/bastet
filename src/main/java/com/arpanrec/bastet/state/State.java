@@ -34,13 +34,11 @@ public class State {
         return hasPrivateKeyPassphrase && hasPrivateKey;
     }
 
-    public boolean isAES256Available() {
-        var hasKey = kvDataService.has(AES256CBC.INTERNAL_KEY_PATH);
-        var hasIV = kvDataService.has(AES256CBC.INTERNAL_IV_PATH);
-        return hasKey && hasIV;
-    }
-
     public boolean isArgon2Available() {
         return kvDataService.has(Argon2.INTERNAL_ARGON2_SALT_PATH);
+    }
+
+    public void init() {
+
     }
 }

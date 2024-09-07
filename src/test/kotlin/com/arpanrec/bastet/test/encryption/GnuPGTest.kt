@@ -85,6 +85,14 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
     }
 
     @Test
+    fun testNewEncryptedMessage() {
+        val newEncryptedMessage = gnuPG.encrypt(message)
+        log.info("New encrypted message: {}", newEncryptedMessage)
+        assert(newEncryptedMessage != armoredBcEncryptedMessage)
+        { "New encrypted message is not same as old encrypted message" }
+    }
+
+    @Test
     fun testCliEncryptedMessage() {
         val decryptedMessage = gnuPG.decrypt(armoredCliEncryptedMessage)
         log.info("Decrypted CLI message: {}", decryptedMessage)

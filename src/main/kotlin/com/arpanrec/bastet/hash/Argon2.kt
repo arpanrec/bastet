@@ -1,5 +1,6 @@
 package com.arpanrec.bastet.hash
 
+import com.arpanrec.bastet.exceptions.CaughtException
 import com.arpanrec.bastet.physical.NameSpace
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator
 import org.bouncycastle.crypto.params.Argon2Parameters
@@ -13,9 +14,12 @@ class Argon2 : PasswordEncoder {
 
     private val encoderPrefix = "argon2:"
 
-    private lateinit var argon2Salt: ByteArray
+    private var argon2Salt: ByteArray? = null
 
     fun setArgon2Salt(salt: String) {
+        if (argon2Salt != null) {
+            throw CaughtException("Argon2 salt already set")
+        }
         argon2Salt = Base64.getDecoder().decode(salt)
     }
 
@@ -25,35 +29,12 @@ class Argon2 : PasswordEncoder {
 
     private var characters = "abcdefghijklmnopqrstuvwxyz"
 
-//    private fun generateSalt16ByteBase64EncodedString(): String {
-//        val secureRandom = SecureRandom()
-//        val salt = ByteArray(32)
-//        secureRandom.nextBytes(salt)
-//        return Base64.getEncoder().encodeToString(salt)
-//    }
-
-//    private final fun checkArgon2Salt() {
-//        kVDataService.get(internalArgon2SaltPath).ifPresentOrElse({ kv: KVData ->
-//            log.info("Argon2 salt already exists")
-//            argon2Salt = Base64.getDecoder().decode(kv.value)
-//        }, {
-//            try {
-//                val saltString: String = generateSalt16ByteBase64EncodedString()
-//                val keyValue = KVData(
-//                    internalArgon2SaltPath, saltString, mapOf(
-//                        "created" to System.currentTimeMillis
-//                            ().toString()
-//                    )
-//                )
-//                kVDataService.saveOrUpdate(keyValue)
-//                log.info("Argon2 salt created")
-//                argon2Salt = Base64.getDecoder().decode(saltString)
-//            } catch (e: Exception) {
-//                throw RuntimeException("Error while creating argon2 salt", e)
-//            }
-//        })
-//    }
-
+    fun generateSalt16ByteBase64EncodedString(): String {
+        val secureRandom = SecureRandom()
+        val salt = ByteArray(32)
+        secureRandom.nextBytes(salt)
+        return Base64.getEncoder().encodeToString(salt)
+    }
 
     fun hashString(inputString: String): String {
         val random = SecureRandom()
