@@ -75,9 +75,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains:annotations")
 
-    implementation("org.bouncycastle:bcpg-jdk18on:1.77")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.77")
-    implementation("org.bouncycastle:bcpkix-jdk18on:1.77")
+    implementation("org.bouncycastle:bcpg-jdk18on:1.78.1")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.xerial:sqlite-jdbc")

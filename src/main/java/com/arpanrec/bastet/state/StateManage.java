@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class State {
+public class StateManage {
 
     private final GnuPG gnuPG;
 
@@ -19,7 +19,7 @@ public class State {
 
     private final KVDataService kvDataService;
 
-    public State(@Autowired GnuPG gnuPG,
+    public StateManage(@Autowired GnuPG gnuPG,
                  @Autowired AES256CBC aes256CBC,
                  @Autowired Argon2 argon2, @Autowired KVDataServiceImpl kvDataServiceImpl) {
         this.gnuPG = gnuPG;

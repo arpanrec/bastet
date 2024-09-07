@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.util.Optional
 
-@Component
+@Component("tfStateManage")
 class StateManage() {
     private lateinit var kVDataService: KVDataService
     private val tfStateKeyPath = NameSpace.INTERNAL_TF_STATE
