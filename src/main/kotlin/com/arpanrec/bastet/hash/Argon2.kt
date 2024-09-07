@@ -13,7 +13,11 @@ class Argon2 : PasswordEncoder {
 
     private val encoderPrefix = "argon2:"
 
-    private var argon2Salt: ByteArray? = null
+    private lateinit var argon2Salt: ByteArray
+
+    fun setArgon2Salt(salt: String) {
+        argon2Salt = Base64.getDecoder().decode(salt)
+    }
 
     companion object {
         const val INTERNAL_ARGON2_SALT_PATH: String = NameSpace.INTERNAL_ARGON2 + "/salt"

@@ -1,6 +1,7 @@
 package com.arpanrec.bastet.test.hash
 
 import com.arpanrec.bastet.hash.Argon2
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -10,31 +11,44 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 class Argon2Test(@Autowired private val argon2: Argon2) {
 
-    private val log: Logger = LoggerFactory.getLogger(Argon2Test::class.java)
+    private val log = LoggerFactory.getLogger(Argon2Test::class.java)
 
-    private val password: String = "password"
+    private val password = "password"
+    private val hashedPassword = "argon2:w1NkfH5pC/tyKNLHc6Aw/9F2vMlQ8KUivOLfJaU9lnk="
+    private val wrongHashedPassword = "argon2:w2NkfH5pC/tyKNLHc6Aw/9F2vMlQ8KUivOLfJaU9lnk="
+    private val argon2Salt = "vQlm0mVHOcpEiEYI3GEYxw=="
 
-    private val oldEncodedPassword: String = "argon2:w1NkfH5pC/tyKNLHc6Aw/9F2vMlQ8KUivOLfJaU9lnk="
+    @BeforeEach
+    fun loadPrivateKey() {
+        argon2.setArgon2Salt(argon2Salt)
+    }
 
     @Test
-    fun testOldEncodedPassword() {
-        log.info("OLD Encoded password: $oldEncodedPassword")
-        assert(argon2.matches(password, oldEncodedPassword)) { "Old encoded password does not match" }
+    fun testHashedPassword() {
+        log.info("OLD Encoded Password: $hashedPassword")
+        assert(argon2.matches(password, hashedPassword)) { "Old hashed password does not match" }
         log.info("Old encoded password matches")
     }
 
     @Test
-    fun testNewEncodedPassword() {
+    fun testNewHashedPassword() {
         val newEncodedPassword = argon2.encode(this.password)
-        log.info("NEW Encoded password: $newEncodedPassword")
+        log.info("New Hashed Password: $newEncodedPassword")
         assert(argon2.matches(password, newEncodedPassword)) { "New encoded password does not match" }
-        log.info("New encoded password matches")
+        log.info("New hashed password matches")
+    }
+
+    @Test
+    fun testNewHash() {
+        val newHash = argon2.encode(this.password)
+        log.info("New Hash: $newHash")
+        assert(newHash != hashedPassword) { "New hash matches old hash" }
+        log.info("New hash does not match old hash")
     }
 
     @Test
     fun wrongPasswordTest() {
-        val wrongPassword = "wrongPassword"
-        assert(!argon2.matches(wrongPassword, oldEncodedPassword))
+        assert(!argon2.matches(password, wrongHashedPassword)) { "Wrong password matches" }
         log.info("Wrong password does not match")
     }
 }
