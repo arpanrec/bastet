@@ -1,17 +1,14 @@
 package com.arpanrec.bastet.test.encryption
 
 import com.arpanrec.bastet.encryption.AES256CBC
+import com.arpanrec.bastet.encryption.Encryption
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 
-
-@SpringBootTest
-class AES256CBCTest(@Autowired private val aes256CBC: AES256CBC) {
+class AES256CBCTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
-
+    private var encryption: Encryption? = null
     private val secretKeyBase64 = "5jcK7IMk3+QbNLikFRl3Zwgl9xagKD87s5dT2UqaSR4="
     private val ivBase64 = "5jcK7IMk3+QbNLikFRl3Zw=="
     private val plainText = "Hello, World!"
@@ -19,13 +16,15 @@ class AES256CBCTest(@Autowired private val aes256CBC: AES256CBC) {
 
     @BeforeEach
     fun loadPrivateKey() {
-        aes256CBC.setSecretKeyAndIv(secretKeyBase64, ivBase64)
+        val enc = AES256CBC()
+        enc.setSecretKeyAndIv(secretKeyBase64, ivBase64)
+        encryption = enc
     }
 
     @Test
     fun testEncrypt() {
         log.info("Encrypting plain text")
-        val cipherText = aes256CBC.encrypt(plainText)
+        val cipherText = encryption!!.encrypt(plainText)
         log.info("Cipher text: $cipherText")
         assert(cipherText == cipherTextBase64) { "Cipher text does not match" }
     }
@@ -33,7 +32,7 @@ class AES256CBCTest(@Autowired private val aes256CBC: AES256CBC) {
     @Test
     fun testDecrypt() {
         log.info("Decrypting cipher text")
-        val decryptedText = aes256CBC.decrypt(cipherTextBase64)
+        val decryptedText = encryption!!.decrypt(cipherTextBase64)
         log.info("Decrypted text: $decryptedText")
         assert(decryptedText == plainText) { "Decrypted text does not match" }
     }

@@ -42,7 +42,7 @@ import java.security.NoSuchProviderException
 import java.security.Security
 
 @Component
-class GnuPG {
+class GnuPG : Encryption {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
@@ -94,7 +94,7 @@ class GnuPG {
         return encryptedDataGenerator
     }
 
-    fun encrypt(clearTextData: String): String {
+    override fun encrypt(plainText: String): String {
         val clearTextDataByteOutputStream = ByteArrayOutputStream()
         val gpgCompressedDataGenerator = PGPCompressedDataGenerator(CompressionAlgorithmTags.ZIP)
         val gpgLiteralDataGenerator = PGPLiteralDataGenerator()
@@ -102,10 +102,10 @@ class GnuPG {
             gpgCompressedDataGenerator.open(clearTextDataByteOutputStream),
             PGPLiteralData.TEXT,
             GnuPG::class.java.canonicalName,
-            clearTextData.length.toLong(),
+            plainText.length.toLong(),
             Date()
         )
-        pOut.write(clearTextData.toByteArray(StandardCharsets.US_ASCII))
+        pOut.write(plainText.toByteArray(StandardCharsets.US_ASCII))
         pOut.close()
         gpgCompressedDataGenerator.close()
 
@@ -118,7 +118,7 @@ class GnuPG {
         encryptedOutStream.close()
         out.close()
         val encryptedData = encryptedOut.toString(StandardCharsets.US_ASCII)
-        log.trace("Clear Text: {}, Encrypted data: {}", clearTextData, encryptedData)
+        log.trace("Clear Text: {}, Encrypted data: {}", plainText, encryptedData)
         return encryptedData
     }
 
@@ -164,11 +164,11 @@ class GnuPG {
         return pgpPrivateKey
     }
 
-    fun decrypt(encryptedArmoredData: String): String {
+    override fun decrypt(encryptedText: String): String {
 
         val encryptedDataStream: InputStream = ArmoredInputStream(
             ByteArrayInputStream(
-                encryptedArmoredData.toByteArray(StandardCharsets.US_ASCII)
+                encryptedText.toByteArray(StandardCharsets.US_ASCII)
             )
         )
 
@@ -219,7 +219,7 @@ class GnuPG {
                             out.write(ch)
                         }
                         val decryptedData = out.toString()
-                        log.trace("Decrypting data: {}, Decrypted data: {}", encryptedArmoredData, decryptedData)
+                        log.trace("Decrypting data: {}, Decrypted data: {}", encryptedText, decryptedData)
                         return decryptedData
                     }
                 } catch (e: Exception) {

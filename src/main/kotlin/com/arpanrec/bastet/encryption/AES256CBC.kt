@@ -12,7 +12,7 @@ import java.util.Base64
 import javax.crypto.spec.SecretKeySpec
 
 @Component
-class AES256CBC {
+class AES256CBC : Encryption {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -47,17 +47,17 @@ class AES256CBC {
         return IvParameterSpec(iv)
     }
 
-    fun encrypt(plainText: String): String {
+    override fun encrypt(plainText: String): String {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv)
         val cipherText = cipher.doFinal(plainText.toByteArray())
         return Base64.getEncoder().encodeToString(cipherText)
     }
 
-    fun decrypt(cipherText: String): String {
+    override fun decrypt(encryptedText: String): String {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
         cipher.init(Cipher.DECRYPT_MODE, secretKey, iv)
-        val plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText))
+        val plainText = cipher.doFinal(Base64.getDecoder().decode(encryptedText))
         return String(plainText)
     }
 }
