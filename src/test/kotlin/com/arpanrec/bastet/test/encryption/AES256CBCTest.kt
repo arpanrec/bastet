@@ -17,9 +17,9 @@ class AES256CBCTest {
     fun loadPrivateKey() {
         val secretKeyBase64 = "5jcK7IMk3+QbNLikFRl3Zwgl9xagKD87s5dT2UqaSR4="
         val ivBase64 = "5jcK7IMk3+QbNLikFRl3Zw=="
-        val enc = AES256CBC()
-        enc.setSecretKeyAndIv(secretKeyBase64, ivBase64)
-        encryption = enc
+        val aeS256CBC = AES256CBC()
+        aeS256CBC.setSecretKeyAndIv(secretKeyBase64, ivBase64)
+        encryption = aeS256CBC
     }
 
     @Test
