@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 
 class GnuPGTest {
-    private var encryption: Encryption? = null
+    private lateinit var encryption: Encryption
     private val log = LoggerFactory.getLogger(GnuPGTest::class.java)
     private val message = "Hello, World!"
     private val armoredBcEncryptedMessage = """-----BEGIN PGP MESSAGE-----
@@ -32,7 +32,10 @@ GVD/xf7huNGhmdOr8OLf1X7jmzpUdEZLblbZ0fFR9V68E59oU6TT87nt4NVc
 -----END PGP MESSAGE-----
 
 """
-    private val armoredPrivateKey = """-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+    @BeforeEach
+    fun loadPrivateKey() {
+        val armoredPrivateKey = """-----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lIYEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm
 umnaeIz+BwMCdNs9UHB91Gn/sq1FqE2sz9/ZguQjtGCOsmqjAUr5WJqGB2NE9RR4
@@ -51,10 +54,8 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
 -----END PGP PRIVATE KEY BLOCK-----
 
 """
-    private val privateKeyPassphrase = "password"
+        val privateKeyPassphrase = "password"
 
-    @BeforeEach
-    fun loadPrivateKey() {
         val gnuPG = GnuPG()
         gnuPG.setPgpPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
         encryption = gnuPG
@@ -62,29 +63,29 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
 
     @Test
     fun testEncrypt() {
-        val encryptedMessage = encryption!!.encrypt(message)
+        val encryptedMessage = encryption.encrypt(message)
         log.info("Able to encrypt message: {}", encryptedMessage)
     }
 
     @Test
     fun testDecrypt() {
-        val decryptedMessage = encryption!!.decrypt(armoredBcEncryptedMessage)
+        val decryptedMessage = encryption.decrypt(armoredBcEncryptedMessage)
         log.info("Able to decrypt message: {}", decryptedMessage)
         assert(decryptedMessage == message) { "Decrypted message is not same as original message" }
     }
 
     @Test
     fun testEncryptAndDecrypt() {
-        val encryptedMessage = encryption!!.encrypt(message)
+        val encryptedMessage = encryption.encrypt(message)
         log.info("Encrypted message: {}", encryptedMessage)
-        val decryptedMessage = encryption!!.decrypt(encryptedMessage)
+        val decryptedMessage = encryption.decrypt(encryptedMessage)
         log.info("Decrypted message: {}", decryptedMessage)
         assert(decryptedMessage == message)
     }
 
     @Test
     fun testNewEncryptedMessage() {
-        val newEncryptedMessage = encryption!!.encrypt(message)
+        val newEncryptedMessage = encryption.encrypt(message)
         log.info("New encrypted message: {}", newEncryptedMessage)
         assert(newEncryptedMessage != armoredBcEncryptedMessage)
         { "New encrypted message is not same as old encrypted message" }
@@ -92,7 +93,7 @@ BBgWCgAmFiEEf7V+1iXe1tFm8YWP62P3AT2QugAFAmWu9AACGwwFCQWjmoAACgkQ
 
     @Test
     fun testCliEncryptedMessage() {
-        val decryptedMessage = encryption!!.decrypt(armoredCliEncryptedMessage)
+        val decryptedMessage = encryption.decrypt(armoredCliEncryptedMessage)
         log.info("Decrypted CLI message: {}", decryptedMessage)
         assert(decryptedMessage == message)
     }
