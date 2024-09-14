@@ -2,12 +2,11 @@ package com.arpanrec.bastet.test.encryption
 
 import com.arpanrec.bastet.encryption.Encryption
 import com.arpanrec.bastet.encryption.GnuPG
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 
 class GnuPGTest {
-    private lateinit var encryption: Encryption
+    private val encryption: Encryption
     private val log = LoggerFactory.getLogger(GnuPGTest::class.java)
     private val message = "Hello, World!"
     private val armoredBcEncryptedMessage = """-----BEGIN PGP MESSAGE-----
@@ -33,8 +32,8 @@ GVD/xf7huNGhmdOr8OLf1X7jmzpUdEZLblbZ0fFR9V68E59oU6TT87nt4NVc
 
 """
 
-    @BeforeEach
-    fun loadPrivateKey() {
+
+    init {
         val armoredPrivateKey = """-----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lIYEZa70ABYJKwYBBAHaRw8BAQdAqc7Zfp6aQyefH7FWJOHWGyKSwIZe2L9e+pVm

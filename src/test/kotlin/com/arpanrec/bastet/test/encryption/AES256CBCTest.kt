@@ -2,19 +2,17 @@ package com.arpanrec.bastet.test.encryption
 
 import com.arpanrec.bastet.encryption.AES256CBC
 import com.arpanrec.bastet.encryption.Encryption
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 
 class AES256CBCTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private lateinit var encryption: Encryption
+    private val encryption: Encryption
 
     private val plainText = "Hello, World!"
     private val cipherTextBase64 = "yQp5HF92QfpV/jdmPIDYJQ=="
 
-    @BeforeEach
-    fun loadPrivateKey() {
+    init {
         val secretKeyBase64 = "5jcK7IMk3+QbNLikFRl3Zwgl9xagKD87s5dT2UqaSR4="
         val ivBase64 = "5jcK7IMk3+QbNLikFRl3Zw=="
         val aeS256CBC = AES256CBC()
