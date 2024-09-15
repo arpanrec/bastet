@@ -1,6 +1,6 @@
 package com.arpanrec.bastet.physical
 
-import com.arpanrec.bastet.encryption.GnuPG
+import com.arpanrec.bastet.encryption.gpg.GnuPG
 import com.arpanrec.bastet.physical.jpa.KVDataServiceJpaImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

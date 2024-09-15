@@ -78,7 +78,7 @@ dependencies {
     implementation("org.bouncycastle:bcpg-jdk18on:1.78.1")
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
-    runtimeOnly("org.pgpainless:pgpainless-core:1.6.7")
+    implementation("org.pgpainless:pgpainless-core:1.6.7")
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.xerial:sqlite-jdbc")

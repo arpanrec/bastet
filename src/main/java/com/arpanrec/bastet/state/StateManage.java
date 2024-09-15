@@ -1,7 +1,7 @@
 package com.arpanrec.bastet.state;
 
 import com.arpanrec.bastet.encryption.AES256CBC;
-import com.arpanrec.bastet.encryption.GnuPG;
+import com.arpanrec.bastet.encryption.gpg.GnuPG;
 import com.arpanrec.bastet.hash.Argon2;
 import com.arpanrec.bastet.physical.KVDataService;
 import com.arpanrec.bastet.physical.KVDataServiceImpl;
