@@ -1,7 +1,7 @@
 package com.arpanrec.bastet.test.encryption.gpg
 
 import com.arpanrec.bastet.encryption.Encryption
-import com.arpanrec.bastet.encryption.gpg.PainlessGnuPG
+import com.arpanrec.bastet.encryption.gpg.GnuPG
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 
@@ -10,8 +10,7 @@ class GnuPGTest : Data() {
     private val log = LoggerFactory.getLogger(GnuPGTest::class.java)
 
     init {
-        val gnuPG = PainlessGnuPG()
-        //val gnuPG = GnuPG()
+        val gnuPG = GnuPG()
         gnuPG.setPgpPrivateKeyFromArmoredString(armoredPrivateKey, privateKeyPassphrase)
         encryption = gnuPG
     }
