@@ -11,10 +11,10 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     kotlin("plugin.jpa") version "1.9.25"
-    id("org.hibernate.orm") version "6.5.2.Final"
+    id("org.hibernate.orm") version "6.6.0.Final"
     kotlin("plugin.serialization") version "1.9.25"
     idea
-    // id("org.graalvm.buildtools.native") version "0.10.2"
+    // id("org.graalvm.buildtools.native") version "0.10.3"
 }
 
 group = "com.arpanrec"
@@ -65,6 +65,9 @@ configurations {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
+    maven { url = uri("https://repo.spring.io/milestone") }
+    maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
 dependencies {
