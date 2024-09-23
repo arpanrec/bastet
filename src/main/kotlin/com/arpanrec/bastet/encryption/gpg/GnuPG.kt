@@ -1,5 +1,6 @@
-package com.arpanrec.bastet.encryption
+package com.arpanrec.bastet.encryption.gpg
 
+import com.arpanrec.bastet.encryption.Encryption
 import com.arpanrec.bastet.exceptions.CaughtException
 import com.arpanrec.bastet.physical.NameSpace
 import com.arpanrec.bastet.utils.FileUtils
