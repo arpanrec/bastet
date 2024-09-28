@@ -10,8 +10,8 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
-    kotlin("plugin.jpa") version "1.9.25"
-    id("org.hibernate.orm") version "6.6.0.Final"
+//    kotlin("plugin.jpa") version "1.9.25"
+//    id("org.hibernate.orm") version "6.6.0.Final"
     kotlin("plugin.serialization") version "1.9.25"
     idea
     // id("org.graalvm.buildtools.native") version "0.10.3"
@@ -83,10 +83,10 @@ dependencies {
     implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
     implementation("org.pgpainless:pgpainless-core:1.6.7")
 
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.xerial:sqlite-jdbc")
-    implementation("org.hibernate.orm:hibernate-community-dialects")
-    runtimeOnly("org.postgresql:postgresql")
+//    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+//    implementation("org.xerial:sqlite-jdbc")
+//    implementation("org.hibernate.orm:hibernate-community-dialects")
+//    runtimeOnly("org.postgresql:postgresql")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -185,8 +185,8 @@ fun getVersions(): String {
     return "9.9.9-SNAPSHOT"
 }
 
-hibernate {
-    enhancement {
-        enableAssociationManagement = true
-    }
-}
+//hibernate {
+//    enhancement {
+//        enableAssociationManagement = true
+//    }
+//}
