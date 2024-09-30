@@ -1,41 +1,30 @@
 package com.arpanrec.bastet.physical
 
-import com.arpanrec.bastet.encryption.gpg.GnuPG
-import com.arpanrec.bastet.physical.jpa.KVDataServiceJpaImpl
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
-import java.util.Optional
+import com.arpanrec.bastet.physical.impl.Postgres
+import org.springframework.stereotype.Component
 
-@Service
-class KVDataServiceImpl() : KVDataService {
-    private lateinit var kvDataService: KVDataService
-    private lateinit var gnuPG: GnuPG
+@Component
+class KVDataServiceImpl : KVDataService {
 
-    private constructor(@Autowired kvDataServiceJpaImpl: KVDataServiceJpaImpl, @Autowired gnuPG: GnuPG) : this() {
-        this.kvDataService = kvDataServiceJpaImpl; this.gnuPG = gnuPG
-    }
+    private val kvDataService: KVDataService = Postgres()
 
-    override fun get(key: String): Optional<KVData> {
-        val kvData = kvDataService.get(key)
-        if (kvData.isPresent) {
-            val decryptedValue = gnuPG.decrypt(kvData.get().value)
-            kvData.get().value = decryptedValue
-            return Optional.of(kvData.get())
-        }
-        return Optional.empty()
+    override fun get(key: String): KVData {
+        return this.kvDataService.get(key)
     }
 
     override fun has(key: String): Boolean {
-        return kvDataService.has(key)
+        return this.kvDataService.has(key)
     }
 
-    override fun saveOrUpdate(kvData: KVData): Boolean {
-        val encryptedValue = gnuPG.encrypt(kvData.value)
-        kvData.value = encryptedValue
-        return kvDataService.saveOrUpdate(kvData)
+    override fun save(kvData: KVData) {
+        this.kvDataService.save(kvData)
+    }
+
+    override fun update(kvData: KVData) {
+        this.kvDataService.update(kvData)
     }
 
     override fun delete(kvData: KVData) {
-        return kvDataService.delete(kvData)
+        this.kvDataService.delete(kvData)
     }
 }
