@@ -2,3 +2,9 @@
 server:
     port: 8081
 debug: true
+spring:
+    devtools:
+        livereload:
+            enabled: false
+        restart:
+            enabled: false

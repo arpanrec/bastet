@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.sql.Connection
 import java.sql.DriverManager
-import java.util.*
+import java.util.Properties
+import java.util.Optional
+import kotlin.collections.HashMap
 
 @Component("sf")
 class Postgres : KVDataService {

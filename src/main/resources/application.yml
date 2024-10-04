@@ -3,31 +3,12 @@ server:
     servlet:
         context-path: /
 spring:
-    devtools:
-        livereload:
-            enabled: false
-        restart:
-            enabled: false
-    profiles:
-        active: dev
     application:
         name: bastet
+    profiles:
+        active: dev
     main:
         lazy-initialization: true
-    datasource:
-        url: jdbc:postgresql://localhost:5432/postgres
-        username: postgres
-        password: postgres
-    #        url: jdbc:sqlite:mydatabase.db
-    #        driver-class-name: org.sqlite.JDBC
-    jpa:
-        show-sql: true
-        # database-platform: org.hibernate.community.dialect.SQLiteDialect
-        hibernate:
-            ddl-auto: update
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.PostgreSQLDialect
 bastet:
     auth:
         filter:
@@ -35,3 +16,11 @@ bastet:
         security-config:
             root-username: root
             root-password: root
+    physical:
+        type: postgres
+        config:
+            url: jdbc:postgresql://localhost:5432/bastet
+            properties:
+                user: bastet
+                password: bastet
+                driver-class-name: org.postgresql.Driver
