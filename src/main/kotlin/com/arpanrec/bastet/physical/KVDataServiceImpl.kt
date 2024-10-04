@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class KVDataServiceImpl(@Qualifier("sf") private val kvDataService: Postgres) : KVDataService {
+class KVDataServiceImpl(@Autowired private val kvDataService: Postgres) : KVDataService {
 
 
     override fun get(key: String): KVData {

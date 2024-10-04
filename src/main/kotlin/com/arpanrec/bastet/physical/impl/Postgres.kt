@@ -12,7 +12,7 @@ import java.util.Properties
 import java.util.Optional
 import kotlin.collections.HashMap
 
-@Component("sf")
+@Component
 class Postgres : KVDataService {
 
     private val log = LoggerFactory.getLogger(Postgres::class.java)
