@@ -1,22 +1,28 @@
 package com.arpanrec.bastet.test.physical
-//
-//import com.arpanrec.bastet.physical.KVData
-//import com.arpanrec.bastet.physical.jpa.KVDataServiceJpaImpl
-//import org.junit.jupiter.api.Test
-//import org.slf4j.Logger
-//import org.slf4j.LoggerFactory
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.boot.test.context.SpringBootTest
-//
-//@SpringBootTest
-//class KeyValueTests(@Autowired private val kVDataService: KVDataServiceJpaImpl) {
-//
-//    private val log: Logger = LoggerFactory.getLogger(KeyValueTests::class.java)
-//
-//    private fun getRandomKey(): String {
-//        return "test" + System.currentTimeMillis()
-//    }
-//
+
+import com.arpanrec.bastet.physical.KVData
+import com.arpanrec.bastet.physical.KVDataServiceImpl
+import org.junit.jupiter.api.Test
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+
+@SpringBootTest
+class KeyValueTests(@Autowired private val kVDataService: KVDataServiceImpl) {
+
+    private val log: Logger = LoggerFactory.getLogger(KeyValueTests::class.java)
+
+    private fun getRandomKey(): String {
+        return "test" + System.currentTimeMillis()
+    }
+
+    @Test
+    fun testGet() {
+        val kv: KVData = kVDataService.get("asfgas")
+        log.info("kv: {}", kv)
+    }
+
 //    @Test
 //    fun testSave() {
 //        val key = getRandomKey()
@@ -30,7 +36,7 @@ package com.arpanrec.bastet.test.physical
 //            assert(false) { "keyValue2 is null" }
 //        }
 //    }
-
+//
 //    @Test
 //    fun testSaveVersion() {
 //        val keyValueSave = KVData("1", mapOf("created" to System.currentTimeMillis().toString()))
@@ -58,4 +64,4 @@ package com.arpanrec.bastet.test.physical
 //            assert(false) { "keyValueGetOldVersion is null" }
 //        }
 //    }
-//}
+}

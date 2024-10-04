@@ -33,7 +33,7 @@ public class KeyValue {
     public HttpEntity<KVData> get(HttpServletRequest request) {
         String key = new AntPathMatcher().extractPathWithinPattern(
             request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString(), request.getRequestURI());
-        Optional<KVData> keyValue = kvDataService.get(key);
+        Optional<KVData> keyValue = kvDataService.getMaybe(key);
         return keyValue.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

@@ -29,7 +29,7 @@ class StateManage() {
     }
 
     fun get(tfState: String): HttpEntity<Any> {
-        val keyValueMaybe: Optional<KVData> = kVDataService.get("$tfStateKeyPath/$tfState")
+        val keyValueMaybe: Optional<KVData> = kVDataService.getMaybe("$tfStateKeyPath/$tfState")
         if (keyValueMaybe.isPresent) {
             val keyValue: KVData = keyValueMaybe.get()
             val result: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
@@ -54,7 +54,7 @@ class StateManage() {
             kVDataService.saveOrUpdate(keyValueStateData)
             return ResponseEntity(HttpStatus.OK)
         }
-        val keyValueLockDataMaybe: Optional<KVData> = kVDataService.get("$tfStateKeyPath/${tfState}.lock")
+        val keyValueLockDataMaybe: Optional<KVData> = kVDataService.getMaybe("$tfStateKeyPath/${tfState}.lock")
         if (keyValueLockDataMaybe.isPresent) {
             val lockDataMap: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
                 keyValueLockDataMaybe.get().value, valueMapType
@@ -76,7 +76,7 @@ class StateManage() {
     }
 
     fun setLock(tfState: String, tfStateLock: Map<String, Any>): HttpEntity<Map<String, Any>> {
-        val keyValueLockDataMaybe: Optional<KVData> = kVDataService.get("$tfStateKeyPath/${tfState}.lock")
+        val keyValueLockDataMaybe: Optional<KVData> = kVDataService.getMaybe("$tfStateKeyPath/${tfState}.lock")
         if (keyValueLockDataMaybe.isPresent) {
             val tfLockJson: Map<String, Any> = objectMapper.readValue<Map<String, String>>(
                 keyValueLockDataMaybe.get().value, valueMapType
@@ -93,7 +93,7 @@ class StateManage() {
     }
 
     fun deleteLock(tfState: String): HttpEntity<Any> {
-        val keyValueLockDataMaybe: Optional<KVData> = kVDataService.get("${tfStateKeyPath}/${tfState}.lock")
+        val keyValueLockDataMaybe: Optional<KVData> = kVDataService.getMaybe("${tfStateKeyPath}/${tfState}.lock")
         if (keyValueLockDataMaybe.isPresent) {
             kVDataService.delete(keyValueLockDataMaybe.get())
             return ResponseEntity(HttpStatus.OK)

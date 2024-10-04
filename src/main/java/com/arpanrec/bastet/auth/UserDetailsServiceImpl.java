@@ -48,7 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserDetailsByUsername(String username) throws CaughtException {
         log.debug("Loading user by username: {}", username);
-        Optional<KVData> userData = kvDataService.get(internalUsersKeyPath + "/" + username);
+        Optional<KVData> userData = kvDataService.getMaybe(internalUsersKeyPath + "/" + username);
         if (userData.isEmpty()) {
             throw new CaughtException("User not found with username: " + username);
         } else {
