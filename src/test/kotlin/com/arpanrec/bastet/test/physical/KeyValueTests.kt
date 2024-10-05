@@ -19,7 +19,7 @@ class KeyValueTests(@Autowired private val kVDataService: KVDataServiceImpl) {
 
     @Test
     fun testGet() {
-        val kv: KVData = kVDataService.get("asfgas")
+        val kv: KVData = kVDataService.get("asf", 1)
         log.info("kv: {}", kv)
     }
 
