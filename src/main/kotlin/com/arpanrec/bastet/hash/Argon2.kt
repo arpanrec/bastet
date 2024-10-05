@@ -25,16 +25,15 @@ class Argon2 : PasswordEncoder {
 
     companion object {
         const val INTERNAL_ARGON2_SALT_PATH = NameSpace.INTERNAL_ARGON2 + "/salt"
+        fun generateSalt16ByteBase64EncodedString(): String {
+            val secureRandom = SecureRandom()
+            val salt = ByteArray(32)
+            secureRandom.nextBytes(salt)
+            return Base64.getEncoder().encodeToString(salt)
+        }
     }
 
     private var characters = "abcdefghijklmnopqrstuvwxyz"
-
-    fun generateSalt16ByteBase64EncodedString(): String {
-        val secureRandom = SecureRandom()
-        val salt = ByteArray(32)
-        secureRandom.nextBytes(salt)
-        return Base64.getEncoder().encodeToString(salt)
-    }
 
     fun hashString(inputString: String): String {
         val random = SecureRandom()
