@@ -11,18 +11,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class StateManage {
 
-    private final GnuPG gnuPG;
-
     private final AES256CBC aes256CBC;
 
     private final Argon2 argon2;
 
     private final KVDataService kvDataService;
 
-    public StateManage(@Autowired GnuPG gnuPG,
-                 @Autowired AES256CBC aes256CBC,
-                 @Autowired Argon2 argon2, @Autowired KVDataServiceImpl kvDataServiceImpl) {
-        this.gnuPG = gnuPG;
+    public StateManage(@Autowired AES256CBC aes256CBC,
+                       @Autowired Argon2 argon2,
+                       @Autowired KVDataServiceImpl kvDataServiceImpl) {
         this.aes256CBC = aes256CBC;
         this.argon2 = argon2;
         this.kvDataService = kvDataServiceImpl;

@@ -6,6 +6,5 @@ class NameSpace {
         const val INTERNAL_ARGON2 = "$INTERNAL/argon2"
         const val INTERNAL_TF_STATE = "$INTERNAL/tf_state"
         const val INTERNAL_USERS = "$INTERNAL/users"
-        const val INTERNAL_GNUPG = "$INTERNAL/gnupg"
     }
 }
