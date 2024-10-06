@@ -1,65 +1,65 @@
 package com.arpanrec.bastet.physical
 
-import com.arpanrec.bastet.exceptions.CaughtException
-import com.arpanrec.bastet.exceptions.KeyValueNotFoundException
+import com.arpanrec.bastet.encryption.AES256CBC
+import com.arpanrec.bastet.physical.impl.Postgres
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.util.Optional
 
+@Component
+class KVDataService(
+    @Autowired private val kvDataServiceImpl: Postgres,
+    @Autowired private val aes256CBC: AES256CBC
+) {
 
-interface KVDataService {
-    fun get(key: String): KVData {
-        return get(key, 0)
+    private val objectMapper = jacksonObjectMapper()
+
+    fun getEncrypted(key: String): KVDataEncrypted {
+        return kvDataServiceImpl.get(key)
     }
 
-    fun get(key: String, version: Int): KVData
+    fun saveEncrypted(kvDataEncrypted: KVDataEncrypted) {
+        kvDataServiceImpl.save(kvDataEncrypted)
+    }
+
+    fun get(key: String, version: Int): KVData {
+        val encryptedKV = kvDataServiceImpl.get(key, version)
+        return KVData(encryptedKV.key, aes256CBC.decrypt(encryptedKV.value), encryptedKV.metadata)
+    }
 
     fun getMaybe(key: String): Optional<KVData> {
-        return getMaybe(key, 0)
-    }
-
-    @Throws(CaughtException::class)
-    fun getMaybe(key: String, version: Int): Optional<KVData> {
-        return try {
-            Optional.of(get(key, version))
-        } catch (e: KeyValueNotFoundException) {
-            Optional.empty()
-        } catch (e: Exception) {
-            throw CaughtException("Caught exception", e)
+        val encryptedKV = kvDataServiceImpl.getMaybe(key, version)
+        if (encryptedKV.isPresent) {
+            return Optional.of(decrypt(encryptedKV.get()))
         }
+        return Optional.empty()
     }
 
-    fun has(key: String): Boolean {
-        return has(key, 0)
+    fun has(key: String, version: Int): Boolean {
+        return kvDataServiceImpl.has(key, version)
     }
 
-    fun has(key: String, version: Int): Boolean
-
-    fun save(kvData: KVData) {
-        save(kvData, 0)
+    fun save(kvData: KVData, version: Int) {
+        val kvDataEncrypted = encrypt(kvData)
+        kvDataServiceImpl.save(kvDataEncrypted, version)
     }
 
-    fun save(kvData: KVData, version: Int)
-
-    fun update(kvData: KVData, version: Int)
-
-    fun saveOrUpdate(kvData: KVData) {
-        saveOrUpdate(kvData, 0)
+    fun update(kvData: KVData, version: Int) {
+        val kvDataEncrypted = encrypt(kvData)
+        kvDataServiceImpl.update(kvDataEncrypted, version)
     }
 
-    fun saveOrUpdate(kvData: KVData, version: Int) {
-        if (has(kvData.key, version)) {
-            update(kvData, version)
-        } else {
-            save(kvData, version)
-        }
+    fun delete(kvData: KVData, version: Int) {
+        val kvDataEncrypted = encrypt(kvData)
+        kvDataServiceImpl.delete(kvDataEncrypted, version)
     }
 
-    fun delete(kvData: KVData) {
-        delete(kvData, 0)
+    fun getMaxVersion(key: String): Int {
+        return kvDataServiceImpl.getMaxVersion(key)
     }
 
-    fun delete(kvData: KVData, version: Int)
-
-    fun getMaxVersion(key: String): Int
-
-    fun getNewVersion(key: String): Int
+    fun getNewVersion(key: String): Int {
+        return kvDataServiceImpl.getNewVersion(key)
+    }
 }

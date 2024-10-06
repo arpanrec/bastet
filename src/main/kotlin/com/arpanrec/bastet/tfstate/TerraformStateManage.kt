@@ -1,7 +1,6 @@
 package com.arpanrec.bastet.tfstate
 
 import com.arpanrec.bastet.physical.KVData
-import com.arpanrec.bastet.physical.KVDataServiceImpl
 import com.arpanrec.bastet.physical.KVDataService
 import com.arpanrec.bastet.physical.NameSpace
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -14,19 +13,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.util.Optional
 
-@Component("tfStateManage")
-class StateManage() {
-    private lateinit var kVDataService: KVDataService
+@Component
+class TerraformStateManage(@Autowired private val kVDataService: KVDataService) {
     private val tfStateKeyPath = NameSpace.INTERNAL_TF_STATE
 
     private val objectMapper = ObjectMapper()
     private val valueMapType: MapType = TypeFactory.defaultInstance().constructMapType(
         HashMap::class.java, String::class.java, Object::class.java
     )
-
-    constructor(@Autowired kvDataServiceImpl: KVDataServiceImpl) : this() {
-        this.kVDataService = kvDataServiceImpl
-    }
 
     fun get(tfState: String): HttpEntity<Any> {
         val keyValueMaybe: Optional<KVData> = kVDataService.getMaybe("$tfStateKeyPath/$tfState")

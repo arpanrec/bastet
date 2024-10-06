@@ -51,16 +51,17 @@ class AES256CBC : Encryption {
     }
 
     companion object {
-        fun generateAESKey(): Key {
+        fun generateAESKeyBase64(): String {
             val keyGen = KeyGenerator.getInstance("AES")
-            keyGen.init(256) // 256-bit key
-            return keyGen.generateKey()
+            keyGen.init(256)
+            val secretKey = keyGen.generateKey()
+            return Base64.getEncoder().encodeToString(secretKey.encoded)
         }
 
-        fun generateIV(): IvParameterSpec {
+        fun generateIVBase64(): String {
             val iv = ByteArray(16) // AES block size is 16 bytes
             SecureRandom().nextBytes(iv)
-            return IvParameterSpec(iv)
+            return Base64.getEncoder().encodeToString(iv)
         }
 
         const val INTERNAL_AES_SECRET_KEY_PATH = NameSpace.INTERNAL_AES_CBC + "/secret_key"

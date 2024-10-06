@@ -33,7 +33,9 @@ public class SecurityConfig {
 
     private RequestMatcher[] getPermitAllRequestMatchers() {
         return new RequestMatcher[]{
-            new AntPathRequestMatcher("/h2-console/**"), new AntPathRequestMatcher("/error")
+            new AntPathRequestMatcher("/h2-console/**"),
+            new AntPathRequestMatcher("/error"),
+            new AntPathRequestMatcher("/api/v1/public/**")
         };
     }
 

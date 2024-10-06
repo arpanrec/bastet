@@ -74,7 +74,10 @@ dependencies {
     implementation("org.apache.commons:commons-lang3")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    runtimeOnly("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3")
+
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains:annotations")
 

@@ -1,6 +1,6 @@
 package com.arpanrec.bastet.api;
 
-import com.arpanrec.bastet.tfstate.StateManage;
+import com.arpanrec.bastet.tfstate.TerraformStateManage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,31 +18,31 @@ import java.util.Map;
 @RequestMapping(path = "/api/v1/tfstate/{tfState}", produces = "application/json")
 public class TFState {
 
-    private final StateManage stateManage;
+    private final TerraformStateManage terraformStateManage;
 
-    public TFState(@Autowired StateManage stateManage) {
-        this.stateManage = stateManage;
+    public TFState(@Autowired TerraformStateManage terraformStateManage) {
+        this.terraformStateManage = terraformStateManage;
     }
 
     @GetMapping
     public HttpEntity<?> get(@PathVariable String tfState) {
-        return this.stateManage.get(tfState);
+        return this.terraformStateManage.get(tfState);
     }
 
     @PostMapping
     public HttpEntity<Map<String, Object>> createOrUpdate(@PathVariable String tfState, @RequestBody Map<String,
         Object> state, @RequestParam(name = "lock_id", required = false) String lockId) {
-        return this.stateManage.createOrUpdate(tfState, state, lockId);
+        return this.terraformStateManage.createOrUpdate(tfState, state, lockId);
     }
 
     @PostMapping(path = "/lock")
     public HttpEntity<Map<String, Object>> setLock(@PathVariable String tfState, @RequestBody Map<String,
         Object> lockData) {
-        return this.stateManage.setLock(tfState, lockData);
+        return this.terraformStateManage.setLock(tfState, lockData);
     }
 
     @DeleteMapping(path = "/lock")
     public HttpEntity<?> deleteLock(@PathVariable String tfState) {
-        return this.stateManage.deleteLock(tfState);
+        return this.terraformStateManage.deleteLock(tfState);
     }
 }

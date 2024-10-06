@@ -16,7 +16,7 @@ class Argon2 : PasswordEncoder {
 
     private var argon2Salt: ByteArray? = null
 
-    fun setArgon2Salt(salt: String) {
+    fun setArgon2Base64Salt(salt: String) {
         if (argon2Salt != null) {
             throw CaughtException("Argon2 salt already set")
         }

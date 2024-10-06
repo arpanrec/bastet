@@ -52,9 +52,6 @@ class GnuPG : Encryption {
     }
 
     companion object {
-        const val INTERNAL_GNUPG_PRIVATE_KEY_PATH = "${NameSpace.INTERNAL_GNUPG}/private_key"
-        const val INTERNAL_GNUPG_PRIVATE_KEY_PASSPHRASE_PATH =
-            "${NameSpace.INTERNAL_GNUPG}/private_key_passphrase"
     }
 
     private var pgpPrivateKey: PGPPrivateKey? = null
